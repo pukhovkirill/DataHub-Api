@@ -1,11 +1,11 @@
 package com.pukhovkirill.datahub.usecase.factory;
 
+import java.sql.Timestamp;
+import java.net.URLConnection;
+
 import com.pukhovkirill.datahub.entity.factory.StorageEntityFactory;
 import com.pukhovkirill.datahub.entity.model.StorageEntity;
 import com.pukhovkirill.datahub.util.StringHelper;
-
-import java.net.URLConnection;
-import java.sql.Timestamp;
 
 public class StorageEntityFactoryImpl implements StorageEntityFactory {
 

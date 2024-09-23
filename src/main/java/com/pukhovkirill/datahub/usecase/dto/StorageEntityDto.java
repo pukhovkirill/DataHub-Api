@@ -1,7 +1,7 @@
 package com.pukhovkirill.datahub.usecase.dto;
 
-import java.io.ByteArrayInputStream;
 import java.sql.Timestamp;
+import java.io.ByteArrayInputStream;
 
 public interface StorageEntityDto {
     String getName();
