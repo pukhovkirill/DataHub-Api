@@ -1,7 +1,6 @@
 package com.pukhovkirill.datahub.infrastructure.dto;
 
 import java.sql.Timestamp;
-import java.io.ByteArrayInputStream;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -27,6 +26,4 @@ public class StorageEntityDtoImpl implements StorageEntityDto {
     private Timestamp lastModified;
 
     private long size;
-
-    private ByteArrayInputStream data;
 }

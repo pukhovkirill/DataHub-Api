@@ -20,8 +20,8 @@ public class UploadStorageEntityImpl implements UploadStorageEntity{
         this.factory = factory;
     }
 
-    public StorageEntity upload(StorageEntityDto dto){
-        try(ByteArrayInputStream bais = dto.getData(); ByteArrayOutputStream baos = new ByteArrayOutputStream()){
+    public StorageEntity upload(StorageEntityDto dto, ByteArrayInputStream bais){
+        try(ByteArrayOutputStream baos = new ByteArrayOutputStream()){
             byte[] buf = new byte[1024];
 
             while(bais.read(buf, 0, buf.length) > 0)
