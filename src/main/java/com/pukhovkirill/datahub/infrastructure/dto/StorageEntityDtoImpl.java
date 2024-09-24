@@ -26,4 +26,14 @@ public class StorageEntityDtoImpl implements StorageEntityDto {
     private Timestamp lastModified;
 
     private long size;
+
+    @Override
+    public StorageEntityDto clone() {
+        try {
+            return (StorageEntityDto) super.clone();
+        }
+        catch( CloneNotSupportedException ex ) {
+            throw new InternalError();
+        }
+    }
 }

@@ -8,4 +8,5 @@ public interface StorageEntityDto {
     String getContentType();
     Timestamp getLastModified();
     long getSize();
+    StorageEntityDto clone();
 }
