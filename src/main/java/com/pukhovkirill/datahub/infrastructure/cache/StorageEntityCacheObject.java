@@ -1,6 +1,5 @@
-package com.pukhovkirill.datahub.usecase.cache.storageEntity;
+package com.pukhovkirill.datahub.infrastructure.cache;
 
-import com.pukhovkirill.datahub.usecase.cache.Cacheable;
 import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
 
 public interface StorageEntityCacheObject extends Cacheable<StorageEntityDto> {

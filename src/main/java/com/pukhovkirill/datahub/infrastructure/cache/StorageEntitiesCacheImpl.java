@@ -1,7 +1,6 @@
 package com.pukhovkirill.datahub.infrastructure.cache;
 
 import com.pukhovkirill.datahub.usecase.cache.storageEntity.StorageEntitiesCache;
-import com.pukhovkirill.datahub.usecase.cache.storageEntity.StorageEntityCacheObject;
 import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
 
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -25,7 +24,7 @@ public class StorageEntitiesCacheImpl implements StorageEntitiesCache {
     }
 
     @Override
-    public void saveToCache(String key, StorageEntityCacheObject value) {
+    public void saveToCache(String key, StorageEntityDto value) {
 
     }
 

@@ -1,4 +1,4 @@
-package com.pukhovkirill.datahub.usecase.cache;
+package com.pukhovkirill.datahub.infrastructure.cache;
 
 public interface Cacheable<T> {
     long expireAt();

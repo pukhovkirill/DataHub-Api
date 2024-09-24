@@ -1,6 +1,5 @@
 package com.pukhovkirill.datahub.infrastructure.cache;
 
-import com.pukhovkirill.datahub.usecase.cache.storageEntity.StorageEntityCacheObject;
 import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
 import lombok.AllArgsConstructor;
 
