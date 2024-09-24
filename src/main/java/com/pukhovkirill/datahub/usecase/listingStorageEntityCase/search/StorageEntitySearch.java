@@ -4,7 +4,7 @@ import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
 import com.pukhovkirill.datahub.usecase.listingStorageEntityCase.criteria.FilterCriteria;
 import com.pukhovkirill.datahub.usecase.listingStorageEntityCase.criteria.SearchCriteria;
 
-public interface StorageEntitySearch {
+public interface StorageEntitySearch extends Cloneable{
     Iterable<StorageEntityDto> Search(SearchCriteria criteria);
     StorageEntityDto FindById();
     Iterable<StorageEntityDto> FindByName(String name);
