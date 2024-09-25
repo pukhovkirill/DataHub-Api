@@ -14,7 +14,7 @@ public class StorageEntitiesCacheImpl implements StorageEntitiesCache {
     }
 
     @Override
-    public StorageEntityDto getFromCache(String key) {
+    public Iterable<StorageEntityDto> getFromCache(String key) {
         return null;
     }
 
