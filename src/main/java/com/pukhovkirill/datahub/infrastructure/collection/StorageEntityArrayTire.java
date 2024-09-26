@@ -2,6 +2,8 @@ package com.pukhovkirill.datahub.infrastructure.collection;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -21,11 +23,11 @@ public class StorageEntityArrayTire implements Tire<StorageEntityDto>{
     private static class TireNode {
         private final AtomicReferenceArray<TireNode> outgoingNodes;
 
-        private volatile StorageEntityDto entity;
+        private final List<StorageEntityDto> entities;
 
         public TireNode() {
             this.outgoingNodes = new AtomicReferenceArray<>(new TireNode[26]);
-            this.entity = null;
+            this.entities = new CopyOnWriteArrayList<>();
         }
 
         public TireNode getChild(char ch){
@@ -36,13 +38,17 @@ public class StorageEntityArrayTire implements Tire<StorageEntityDto>{
             this.outgoingNodes.set(ch - 'a', new TireNode());
         }
 
-        public StorageEntityDto getEntity(){
-            return this.entity;
+        public Collection<StorageEntityDto> getEntities(){
+            return this.entities;
         }
 
-        public synchronized void setEntity(StorageEntityDto entity){
+        public synchronized void addEntity(StorageEntityDto entity){
             if(entity == null) return;
-            this.entity = entity.clone();
+            this.entities.add(entity.clone());
+        }
+
+        public synchronized void removeEntity(StorageEntityDto entity){
+            entities.removeIf(entity::equals);
         }
     }
 
@@ -58,52 +64,49 @@ public class StorageEntityArrayTire implements Tire<StorageEntityDto>{
     public void add(StorageEntityDto entity) {
         acquireWriteLock();
         try{
-            String path = entity.getPath();
+            String name = entity.getName();
             var currentNode = this.root;
-            for(char ch : path.toCharArray()){
+            for(char ch : name.toCharArray()){
                 if (currentNode.getChild(ch) == null){
                     currentNode.setChild(ch);
                 }
                 currentNode = currentNode.getChild(ch);
             }
-            currentNode.setEntity(entity);
+            currentNode.addEntity(entity);
         }finally{
             releaseWriteLock();
         }
     }
 
     @Override
-    public StorageEntityDto find(String path) {
-        var currentNode = this.root;
-        for(char ch : path.toCharArray()){
-            if (currentNode.getChild(ch) == null){
-                return null;
-            }
-            currentNode = currentNode.getChild(ch);
-        }
-
-        return currentNode.getEntity().clone();
+    public StorageEntityDto find(String name) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void lazyErase(String path) {
+    public void lazyErase(StorageEntityDto entity) {
         var currentNode = this.root;
-        for(char ch : path.toCharArray()){
+        var name = entity.getName();
+        for(char ch : name.toCharArray()){
             if (currentNode.getChild(ch) == null){
                 return;
             }
             currentNode = currentNode.getChild(ch);
         }
 
-        currentNode.setEntity(null);
+        currentNode.removeEntity(entity);
     }
 
     @Override
-    public Collection<StorageEntityDto> findFuzzy(String path) {
+    public Collection<StorageEntityDto> findFuzzy(String name) {
         Collection<StorageEntityDto> entities = new LinkedList<>();
         var currentNode = this.root;
-        for(char ch : path.toCharArray()){
-            if(currentNode.getChild(ch) != null) entities.add(currentNode.entity.clone());
+        for(char ch : name.toCharArray()){
+            if(currentNode.getChild(ch) != null){
+                for(var entity : currentNode.getEntities()){
+                    entities.add(entity.clone());
+                }
+            }
             if (currentNode.getChild(ch) == null){
                 return entities;
             }
@@ -119,14 +122,14 @@ public class StorageEntityArrayTire implements Tire<StorageEntityDto>{
         try{
             for(StorageEntityDto entity : entities){
                 var currentNode = this.root;
-                String path = entity.getPath();
-                for(char ch : path.toCharArray()){
+                String name = entity.getName();
+                for(char ch : name.toCharArray()){
                     if (currentNode.getChild(ch) == null){
                         currentNode.setChild(ch);
                     }
                     currentNode = currentNode.getChild(ch);
                 }
-                currentNode.setEntity(entity);
+                currentNode.addEntity(entity);
             }
         }finally{
             releaseWriteLock();

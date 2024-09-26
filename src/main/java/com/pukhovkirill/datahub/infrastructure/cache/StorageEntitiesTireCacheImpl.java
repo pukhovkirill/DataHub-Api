@@ -1,5 +1,7 @@
 package com.pukhovkirill.datahub.infrastructure.cache;
 
+import java.util.Collection;
+
 import com.pukhovkirill.datahub.infrastructure.collection.StorageEntityArrayTire;
 import com.pukhovkirill.datahub.infrastructure.collection.Tire;
 import com.pukhovkirill.datahub.usecase.cache.storageEntity.StorageEntitiesCache;
@@ -14,12 +16,12 @@ public class StorageEntitiesTireCacheImpl implements StorageEntitiesCache {
     }
 
     @Override
-    public Iterable<StorageEntityDto> getFromCache(String key) {
+    public Collection<StorageEntityDto> getFromCache(String key) {
         return null;
     }
 
     @Override
-    public Iterable<StorageEntityDto> getAllFromCache() {
+    public Collection<StorageEntityDto> getAllFromCache() {
         return null;
     }
 

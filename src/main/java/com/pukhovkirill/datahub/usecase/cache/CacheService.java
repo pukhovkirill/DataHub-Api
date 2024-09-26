@@ -1,8 +1,10 @@
 package com.pukhovkirill.datahub.usecase.cache;
 
+import java.util.Collection;
+
 public interface CacheService<T>{
-    Iterable<T> getFromCache(String key);
-    Iterable<T> getAllFromCache();
+    Collection<T> getFromCache(String key);
+    Collection<T> getAllFromCache();
     void saveToCache(String key, T value);
     void removeFromCache(String key);
     boolean hasInCache(String key);

@@ -1,7 +1,10 @@
 package com.pukhovkirill.datahub.usecase.listingStorageEntityCase.criteria.filter;
 
-public interface Filter {
-    void setName(String name);
+import java.util.Collection;
+
+public interface Filter<K,E> {
     void setType(FilterType type);
-    void setValue(String value);
+    void setValue(K value);
+
+    void filter(Collection<E> collection);
 }

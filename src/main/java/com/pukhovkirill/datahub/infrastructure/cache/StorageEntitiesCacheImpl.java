@@ -1,9 +1,10 @@
 package com.pukhovkirill.datahub.infrastructure.cache;
 
+import java.util.Collection;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import com.pukhovkirill.datahub.usecase.cache.storageEntity.StorageEntitiesCache;
 import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
-
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class StorageEntitiesCacheImpl implements StorageEntitiesCache {
 
@@ -14,12 +15,12 @@ public class StorageEntitiesCacheImpl implements StorageEntitiesCache {
     }
 
     @Override
-    public Iterable<StorageEntityDto> getFromCache(String key) {
+    public Collection<StorageEntityDto> getFromCache(String key) {
         return null;
     }
 
     @Override
-    public Iterable<StorageEntityDto> getAllFromCache() {
+    public Collection<StorageEntityDto> getAllFromCache() {
         return null;
     }
 
