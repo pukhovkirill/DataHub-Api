@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import com.pukhovkirill.datahub.entity.factory.StorageEntityFactory;
 import com.pukhovkirill.datahub.entity.gateway.StorageGateway;
 import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
+import com.pukhovkirill.datahub.usecase.factory.StorageEntityFactoryImpl;
 
 public class UploadStorageEntityImpl implements UploadStorageEntity{
 
@@ -14,9 +15,9 @@ public class UploadStorageEntityImpl implements UploadStorageEntity{
 
     private final StorageEntityFactory factory;
 
-    public UploadStorageEntityImpl(StorageGateway gateway, StorageEntityFactory factory) {
+    public UploadStorageEntityImpl(StorageGateway gateway) {
         this.gateway = gateway;
-        this.factory = factory;
+        this.factory = new StorageEntityFactoryImpl();
     }
 
     public void upload(StorageEntityDto dto, ByteArrayInputStream bais){

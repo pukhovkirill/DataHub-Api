@@ -1,4 +1,4 @@
-package com.pukhovkirill.datahub.infrastructure.dto;
+package com.pukhovkirill.datahub.infrastructure.file.dto;
 
 import java.sql.Timestamp;
 
@@ -13,7 +13,7 @@ import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
 @Setter
 @Builder
 @AllArgsConstructor
-public class StorageEntityDtoImpl implements StorageEntityDto {
+public class StorageFile implements StorageEntityDto {
 
     private long id;
 
