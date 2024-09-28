@@ -1,5 +1,8 @@
 package com.pukhovkirill.datahub.infrastructure.config;
 
+import com.pukhovkirill.datahub.entity.factory.StorageEntityFactory;
+import com.pukhovkirill.datahub.entity.gateway.StorageGateway;
+import com.pukhovkirill.datahub.infrastructure.file.repository.MinioGatewayImpl;
 import io.minio.MinioClient;
 import java.util.concurrent.TimeUnit;
 import okhttp3.ConnectionPool;
@@ -51,6 +54,12 @@ public class MinioConfig {
                 .credentials(accessKey, secretKey)
                 .httpClient(okHttpClient)
                 .build();
+    }
+
+    @Bean
+    @Scope("prototype")
+    public StorageGateway minioStorageGateway(MinioClient client, StorageEntityFactory factory) {
+        return new MinioGatewayImpl(client, factory);
     }
 
 }

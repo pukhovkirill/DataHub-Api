@@ -7,7 +7,7 @@ import java.io.ByteArrayOutputStream;
 import com.pukhovkirill.datahub.entity.factory.StorageEntityFactory;
 import com.pukhovkirill.datahub.entity.gateway.StorageGateway;
 import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
-import com.pukhovkirill.datahub.usecase.factory.StorageEntityFactoryImpl;
+import com.pukhovkirill.datahub.entity.factory.StorageEntityFactoryImpl;
 
 public class UploadStorageEntityImpl implements UploadStorageEntity{
 

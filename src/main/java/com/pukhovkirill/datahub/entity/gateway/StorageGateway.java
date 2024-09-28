@@ -7,13 +7,13 @@ import com.pukhovkirill.datahub.entity.model.StorageEntity;
 public interface StorageGateway {
     long count();
 
-    void delete(StorageEntity storageEntity);
-    void deleteAll(StorageEntity storageEntity);
+    void delete(StorageEntity entity);
+    void deleteAll(Iterable<StorageEntity> entities);
 
-    boolean existsByName(String name);
+    boolean existsByPath(String path);
 
     Iterable<StorageEntity> findAll();
-    Optional<StorageEntity> findByName(String name);
+    Optional<StorageEntity> findByPath(String path);
 
     StorageEntity save(StorageEntity entity);
     Iterable<StorageEntity> saveAll(Iterable<StorageEntity> entities);
