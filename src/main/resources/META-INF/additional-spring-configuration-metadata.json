@@ -1,0 +1,56 @@
+{
+  "properties": [
+    {
+      "name": "minio.url",
+      "type": "java.lang.String",
+      "description": "The URL of the MinIO server. This should include the hostname or IP address where MinIO is running.",
+      "defaultValue": "localhost"
+    },
+    {
+      "name": "minio.port",
+      "type": "java.lang.Integer",
+      "description": "The port on which the MinIO server is running. Default MinIO port is 9000 for HTTP and 9001 for HTTPS.",
+      "defaultValue": 9000
+    },
+    {
+      "name": "minio.secure",
+      "type": "java.lang.Boolean",
+      "description": "A flag to determine if the connection to the MinIO server is secure (HTTPS) or not (HTTP). Set to true for HTTPS and false for HTTP.",
+      "defaultValue": false
+    },
+    {
+      "name": "minio.access-key",
+      "type": "java.lang.String",
+      "description": "The access key used for authentication with the MinIO server. This acts like a username to access the server.",
+    },
+    {
+      "name": "minio.secret-key",
+      "type": "java.lang.String",
+      "description": "The secret key used for authentication with the MinIO server. This acts like a password to access the server."
+    },
+    {
+      "name": "minio.pool.size",
+      "type": "java.lang.Integer",
+      "description": "The maximum number of connections that can be pooled and reused to improve performance and reduce latency.",
+      "defaultValue": 10
+    },
+    {
+      "name": "minio.pool.keep-alive",
+      "type": "java.lang.Integer",
+      "description": "The amount of time (in seconds) that idle connections in the pool are kept alive before they are closed.",
+      "defaultValue": 5
+    },
+    {
+      "name": "minio.pool.keep-alive-time-unit",
+      "type": "java.lang.Enum",
+      "description": "The time unit for the keep-alive setting of the connection pool. Options include time units such as SECONDS, MINUTES, or HOURS.",
+      "defaultValue": "TimeUnit.HOURS"
+    },
+    {
+      "name": "minio.default-bucket-name",
+      "type": "java.lang.String",
+      "description": "The default bucket name where files will be stored in the MinIO server if no other bucket is specified.",
+      "defaultValue": "default"
+    }
+  ]
+}
