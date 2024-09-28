@@ -6,5 +6,5 @@ public interface Filter<K,E> {
     void setType(FilterType type);
     void setValue(K value);
 
-    void filter(Collection<E> collection);
+    void apply(Collection<E> collection);
 }

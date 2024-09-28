@@ -6,7 +6,6 @@ import java.io.ByteArrayOutputStream;
 
 import com.pukhovkirill.datahub.entity.factory.StorageEntityFactory;
 import com.pukhovkirill.datahub.entity.gateway.StorageGateway;
-import com.pukhovkirill.datahub.entity.model.StorageEntity;
 import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
 
 public class UploadStorageEntityImpl implements UploadStorageEntity{
@@ -20,7 +19,8 @@ public class UploadStorageEntityImpl implements UploadStorageEntity{
         this.factory = factory;
     }
 
-    public StorageEntity upload(StorageEntityDto dto, ByteArrayInputStream bais){
+    public void upload(StorageEntityDto dto, ByteArrayInputStream bais){
+        // todo: add exception cases
         try(ByteArrayOutputStream baos = new ByteArrayOutputStream()){
             byte[] buf = new byte[1024];
 
@@ -28,7 +28,7 @@ public class UploadStorageEntityImpl implements UploadStorageEntity{
                 baos.write(buf, 0, buf.length);
 
             var entity = factory.create(dto.getPath(), baos.toByteArray());
-            return gateway.save(entity);
+            gateway.save(entity);
 
         } catch (IOException e) {
             throw new RuntimeException(e);

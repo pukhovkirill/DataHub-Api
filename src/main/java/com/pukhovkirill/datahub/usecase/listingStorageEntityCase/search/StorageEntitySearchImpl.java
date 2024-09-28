@@ -14,28 +14,28 @@ public class StorageEntitySearchImpl implements StorageEntitySearch {
     }
 
     @Override
-    public Iterable<StorageEntityDto> search(SearchCriteria criteria) {
-        var query = criteria.getQuery();
+    public Iterable<StorageEntityDto> search(SearchCriteria searchCriteria) {
+        var query = searchCriteria.getQuery();
         return storageEntitiesCache.getFromCache(query.getValue());
     }
 
     @Override
-    public Iterable<StorageEntityDto> searchAnyWithFilters(FilterCriteria filters) {
+    public Iterable<StorageEntityDto> searchAnyWithFilters(FilterCriteria filterCriteria) {
         var collection = storageEntitiesCache.getAllFromCache();
 
-        for(var filter : filters.getAllFilter())
-            filter.filter(collection);
+        for(var filter : filterCriteria.getAllFilter())
+            filter.apply(collection);
 
         return collection;
     }
 
     @Override
-    public Iterable<StorageEntityDto> searchWithFilters(SearchCriteria criteria, FilterCriteria filters) {
-        var query = criteria.getQuery();
+    public Iterable<StorageEntityDto> searchWithFilters(SearchCriteria searchCriteria, FilterCriteria filterCriteria) {
+        var query = searchCriteria.getQuery();
         var collection = storageEntitiesCache.getFromCache(query.getValue());
 
-        for(var filter : filters.getAllFilter())
-            filter.filter(collection);
+        for(var filter : filterCriteria.getAllFilter())
+            filter.apply(collection);
 
         return collection;
     }
