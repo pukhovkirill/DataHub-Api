@@ -15,10 +15,10 @@ public class DeleteStorageEntityImpl implements DeleteStorageEntity{
     @Override
     public boolean delete(StorageEntityDto dto) {
         try{
-            var optEntity = gateway.findByName(dto.getName());
+            var optEntity = gateway.findByPath(dto.getPath());
 
             if(optEntity.isEmpty())
-                throw new StorageEntityNotFoundException(dto.getName());
+                throw new StorageEntityNotFoundException(dto.getPath());
 
             var entity = optEntity.get();
 

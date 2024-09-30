@@ -19,7 +19,7 @@ public class DownloadStorageEntityImpl implements DownloadStorageEntity {
     public ByteArrayOutputStream download(StorageEntityDto dto) {
         // todo: add exception cases
         try{
-            var optEntity = gateway.findByName(dto.getPath());
+            var optEntity = gateway.findByPath(dto.getPath());
 
             if(optEntity.isEmpty())
                 throw new StorageEntityNotFoundException(dto.getPath());

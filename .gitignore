@@ -35,3 +35,5 @@ build/
 
 ### Project ###
 src/main/resources/application-prod.properties
+docker_secrets/
+.env

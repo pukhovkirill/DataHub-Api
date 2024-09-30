@@ -20,7 +20,7 @@ public class StorageEntityFactoryImpl implements StorageEntityFactory {
     @Override
     public StorageEntity restore(String path, Timestamp lastModified, long size, byte[] data) {
         var name = StringHelper.extractName(path);
-        var contentType = URLConnection.guessContentTypeFromName(path); //path - ? or name - ?
+        var contentType = URLConnection.guessContentTypeFromName(path);
         return new StorageEntity(name, path, contentType, lastModified, size, data);
     }
 }
