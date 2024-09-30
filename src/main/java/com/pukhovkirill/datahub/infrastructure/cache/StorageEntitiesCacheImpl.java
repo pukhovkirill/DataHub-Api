@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class StorageEntitiesCacheImpl implements StorageEntitiesCache {
 
-    private static final CopyOnWriteArrayList<StorageEntityCacheObject> cache;
+    private static final CopyOnWriteArrayList<StorageEntityDto> cache;
 
     static{
         cache = new CopyOnWriteArrayList<>();

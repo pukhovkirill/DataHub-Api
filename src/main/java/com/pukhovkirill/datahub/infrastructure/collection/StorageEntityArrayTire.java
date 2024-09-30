@@ -1,8 +1,6 @@
 package com.pukhovkirill.datahub.infrastructure.collection;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.concurrent.locks.Lock;
@@ -79,8 +77,24 @@ public class StorageEntityArrayTire implements Tire<StorageEntityDto>{
     }
 
     @Override
-    public StorageEntityDto find(String name) {
-        throw new UnsupportedOperationException();
+    public Collection<StorageEntityDto> findAll() {
+        Collection<StorageEntityDto> entities = new LinkedList<>();
+
+        Queue<TireNode> queue = new ArrayDeque<>();
+        queue.add(this.root);
+
+        while(!queue.isEmpty()){
+            var node = queue.poll();
+
+            if(!node.entities.isEmpty())
+                entities.addAll(node.entities);
+
+            for(char ch = 'a'; ch <= 'z'; ch++){
+                if(node.getChild(ch) != null)
+                    queue.add(node.getChild(ch));
+            }
+        }
+        return entities;
     }
 
     @Override
@@ -132,6 +146,16 @@ public class StorageEntityArrayTire implements Tire<StorageEntityDto>{
                 currentNode.addEntity(entity);
             }
         }finally{
+            releaseWriteLock();
+        }
+    }
+
+    @Override
+    public void clear() {
+        acquireWriteLock();
+        try{
+            root = new TireNode();
+        }finally {
             releaseWriteLock();
         }
     }

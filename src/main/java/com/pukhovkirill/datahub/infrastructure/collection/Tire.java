@@ -4,9 +4,10 @@ import java.util.Collection;
 
 public interface Tire<T> {
     void add(T entity);
-    T find(String name);
+    Collection<T> findAll();
     void lazyErase(T name);
     Collection<T> findFuzzy(String name);
     void fill(Iterable<T> entities);
+    void clear();
 
 }

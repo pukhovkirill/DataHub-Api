@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class StorageEntitiesTireCacheImpl implements StorageEntitiesCache {
 
-    public static final Tire<StorageEntityDto> cache;
+    private static final Tire<StorageEntityDto> cache;
 
     static{
         cache = new StorageEntityArrayTire();
@@ -19,31 +19,38 @@ public class StorageEntitiesTireCacheImpl implements StorageEntitiesCache {
 
     @Override
     public Collection<StorageEntityDto> getFromCache(String key) {
-        return null;
+        return cache.findFuzzy(key);
     }
 
     @Override
     public Collection<StorageEntityDto> getAllFromCache() {
-        return null;
+        return cache.findAll();
     }
 
     @Override
     public void saveToCache(String key, StorageEntityDto value) {
-
+        cache.add(value);
     }
 
     @Override
     public void removeFromCache(String key) {
-
+        var results = cache.findFuzzy(key);
+        for(var result : results){
+            if(result.getPath().equals(key)){
+                cache.lazyErase(result);
+                break;
+            }
+        }
     }
 
     @Override
     public boolean hasInCache(String key) {
-        return false;
+        var results = cache.findFuzzy(key);
+        return !results.isEmpty();
     }
 
     @Override
     public void clearCache() {
-
+        cache.clear();
     }
 }
