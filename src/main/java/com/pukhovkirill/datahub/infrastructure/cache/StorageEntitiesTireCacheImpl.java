@@ -35,10 +35,10 @@ public class StorageEntitiesTireCacheImpl implements StorageEntitiesCache {
     }
 
     @Override
-    public void removeFromCache(String key) {
-        var results = cache.findFuzzy(key);
+    public void removeFromCache(StorageEntityDto key) {
+        var results = cache.findFuzzy(key.getName());
         for(var result : results){
-            if(result.getPath().equals(key)){
+            if(result.getLocation().equals(key.getLocation())){
                 cache.lazyErase(result);
                 break;
             }
@@ -46,8 +46,8 @@ public class StorageEntitiesTireCacheImpl implements StorageEntitiesCache {
     }
 
     @Override
-    public boolean hasInCache(String key) {
-        var results = cache.findFuzzy(key);
+    public boolean hasInCache(StorageEntityDto key) {
+        var results = cache.findFuzzy(key.getName());
         return !results.isEmpty();
     }
 

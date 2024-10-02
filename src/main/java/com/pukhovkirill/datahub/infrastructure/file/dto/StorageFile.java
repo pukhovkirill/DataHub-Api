@@ -25,6 +25,8 @@ public class StorageFile implements StorageEntityDto {
 
     private long size;
 
+    private String location;
+
     @Override
     public StorageEntityDto clone() {
         try {

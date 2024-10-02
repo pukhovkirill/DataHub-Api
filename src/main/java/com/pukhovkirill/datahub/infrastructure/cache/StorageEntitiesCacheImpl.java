@@ -34,12 +34,12 @@ public class StorageEntitiesCacheImpl implements StorageEntitiesCache {
     }
 
     @Override
-    public void removeFromCache(String key) {
+    public void removeFromCache(StorageEntityDto key) {
 
     }
 
     @Override
-    public boolean hasInCache(String key) {
+    public boolean hasInCache(StorageEntityDto key) {
         return false;
     }
 

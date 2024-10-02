@@ -3,25 +3,20 @@ package com.pukhovkirill.datahub.infrastructure.file.service;
 import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.Collection;
 
 public interface StorageService {
 
-    void upload(StorageEntityDto entity, ByteArrayInputStream bais);
+    void uploadTo(String location, StorageEntityDto entity, ByteArrayInputStream bais);
 
-    void uploadAll(Collection<StorageEntityDto> entities, Collection<ByteArrayInputStream> bais);
+    void uploadAll(String location, Collection<StorageEntityDto> entities, Collection<ByteArrayInputStream> bais);
 
-    void delete(StorageEntityDto entity);
+    void delete(String location, String name);
 
-    void deleteAll(Collection<StorageEntityDto> entities);
+    void deleteAll(String location, Collection<String> names);
 
-    void find(StorageEntityDto dto);
+    ByteArrayOutputStream download(StorageEntityDto entity);
 
-    ByteArrayInputStream download(StorageEntityDto dto);
-
-    Collection<ByteArrayInputStream> downloadAll(Collection<StorageEntityDto> dto);
-
-    void update();
-
-    void clear();
+    Collection<ByteArrayOutputStream> downloadAll(Collection<StorageEntityDto> entities);
 }
