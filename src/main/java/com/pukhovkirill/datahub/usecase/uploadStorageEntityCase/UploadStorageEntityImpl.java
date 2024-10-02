@@ -31,7 +31,7 @@ public class UploadStorageEntityImpl implements UploadStorageEntity{
             var entity = factory.create(dto.getPath(), baos.toByteArray());
             gateway.save(entity);
 
-        } catch (IOException e) {
+        }catch(IOException e) {
             throw new RuntimeException(e);
         }
     }

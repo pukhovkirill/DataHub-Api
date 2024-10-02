@@ -2,6 +2,7 @@ package com.pukhovkirill.datahub.usecase.downloadStorageEntityCase;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import com.pukhovkirill.datahub.entity.exception.StorageEntityNotFoundException;
 import com.pukhovkirill.datahub.entity.gateway.StorageGateway;
@@ -36,9 +37,8 @@ public class DownloadStorageEntityImpl implements DownloadStorageEntity {
             bais.close();
 
             return baos;
-        }catch(Exception e){
-            System.err.println(e.getMessage());
-            return null;
+        }catch(IOException e){
+            throw new RuntimeException(e);
         }
     }
 }

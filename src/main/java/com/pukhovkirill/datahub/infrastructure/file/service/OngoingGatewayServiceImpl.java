@@ -15,6 +15,11 @@ public class OngoingGatewayServiceImpl implements OngoingGatewayService {
         storageGatewayCache = new ConcurrentHashMap<>();
     }
 
+    public OngoingGatewayServiceImpl(StorageGateway internalStorageGateway){
+        if(!storageGatewayCache.containsKey("internal"))
+            storageGatewayCache.put("internal", internalStorageGateway);
+    }
+
     @Override
     public void register(String key, StorageGateway gateway) {
         if(!storageGatewayCache.containsKey(key)){
