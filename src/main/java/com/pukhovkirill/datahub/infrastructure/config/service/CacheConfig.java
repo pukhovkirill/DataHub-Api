@@ -1,4 +1,4 @@
-package com.pukhovkirill.datahub.infrastructure.config;
+package com.pukhovkirill.datahub.infrastructure.config.service;
 
 import com.pukhovkirill.datahub.infrastructure.cache.StorageEntitiesCacheImpl;
 import com.pukhovkirill.datahub.usecase.cache.storageEntity.StorageEntitiesCache;

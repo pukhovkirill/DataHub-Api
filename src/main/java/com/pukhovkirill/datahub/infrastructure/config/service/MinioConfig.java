@@ -1,4 +1,4 @@
-package com.pukhovkirill.datahub.infrastructure.config;
+package com.pukhovkirill.datahub.infrastructure.config.service;
 
 import com.pukhovkirill.datahub.entity.factory.StorageEntityFactory;
 import com.pukhovkirill.datahub.entity.gateway.StorageGateway;

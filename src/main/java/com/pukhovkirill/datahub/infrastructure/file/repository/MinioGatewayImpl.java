@@ -14,6 +14,7 @@ import io.minio.*;
 import io.minio.errors.MinioException;
 import io.minio.messages.Item;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import com.pukhovkirill.datahub.entity.factory.StorageEntityFactory;
@@ -24,6 +25,7 @@ import static com.pukhovkirill.datahub.util.TimeConverter.toTimestamp;
 
 // todo: minimize the number of requests to the MinIO server
 @Service
+@Scope("prototype")
 public class MinioGatewayImpl implements StorageGateway {
 
     @Value("${minio.default-bucket-name}")

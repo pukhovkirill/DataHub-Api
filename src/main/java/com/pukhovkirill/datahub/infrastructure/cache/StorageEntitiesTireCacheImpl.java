@@ -6,9 +6,11 @@ import com.pukhovkirill.datahub.infrastructure.collection.StorageEntityArrayTire
 import com.pukhovkirill.datahub.infrastructure.collection.Tire;
 import com.pukhovkirill.datahub.usecase.cache.storageEntity.StorageEntitiesCache;
 import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 @Service
+@Scope("prototype")
 public class StorageEntitiesTireCacheImpl implements StorageEntitiesCache {
 
     private static final Tire<StorageEntityDto> cache;
