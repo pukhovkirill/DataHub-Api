@@ -25,8 +25,9 @@ public class UploadStorageEntityImpl implements UploadStorageEntity{
         try(ByteArrayOutputStream baos = new ByteArrayOutputStream()){
             byte[] buf = new byte[1024];
 
-            while(bais.read(buf, 0, buf.length) > 0)
-                baos.write(buf, 0, buf.length);
+            int count;
+            while((count = bais.read(buf)) >= 0)
+                baos.write(buf, 0, count);
 
             var entity = factory.create(dto.getPath(), baos.toByteArray());
             gateway.save(entity);
