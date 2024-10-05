@@ -41,6 +41,8 @@ public class DownloadStorageEntityImpl implements DownloadStorageEntity {
             return baos;
         }catch(IOException e){
             throw new RuntimeException(e);
+        }catch(NullPointerException e){
+            throw new StorageEntityNotFoundException(dto.getPath());
         }
     }
 }

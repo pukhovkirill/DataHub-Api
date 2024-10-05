@@ -13,6 +13,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Optional;
 
@@ -42,7 +43,7 @@ public class DownloadStorageEntityImplTest {
 
         StorageFile dto = StorageFile.builder()
                 .name("testFile.txt")
-                .path("/test/path")
+                .path(path)
                 .contentType("text/plain")
                 .location("/location")
                 .lastModified(new Timestamp(System.currentTimeMillis()))
@@ -68,7 +69,7 @@ public class DownloadStorageEntityImplTest {
         String path = "/invalid/path";
         StorageFile dto = StorageFile.builder()
                 .name("testFile.txt")
-                .path("/invalid/path")
+                .path(path)
                 .contentType("text/plain")
                 .location("/location")
                 .lastModified(new Timestamp(System.currentTimeMillis()))
@@ -82,7 +83,7 @@ public class DownloadStorageEntityImplTest {
                 () -> downloadStorageEntityImpl.download(dto)
         );
 
-        assertEquals(path, exception.getMessage());
+        assertEquals(String.format("Could not find storage entity with name '%s'", path), exception.getMessage());
         verify(storageGateway, times(1)).findByPath(path);
     }
 
@@ -93,7 +94,7 @@ public class DownloadStorageEntityImplTest {
 
         StorageFile dto = StorageFile.builder()
                 .name("testFile.txt")
-                .path("/invalid/path")
+                .path(path)
                 .contentType("text/plain")
                 .location("/location")
                 .lastModified(new Timestamp(System.currentTimeMillis()))
@@ -102,6 +103,7 @@ public class DownloadStorageEntityImplTest {
         StorageEntity entity = mock(StorageEntity.class);
 
         when(storageGateway.findByPath(path)).thenReturn(Optional.of(entity));
+        when(entity.getData()).thenThrow(new RuntimeException(new IOException("Simulated IOException")));
 
         // Simulate IOException by mocking InputStream behavior (optional step)
 
@@ -112,6 +114,7 @@ public class DownloadStorageEntityImplTest {
         );
 
         assertNotNull(exception.getCause());
+        assertTrue(exception.getCause() instanceof IOException);
         verify(storageGateway, times(1)).findByPath(path);
     }
 }
