@@ -18,7 +18,6 @@ public class DownloadStorageEntityImpl implements DownloadStorageEntity {
 
     @Override
     public ByteArrayOutputStream download(StorageEntityDto dto) {
-        // todo: add exception cases
         try{
             var optEntity = gateway.findByPath(dto.getPath());
 
