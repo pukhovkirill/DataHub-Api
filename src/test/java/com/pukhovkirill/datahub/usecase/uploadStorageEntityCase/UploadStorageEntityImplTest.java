@@ -4,10 +4,12 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -26,7 +28,7 @@ import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
 @SpringBootTest(classes = TestConfig.class)
 public class UploadStorageEntityImplTest {
     @Mock
-    private StorageGateway gateway;
+    private StorageGateway storageGateway;
 
     @Mock
     private StorageEntityFactoryImpl factory;
@@ -37,13 +39,12 @@ public class UploadStorageEntityImplTest {
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        uploadStorageEntity = new UploadStorageEntityImpl(gateway);
+        uploadStorageEntity = new UploadStorageEntityImpl(storageGateway);
         ReflectionTestUtils.setField(uploadStorageEntity, "factory", factory);
     }
 
     @Test
     public void testUpload(){
-        // Given
         StorageFile dto = StorageFile.builder()
                 .name("testFile.txt")
                 .path("/test/path")
@@ -60,19 +61,22 @@ public class UploadStorageEntityImplTest {
 
         uploadStorageEntity.upload(dto, bais);
 
-        // Then
-        verify(gateway).save(eq(storageEntity));
+        verify(storageGateway).save(eq(storageEntity));
     }
 
     @Test
-    public void testUploadWithIOException() {
-        // Given
+    public void testUploadWithIOException() throws IOException {
         StorageEntityDto dto = mock(StorageFile.class);
         ByteArrayInputStream bais = mock(ByteArrayInputStream.class);
 
-        when(bais.read(any(), anyInt(), anyInt())).thenThrow(new IOException());
+        when(bais.read(any())).thenThrow(new RuntimeException(new IOException("Simulated IOException")));
 
-        // Then
-        assertThrows(RuntimeException.class, () -> uploadStorageEntity.upload(dto, bais));
+        RuntimeException exception = Assert.assertThrows(
+                RuntimeException.class,
+                () -> uploadStorageEntity.upload(dto, bais)
+        );
+
+        assertNotNull(exception.getCause());
+        assertTrue(exception.getCause() instanceof IOException);
     }
 }

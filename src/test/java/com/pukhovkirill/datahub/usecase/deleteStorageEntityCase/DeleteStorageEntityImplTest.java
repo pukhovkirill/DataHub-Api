@@ -37,7 +37,6 @@ public class DeleteStorageEntityImplTest {
 
     @Test
     public void deleteSuccess() {
-        // Arrange
         String path = "/some/path";
         StorageFile dto = StorageFile.builder()
                 .name("testFile.txt")
@@ -50,10 +49,8 @@ public class DeleteStorageEntityImplTest {
 
         when(storageGateway.findByPath(path)).thenReturn(Optional.of(entity));
 
-        // Act
         boolean result = deleteStorageEntityImpl.delete(dto);
 
-        // Assert
         assertTrue(result);
         verify(storageGateway, times(1)).findByPath(path);
         verify(storageGateway, times(1)).delete(entity);
@@ -61,7 +58,6 @@ public class DeleteStorageEntityImplTest {
 
     @Test
     public void deleteThrowsStorageEntityNotFoundException() {
-        // Arrange
         String path = "/invalid/path";
         StorageFile dto = StorageFile.builder()
                 .name("testFile.txt")
@@ -73,7 +69,6 @@ public class DeleteStorageEntityImplTest {
 
         when(storageGateway.findByPath(path)).thenReturn(Optional.empty());
 
-        // Act & Assert
         StorageEntityNotFoundException exception = assertThrows(
                 StorageEntityNotFoundException.class,
                 () -> deleteStorageEntityImpl.delete(dto)

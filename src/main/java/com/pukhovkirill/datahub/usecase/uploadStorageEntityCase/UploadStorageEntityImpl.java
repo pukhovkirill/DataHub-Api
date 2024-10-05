@@ -21,7 +21,6 @@ public class UploadStorageEntityImpl implements UploadStorageEntity{
     }
 
     public void upload(StorageEntityDto dto, ByteArrayInputStream bais){
-        // todo: add exception cases
         try(ByteArrayOutputStream baos = new ByteArrayOutputStream()){
             byte[] buf = new byte[1024];
 
@@ -32,7 +31,7 @@ public class UploadStorageEntityImpl implements UploadStorageEntity{
             var entity = factory.create(dto.getPath(), baos.toByteArray());
             gateway.save(entity);
 
-        }catch(IOException e) {
+        }catch(IOException | NullPointerException e) {
             throw new RuntimeException(e);
         }
     }

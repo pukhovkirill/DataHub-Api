@@ -37,7 +37,6 @@ public class DownloadStorageEntityImplTest {
 
     @Test
     public void downloadSuccess() {
-        // Arrange
         String path = "/test/path";
         byte[] data = "test data".getBytes();
 
@@ -54,10 +53,8 @@ public class DownloadStorageEntityImplTest {
 
         when(storageGateway.findByPath(path)).thenReturn(Optional.of(entity));
 
-        // Act
         ByteArrayOutputStream result = downloadStorageEntityImpl.download(dto);
 
-        // Assert
         assertNotNull(result);
         assertArrayEquals(data, result.toByteArray());
         verify(storageGateway, times(1)).findByPath(path);
@@ -65,7 +62,6 @@ public class DownloadStorageEntityImplTest {
 
     @Test
     public void downloadThrowsStorageEntityNotFoundException() {
-        // Arrange
         String path = "/invalid/path";
         StorageFile dto = StorageFile.builder()
                 .name("testFile.txt")
@@ -77,7 +73,6 @@ public class DownloadStorageEntityImplTest {
 
         when(storageGateway.findByPath(path)).thenReturn(Optional.empty());
 
-        // Act & Assert
         StorageEntityNotFoundException exception = assertThrows(
                 StorageEntityNotFoundException.class,
                 () -> downloadStorageEntityImpl.download(dto)
@@ -89,7 +84,6 @@ public class DownloadStorageEntityImplTest {
 
     @Test
     public void downloadThrowsRuntimeExceptionOnIOException() {
-        // Arrange
         String path = "/some/path";
 
         StorageFile dto = StorageFile.builder()
@@ -105,9 +99,7 @@ public class DownloadStorageEntityImplTest {
         when(storageGateway.findByPath(path)).thenReturn(Optional.of(entity));
         when(entity.getData()).thenThrow(new RuntimeException(new IOException("Simulated IOException")));
 
-        // Simulate IOException by mocking InputStream behavior (optional step)
 
-        // Act & Assert
         RuntimeException exception = assertThrows(
                 RuntimeException.class,
                 () -> downloadStorageEntityImpl.download(dto)

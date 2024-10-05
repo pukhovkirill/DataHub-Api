@@ -38,10 +38,8 @@ public class DownloadStorageEntityImpl implements DownloadStorageEntity {
             bais.close();
 
             return baos;
-        }catch(IOException e){
+        }catch(IOException | NullPointerException e){
             throw new RuntimeException(e);
-        }catch(NullPointerException e){
-            throw new StorageEntityNotFoundException(dto.getPath());
         }
     }
 }
