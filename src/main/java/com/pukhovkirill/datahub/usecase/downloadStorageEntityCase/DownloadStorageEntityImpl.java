@@ -31,8 +31,10 @@ public class DownloadStorageEntityImpl implements DownloadStorageEntity {
 
             byte[] buf = new byte[1024];
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            while((bais.read(buf, 0, buf.length)) > 0)
-                baos.write(buf, 0, buf.length);
+
+            int count;
+            while((count = bais.read(buf)) >= 0)
+                baos.write(buf, 0, count);
 
             bais.close();
 
