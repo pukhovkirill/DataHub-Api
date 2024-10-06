@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.pukhovkirill.datahub.entity.exception.StorageEntityAlreadyExistsException;
+import com.pukhovkirill.datahub.entity.exception.StorageEntityNotFoundException;
 import io.minio.*;
 import io.minio.errors.MinioException;
 import io.minio.messages.Item;
@@ -23,7 +25,6 @@ import com.pukhovkirill.datahub.entity.model.StorageEntity;
 
 import static com.pukhovkirill.datahub.util.TimeConverter.toTimestamp;
 
-// todo: minimize the number of requests to the MinIO server
 @Service
 @Scope("prototype")
 public class MinioGatewayImpl implements StorageGateway {
@@ -63,6 +64,7 @@ public class MinioGatewayImpl implements StorageGateway {
         }catch (MinioException e){
             System.err.println("Error occurred: " + e);
             System.err.println("HTTP trace: " + e.httpTrace());
+            throw new RuntimeException(e);
         } catch (IOException | NoSuchAlgorithmException | InvalidKeyException e) {
             throw new RuntimeException(e);
         }
@@ -73,31 +75,6 @@ public class MinioGatewayImpl implements StorageGateway {
         for (StorageEntity entity : entities){
             delete(entity);
         }
-    }
-
-    @Override
-    public boolean existsByPath(String path) {
-        try{
-            Iterable<Result<Item>> results = client.listObjects(
-                    ListObjectsArgs.builder()
-                            .bucket(BUCKET_NAME)
-                            .startAfter(path)
-                            .maxKeys(1)
-                            .build());
-
-            var result = results.iterator().next();
-
-            if(result.get().objectName().equals(path))
-                return true;
-
-        }catch (MinioException e){
-            System.err.println("Error occurred: " + e);
-            System.err.println("HTTP trace: " + e.httpTrace());
-        } catch (IOException | NoSuchAlgorithmException | InvalidKeyException e) {
-            throw new RuntimeException(e);
-        }
-
-        return false;
     }
 
     @Override
@@ -118,6 +95,7 @@ public class MinioGatewayImpl implements StorageGateway {
         }catch (MinioException e){
             System.err.println("Error occurred: " + e);
             System.err.println("HTTP trace: " + e.httpTrace());
+            throw new RuntimeException(e);
         } catch (IOException | NoSuchAlgorithmException | InvalidKeyException e) {
             throw new RuntimeException(e);
         }
@@ -128,20 +106,18 @@ public class MinioGatewayImpl implements StorageGateway {
     @Override
     public Optional<StorageEntity> findByPath(String path) {
         try{
-            Iterable<Result<Item>> results = client.listObjects(
-                    ListObjectsArgs.builder()
-                            .bucket(BUCKET_NAME)
-                            .startAfter(path)
-                            .maxKeys(1)
-                            .build());
+            var result = Optional.ofNullable(client.statObject(StatObjectArgs.builder()
+                    .bucket(BUCKET_NAME)
+                    .object(path).build()));
 
-            var result = results.iterator().next();
+            if(result.isEmpty())
+                throw new StorageEntityNotFoundException(path);
 
             var item = result.get();
 
-            var out = new ByteArrayOutputStream();
+            var baos = new ByteArrayOutputStream();
 
-            InputStream in = client.getObject(
+            InputStream is = client.getObject(
                     GetObjectArgs.builder()
                             .bucket(BUCKET_NAME)
                             .object(path)
@@ -150,35 +126,36 @@ public class MinioGatewayImpl implements StorageGateway {
             byte[] buff = new byte[1024];
 
             int count;
-            while ((count = in.read(buff)) >= 0){
-                out.write(buff, 0, count);
+            while ((count = is.read(buff)) >= 0){
+                baos.write(buff, 0, count);
             }
 
             var entity = factory.restore(
                     path,
                     toTimestamp(item.lastModified()),
                     item.size(),
-                    out.toByteArray()
+                    baos.toByteArray()
             );
 
-            out.close();
-            in.close();
+            baos.close();
+            is.close();
 
             return Optional.of(entity);
         }catch (MinioException e){
             System.err.println("Error occurred: " + e);
             System.err.println("HTTP trace: " + e.httpTrace());
+            throw new RuntimeException(e);
         } catch (IOException | NoSuchAlgorithmException | InvalidKeyException e) {
             throw new RuntimeException(e);
         }
-
-        return Optional.empty();
     }
 
     @Override
     public StorageEntity save(StorageEntity entity) {
-        // todo: check if exists
         try{
+            if(existsByPath(entity.getPath()))
+                throw new StorageEntityAlreadyExistsException(entity.getPath());
+
             byte[] buff = entity.getData();
 
             var putBuilder = PutObjectArgs.builder()
@@ -186,21 +163,15 @@ public class MinioGatewayImpl implements StorageGateway {
                     .object(entity.getPath())
                     .stream(new ByteArrayInputStream(buff), entity.getSize(), -1);
 
-            if(!entity.getContentType().equals("folder"))
-                putBuilder.contentType(entity.getContentType());
-
-            client.putObject(
-                    putBuilder.build()
-            );
+            client.putObject(putBuilder.build());
             return entity;
         }catch (MinioException e){
             System.err.println("Error occurred: " + e);
             System.err.println("HTTP trace: " + e.httpTrace());
+            throw new RuntimeException(e);
         } catch (IOException | NoSuchAlgorithmException | InvalidKeyException e) {
             throw new RuntimeException(e);
         }
-
-        return null;
     }
 
     @Override
@@ -209,5 +180,19 @@ public class MinioGatewayImpl implements StorageGateway {
             save(entity);
 
         return entities;
+    }
+
+
+    @Override
+    public boolean existsByPath(String path) {
+        try{
+            var result = Optional.ofNullable(client.statObject(StatObjectArgs.builder()
+                    .bucket(BUCKET_NAME)
+                    .object(path).build()));
+
+            return result.isPresent();
+        }catch(Exception e){
+            return false;
+        }
     }
 }
