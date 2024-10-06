@@ -4,28 +4,24 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.pukhovkirill.datahub.entity.factory.StorageEntityFactoryImpl;
 import com.pukhovkirill.datahub.entity.gateway.StorageGateway;
 import com.pukhovkirill.datahub.entity.model.StorageEntity;
-import com.pukhovkirill.datahub.infrastructure.TestConfig;
 import com.pukhovkirill.datahub.infrastructure.file.dto.StorageFile;
 import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
 
-@SpringBootTest(classes = TestConfig.class)
 public class UploadStorageEntityImplTest {
     @Mock
     private StorageGateway storageGateway;
@@ -36,7 +32,7 @@ public class UploadStorageEntityImplTest {
     @InjectMocks
     private UploadStorageEntityImpl uploadStorageEntity;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         uploadStorageEntity = new UploadStorageEntityImpl(storageGateway);
@@ -76,7 +72,7 @@ public class UploadStorageEntityImplTest {
                 () -> uploadStorageEntity.upload(dto, bais)
         );
 
-        assertNotNull(exception.getCause());
-        assertTrue(exception.getCause() instanceof IOException);
+        Assertions.assertNotNull(exception.getCause());
+        Assertions.assertInstanceOf(IOException.class, exception.getCause());
     }
 }

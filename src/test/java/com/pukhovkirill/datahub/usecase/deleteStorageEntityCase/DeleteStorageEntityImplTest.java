@@ -3,24 +3,22 @@ package com.pukhovkirill.datahub.usecase.deleteStorageEntityCase;
 import java.sql.Timestamp;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import com.pukhovkirill.datahub.entity.exception.StorageEntityNotFoundException;
 import com.pukhovkirill.datahub.entity.gateway.StorageGateway;
 import com.pukhovkirill.datahub.entity.model.StorageEntity;
 import com.pukhovkirill.datahub.infrastructure.file.dto.StorageFile;
 
-@SpringBootTest
 public class DeleteStorageEntityImplTest {
 
     @Mock
@@ -29,7 +27,7 @@ public class DeleteStorageEntityImplTest {
     @InjectMocks
     private DeleteStorageEntityImpl deleteStorageEntityImpl;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         deleteStorageEntityImpl = new DeleteStorageEntityImpl(storageGateway);
@@ -74,7 +72,7 @@ public class DeleteStorageEntityImplTest {
                 () -> deleteStorageEntityImpl.delete(dto)
         );
 
-        assertEquals(String.format("Could not find storage entity with name '%s'", path), exception.getMessage());
+        Assertions.assertEquals(String.format("Could not find storage entity with name '%s'", path), exception.getMessage());
         verify(storageGateway, times(1)).findByPath(path);
         verify(storageGateway, never()).delete(any(StorageEntity.class));
     }

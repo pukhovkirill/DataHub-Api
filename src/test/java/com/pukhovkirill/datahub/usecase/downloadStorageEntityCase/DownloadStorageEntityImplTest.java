@@ -8,19 +8,18 @@ import java.util.Optional;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import com.pukhovkirill.datahub.entity.exception.StorageEntityNotFoundException;
 import com.pukhovkirill.datahub.entity.gateway.StorageGateway;
 import com.pukhovkirill.datahub.entity.model.StorageEntity;
 import com.pukhovkirill.datahub.infrastructure.file.dto.StorageFile;
 
-@SpringBootTest
 public class DownloadStorageEntityImplTest {
 
     @Mock
@@ -29,7 +28,7 @@ public class DownloadStorageEntityImplTest {
     @InjectMocks
     private DownloadStorageEntityImpl downloadStorageEntityImpl;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         downloadStorageEntityImpl = new DownloadStorageEntityImpl(storageGateway);
@@ -55,8 +54,8 @@ public class DownloadStorageEntityImplTest {
 
         ByteArrayOutputStream result = downloadStorageEntityImpl.download(dto);
 
-        assertNotNull(result);
-        assertArrayEquals(data, result.toByteArray());
+        Assertions.assertNotNull(result);
+        Assertions.assertArrayEquals(data, result.toByteArray());
         verify(storageGateway, times(1)).findByPath(path);
     }
 
@@ -78,7 +77,7 @@ public class DownloadStorageEntityImplTest {
                 () -> downloadStorageEntityImpl.download(dto)
         );
 
-        assertEquals(String.format("Could not find storage entity with name '%s'", path), exception.getMessage());
+        Assertions.assertEquals(String.format("Could not find storage entity with name '%s'", path), exception.getMessage());
         verify(storageGateway, times(1)).findByPath(path);
     }
 
@@ -105,8 +104,8 @@ public class DownloadStorageEntityImplTest {
                 () -> downloadStorageEntityImpl.download(dto)
         );
 
-        assertNotNull(exception.getCause());
-        assertTrue(exception.getCause() instanceof IOException);
+        Assertions.assertNotNull(exception.getCause());
+        Assertions.assertInstanceOf(IOException.class, exception.getCause());
         verify(storageGateway, times(1)).findByPath(path);
     }
 }
