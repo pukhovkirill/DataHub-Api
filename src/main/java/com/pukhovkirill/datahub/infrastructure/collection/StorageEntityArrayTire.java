@@ -23,17 +23,52 @@ public class StorageEntityArrayTire implements Tire<StorageEntityDto>{
 
         private final List<StorageEntityDto> entities;
 
+        private static final Map<Character, Integer> charIndexMap = new HashMap<>();
+
+        static {
+            // Mapping lowercase letters
+            for (char ch = 'a'; ch <= 'z'; ch++) {
+                charIndexMap.put(ch, ch - 'a');
+            }
+            // Mapping uppercase letters
+            for (char ch = 'A'; ch <= 'Z'; ch++) {
+                charIndexMap.put(ch, (ch - 'A') + 26);
+            }
+            // Mapping digits
+            for (char ch = '0'; ch <= '9'; ch++) {
+                charIndexMap.put(ch, (ch - '0') + 52);
+            }
+            // Mapping .-_
+            charIndexMap.put('.', 62);
+            charIndexMap.put('-', 63);
+            charIndexMap.put('_', 64);
+            // Mapping special characters
+            for (char ch = ' '; ch <= '+'; ch++) {
+                charIndexMap.put(ch, (ch - ' ') + 65);
+            }
+            for (char ch = ':'; ch <= '@'; ch++) {
+                charIndexMap.put(ch, (ch - ':') + 77);
+            }
+            charIndexMap.put('[', 84);
+            charIndexMap.put(']', 85);
+            charIndexMap.put('^', 86);
+            charIndexMap.put('`', 87);
+            for (char ch = '{'; ch <= '~'; ch++) {
+                charIndexMap.put(ch, (ch - '{') + 88);
+            }
+        }
+
         public TireNode() {
-            this.outgoingNodes = new AtomicReferenceArray<>(new TireNode[26]);
+            this.outgoingNodes = new AtomicReferenceArray<>(new TireNode[92]);
             this.entities = new CopyOnWriteArrayList<>();
         }
 
         public TireNode getChild(char ch){
-            return this.outgoingNodes.get(ch - 'a');
+            return this.outgoingNodes.get(charIndexMap.get(ch));
         }
 
         public synchronized void setChild(char ch){
-            this.outgoingNodes.set(ch - 'a', new TireNode());
+            this.outgoingNodes.set(charIndexMap.get(ch), new TireNode());
         }
 
         public Collection<StorageEntityDto> getEntities(){
