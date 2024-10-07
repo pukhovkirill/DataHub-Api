@@ -1,5 +1,8 @@
 package com.pukhovkirill.datahub.infrastructure.file.service;
 
+import com.pukhovkirill.datahub.entity.exception.StorageEntityNotFoundException;
+import com.pukhovkirill.datahub.entity.exception.StorageGatewayAlreadyExistsException;
+import com.pukhovkirill.datahub.entity.exception.StorageGatewayNotFoundException;
 import com.pukhovkirill.datahub.entity.gateway.StorageGateway;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +28,7 @@ public class OngoingGatewayServiceImpl implements OngoingGatewayService {
         if(!storageGatewayCache.containsKey(key)){
             storageGatewayCache.put(key, gateway);
         }else
-            throw new RuntimeException("Storage gateway already registered");
+            throw new StorageGatewayAlreadyExistsException(key);
     }
 
     @Override
@@ -33,7 +36,7 @@ public class OngoingGatewayServiceImpl implements OngoingGatewayService {
         if(storageGatewayCache.containsKey(key)){
             storageGatewayCache.remove(key);
         }else
-            throw new RuntimeException("Storage gateway not registered");
+            throw new StorageGatewayNotFoundException(key);
     }
 
     @Override
@@ -41,6 +44,6 @@ public class OngoingGatewayServiceImpl implements OngoingGatewayService {
         if(storageGatewayCache.containsKey(key)){
             return storageGatewayCache.get(key);
         }else
-            throw new RuntimeException("Storage gateway not registered");
+            throw new StorageEntityNotFoundException(key);
     }
 }
