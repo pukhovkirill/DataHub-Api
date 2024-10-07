@@ -33,10 +33,17 @@ public class CacheableStorageServiceImpl implements StorageService {
 
     @Override
     public void uploadTo(String location, StorageEntityDto entity, ByteArrayInputStream bais) {
-        var uploadUseCase = beanFactory.getBean(UploadStorageEntity.class, ongoingGateways.get(location));
-        uploadUseCase.upload(entity, bais);
+        try{
+            var uploadUseCase = beanFactory.getBean(
+                    UploadStorageEntity.class,
+                    ongoingGateways.get(location)
+            );
+            uploadUseCase.upload(entity, bais);
 
-        cache.saveToCache(entity.getName(), entity);
+            cache.saveToCache(entity.getName(), entity);
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -51,24 +58,31 @@ public class CacheableStorageServiceImpl implements StorageService {
 
     @Override
     public void delete(String location, String name) {
-        var results = cache.getFromCache(name);
+        try{
+            var results = cache.getFromCache(name);
 
-        StorageEntityDto entity = null;
-        for(var result : results){
-            if(result.getLocation().equals(location)){
-                entity = result;
-                break;
+            StorageEntityDto entity = null;
+            for(var result : results){
+                if(result.getLocation().equals(location)){
+                    entity = result;
+                    break;
+                }
             }
+
+            if(entity == null){
+                throw new RuntimeException("Could not find entity with name: " + name);
+            }
+
+            var deleteUseCase = beanFactory.getBean(
+                    DeleteStorageEntity.class,
+                    ongoingGateways.get(location)
+            );
+            deleteUseCase.delete(entity);
+
+            cache.removeFromCache(entity);
+        }catch (Exception e){
+            throw new RuntimeException(e);
         }
-
-        if(entity == null){
-            throw new RuntimeException("Could not find entity with name: " + name);
-        }
-
-        var deleteUseCase = beanFactory.getBean(DeleteStorageEntity.class, ongoingGateways.get(location));
-        deleteUseCase.delete(entity);
-
-        cache.removeFromCache(entity);
     }
 
     @Override
@@ -80,8 +94,15 @@ public class CacheableStorageServiceImpl implements StorageService {
 
     @Override
     public ByteArrayOutputStream download(StorageEntityDto entity) {
-        var downloadUseCase = beanFactory.getBean(DownloadStorageEntity.class, ongoingGateways.get(entity.getLocation()));
-        return downloadUseCase.download(entity);
+        try{
+            var downloadUseCase = beanFactory.getBean(
+                    DownloadStorageEntity.class,
+                    ongoingGateways.get(entity.getLocation())
+            );
+            return downloadUseCase.download(entity);
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
