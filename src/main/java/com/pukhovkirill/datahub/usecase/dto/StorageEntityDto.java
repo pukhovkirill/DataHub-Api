@@ -9,5 +9,7 @@ public interface StorageEntityDto {
     Timestamp getLastModified();
     long getSize();
     String getLocation();
+    boolean equals(Object o);
+    int hashCode();
     StorageEntityDto clone();
 }
