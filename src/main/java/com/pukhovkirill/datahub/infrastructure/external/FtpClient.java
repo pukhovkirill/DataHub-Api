@@ -40,7 +40,7 @@ public class FtpClient {
     public void connect() {
         if(client == null) {
             client = new FTPClient();
-            try {
+            try{
                 client.connect(server, port);
                 client.login(user, password);
 
@@ -49,19 +49,19 @@ public class FtpClient {
                     client.changeWorkingDirectory(workingDirectory);
                 }
                 client.setFileType(FTP.BINARY_FILE_TYPE);
-            } catch (IOException e) {
+            }catch(IOException e) {
                 throw new RuntimeException("Failed to connect to FTP server", e);
             }
         }
     }
 
     public void disconnect() throws IOException {
-        try {
-            if (client.isConnected()) {
+        try{
+            if(client != null && client.isConnected()) {
                 client.logout();
                 client.disconnect();
             }
-        } catch (IOException e) {
+        }catch(IOException e) {
             throw new IOException("Failed to disconnect from FTP server", e);
         }
     }

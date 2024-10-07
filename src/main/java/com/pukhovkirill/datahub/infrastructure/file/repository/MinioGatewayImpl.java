@@ -65,7 +65,7 @@ public class MinioGatewayImpl implements StorageGateway {
             System.err.println("Error occurred: " + e);
             System.err.println("HTTP trace: " + e.httpTrace());
             throw new RuntimeException(e);
-        } catch (IOException | NoSuchAlgorithmException | InvalidKeyException e) {
+        }catch(IOException | NoSuchAlgorithmException | InvalidKeyException e) {
             throw new RuntimeException(e);
         }
     }
@@ -96,7 +96,7 @@ public class MinioGatewayImpl implements StorageGateway {
             System.err.println("Error occurred: " + e);
             System.err.println("HTTP trace: " + e.httpTrace());
             throw new RuntimeException(e);
-        } catch (IOException | NoSuchAlgorithmException | InvalidKeyException e) {
+        }catch(IOException | NoSuchAlgorithmException | InvalidKeyException e) {
             throw new RuntimeException(e);
         }
 
@@ -145,7 +145,7 @@ public class MinioGatewayImpl implements StorageGateway {
             System.err.println("Error occurred: " + e);
             System.err.println("HTTP trace: " + e.httpTrace());
             throw new RuntimeException(e);
-        } catch (IOException | NoSuchAlgorithmException | InvalidKeyException e) {
+        }catch(IOException | NoSuchAlgorithmException | InvalidKeyException e) {
             throw new RuntimeException(e);
         }
     }
@@ -169,7 +169,7 @@ public class MinioGatewayImpl implements StorageGateway {
             System.err.println("Error occurred: " + e);
             System.err.println("HTTP trace: " + e.httpTrace());
             throw new RuntimeException(e);
-        } catch (IOException | NoSuchAlgorithmException | InvalidKeyException e) {
+        }catch(IOException | NoSuchAlgorithmException | InvalidKeyException e) {
             throw new RuntimeException(e);
         }
     }

@@ -44,14 +44,14 @@ public class FtpGatewayImpl implements StorageGateway {
         try{
             if(client.deleteFile(entity.getPath()))
                 throw new RuntimeException("Error deleting file");
-        } catch (Exception e){
+        }catch(Exception e){
             throw new RuntimeException(e);
         }
     }
 
     @Override
     public void deleteAll(Iterable<StorageEntity> entities) {
-        for (StorageEntity entity : entities){
+        for(StorageEntity entity : entities){
             delete(entity);
         }
     }
@@ -66,7 +66,7 @@ public class FtpGatewayImpl implements StorageGateway {
 
                 entity.ifPresent(entities::add);
             }
-        } catch (Exception e){
+        }catch(Exception e){
             throw new RuntimeException(e);
         }
 
@@ -90,7 +90,7 @@ public class FtpGatewayImpl implements StorageGateway {
             );
 
             return Optional.of(storageEntity);
-        } catch (Exception e){
+        }catch(Exception e){
             throw new RuntimeException(e);
         }
     }
@@ -109,7 +109,7 @@ public class FtpGatewayImpl implements StorageGateway {
             if(success) throw new RuntimeException("Error loading file");
 
             return entity;
-        }catch (Exception e){
+        }catch(Exception e){
             throw new RuntimeException(e);
         }
     }
@@ -132,7 +132,7 @@ public class FtpGatewayImpl implements StorageGateway {
                 }
             }
             return false;
-        } catch (Exception e){
+        }catch(Exception e){
             return false;
         }
     }
