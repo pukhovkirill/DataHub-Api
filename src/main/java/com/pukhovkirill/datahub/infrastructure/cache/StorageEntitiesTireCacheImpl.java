@@ -2,12 +2,13 @@ package com.pukhovkirill.datahub.infrastructure.cache;
 
 import java.util.Collection;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
 import com.pukhovkirill.datahub.infrastructure.collection.StorageEntityArrayTire;
 import com.pukhovkirill.datahub.infrastructure.collection.Tire;
 import com.pukhovkirill.datahub.usecase.cache.storageEntity.StorageEntitiesCache;
 import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
 
 @Service
 @Scope("prototype")

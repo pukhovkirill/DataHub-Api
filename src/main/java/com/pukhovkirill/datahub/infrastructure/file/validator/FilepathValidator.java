@@ -1,11 +1,12 @@
 package com.pukhovkirill.datahub.infrastructure.file.validator;
 
-import com.pukhovkirill.datahub.infrastructure.file.validator.valid.ValidFilepath;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.pukhovkirill.datahub.infrastructure.file.validator.valid.ValidFilepath;
 
 public class FilepathValidator implements ConstraintValidator<ValidFilepath, String> {
 

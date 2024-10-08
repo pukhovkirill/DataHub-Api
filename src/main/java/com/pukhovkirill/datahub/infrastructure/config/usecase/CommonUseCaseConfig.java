@@ -1,5 +1,9 @@
 package com.pukhovkirill.datahub.infrastructure.config.usecase;
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
+
 import com.pukhovkirill.datahub.entity.gateway.StorageGateway;
 import com.pukhovkirill.datahub.usecase.cache.storageEntity.StorageEntitiesCache;
 import com.pukhovkirill.datahub.usecase.deleteStorageEntityCase.DeleteStorageEntity;
@@ -10,9 +14,6 @@ import com.pukhovkirill.datahub.usecase.listingStorageEntityCase.search.StorageE
 import com.pukhovkirill.datahub.usecase.listingStorageEntityCase.search.StorageEntitySearchImpl;
 import com.pukhovkirill.datahub.usecase.uploadStorageEntityCase.UploadStorageEntity;
 import com.pukhovkirill.datahub.usecase.uploadStorageEntityCase.UploadStorageEntityImpl;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
 
 @Configuration
 public class CommonUseCaseConfig {

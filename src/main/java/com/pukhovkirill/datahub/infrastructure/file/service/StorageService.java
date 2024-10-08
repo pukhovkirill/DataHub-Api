@@ -1,10 +1,10 @@
 package com.pukhovkirill.datahub.infrastructure.file.service;
 
-import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Collection;
+
+import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
 
 public interface StorageService {
 

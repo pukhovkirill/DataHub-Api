@@ -1,13 +1,14 @@
 package com.pukhovkirill.datahub.infrastructure.file.service;
 
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
+import org.springframework.stereotype.Service;
+
 import com.pukhovkirill.datahub.entity.exception.StorageEntityNotFoundException;
 import com.pukhovkirill.datahub.entity.exception.StorageGatewayAlreadyExistsException;
 import com.pukhovkirill.datahub.entity.exception.StorageGatewayNotFoundException;
 import com.pukhovkirill.datahub.entity.gateway.StorageGateway;
-import org.springframework.stereotype.Service;
-
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 @Service
 public class OngoingGatewayServiceImpl implements OngoingGatewayService {

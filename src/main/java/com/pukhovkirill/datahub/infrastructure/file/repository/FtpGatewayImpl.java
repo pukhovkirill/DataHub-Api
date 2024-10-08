@@ -1,19 +1,21 @@
 package com.pukhovkirill.datahub.infrastructure.file.repository;
 
-import com.google.common.io.Files;
-import com.pukhovkirill.datahub.entity.factory.StorageEntityFactory;
-import com.pukhovkirill.datahub.entity.gateway.StorageGateway;
-import com.pukhovkirill.datahub.entity.model.StorageEntity;
-import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPFile;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
-
 import java.io.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import com.google.common.io.Files;
+
+import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPFile;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
+import com.pukhovkirill.datahub.entity.factory.StorageEntityFactory;
+import com.pukhovkirill.datahub.entity.gateway.StorageGateway;
+import com.pukhovkirill.datahub.entity.model.StorageEntity;
 
 @Service
 @Scope("prototype")

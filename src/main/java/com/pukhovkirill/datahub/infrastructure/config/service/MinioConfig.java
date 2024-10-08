@@ -1,10 +1,8 @@
 package com.pukhovkirill.datahub.infrastructure.config.service;
 
-import com.pukhovkirill.datahub.entity.factory.StorageEntityFactory;
-import com.pukhovkirill.datahub.entity.gateway.StorageGateway;
-import com.pukhovkirill.datahub.infrastructure.file.repository.MinioGatewayImpl;
-import io.minio.MinioClient;
 import java.util.concurrent.TimeUnit;
+import io.minio.MinioClient;
+
 import okhttp3.ConnectionPool;
 import okhttp3.OkHttpClient;
 
@@ -12,6 +10,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.Configuration;
+
+import com.pukhovkirill.datahub.entity.factory.StorageEntityFactory;
+import com.pukhovkirill.datahub.entity.gateway.StorageGateway;
+import com.pukhovkirill.datahub.infrastructure.file.repository.MinioGatewayImpl;
 
 @Configuration
 public class MinioConfig {

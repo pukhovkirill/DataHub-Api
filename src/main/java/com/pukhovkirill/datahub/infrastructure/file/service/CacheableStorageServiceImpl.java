@@ -1,19 +1,20 @@
 package com.pukhovkirill.datahub.infrastructure.file.service;
 
-import com.pukhovkirill.datahub.usecase.cache.storageEntity.StorageEntitiesCache;
-import com.pukhovkirill.datahub.usecase.deleteStorageEntityCase.DeleteStorageEntity;
-import com.pukhovkirill.datahub.usecase.downloadStorageEntityCase.DownloadStorageEntity;
-import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
-import com.pukhovkirill.datahub.usecase.uploadStorageEntityCase.UploadStorageEntity;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.util.Collection;
+import java.util.LinkedList;
+
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.util.Collection;
-import java.util.LinkedList;
+import com.pukhovkirill.datahub.usecase.cache.storageEntity.StorageEntitiesCache;
+import com.pukhovkirill.datahub.usecase.deleteStorageEntityCase.DeleteStorageEntity;
+import com.pukhovkirill.datahub.usecase.downloadStorageEntityCase.DownloadStorageEntity;
+import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
+import com.pukhovkirill.datahub.usecase.uploadStorageEntityCase.UploadStorageEntity;
 
 @Service
 @Scope("prototype")

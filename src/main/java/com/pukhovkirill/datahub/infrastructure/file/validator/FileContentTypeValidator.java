@@ -1,8 +1,9 @@
 package com.pukhovkirill.datahub.infrastructure.file.validator;
 
-import com.pukhovkirill.datahub.infrastructure.file.validator.valid.ValidFileContentType;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+
+import com.pukhovkirill.datahub.infrastructure.file.validator.valid.ValidFileContentType;
 
 public class FileContentTypeValidator implements ConstraintValidator<ValidFileContentType, String> {
     
