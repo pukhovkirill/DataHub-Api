@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.google.common.io.Files;
-
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.springframework.context.annotation.Scope;
@@ -77,10 +75,9 @@ public class FtpGatewayImpl implements StorageGateway {
 
     @Override
     public Optional<StorageEntity> findByPath(String path) {
-        try{
-            File tmpFile = new File(path);
-            OutputStream outputStream = new FileOutputStream(tmpFile);
-            client.retrieveFile(path, outputStream);
+        try(ByteArrayOutputStream baos = new ByteArrayOutputStream()){
+
+            client.retrieveFile(path, baos);
 
             FTPFile fileInfo = client.mlistFile(path);
 
@@ -88,7 +85,7 @@ public class FtpGatewayImpl implements StorageGateway {
                     path,
                     new Timestamp(fileInfo.getTimestamp().getTimeInMillis()),
                     fileInfo.getSize(),
-                    Files.toByteArray(tmpFile)
+                    baos.toByteArray()
             );
 
             return Optional.of(storageEntity);
@@ -99,16 +96,10 @@ public class FtpGatewayImpl implements StorageGateway {
 
     @Override
     public StorageEntity save(StorageEntity entity) {
-        try{
-            File localFile = new File(entity.getPath());
+        try(ByteArrayInputStream bais = new ByteArrayInputStream(entity.getData())){
 
-            OutputStream os = new FileOutputStream(localFile);
-            os.write(entity.getData());
-            os.close();
-
-            boolean success = client.storeFile(entity.getName(), new FileInputStream(localFile));
-
-            if(!success) throw new RuntimeException("Error loading file");
+            if(!client.storeFile(entity.getName(), bais))
+                throw new RuntimeException("Error loading file");
 
             return entity;
         }catch(Exception e){
