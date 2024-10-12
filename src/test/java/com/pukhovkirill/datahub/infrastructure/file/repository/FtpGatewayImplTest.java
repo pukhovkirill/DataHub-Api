@@ -6,6 +6,8 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
@@ -19,17 +21,20 @@ import static org.mockito.Mockito.*;
 
 class FtpGatewayImplTest {
 
-    private FtpGatewayImpl ftpGateway;
+    @Mock
     private FTPClient mockClient;
+
+    @Mock
     private StorageEntityFactory mockFactory;
-    private StorageEntity mockEntity;
+
+    @InjectMocks
+    private FtpGatewayImpl ftpGateway;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
         mockClient = Mockito.mock(FTPClient.class);
         mockFactory = Mockito.mock(StorageEntityFactory.class);
-        mockEntity = Mockito.mock(StorageEntity.class);
         ftpGateway = new FtpGatewayImpl(mockClient, mockFactory);
     }
 
@@ -44,6 +49,7 @@ class FtpGatewayImplTest {
 
     @Test
     public void testDelete() throws IOException {
+        StorageEntity mockEntity = Mockito.mock(StorageEntity.class);
         when(mockClient.deleteFile(anyString())).thenReturn(true);
 
         ftpGateway.delete(mockEntity);
@@ -54,16 +60,12 @@ class FtpGatewayImplTest {
     @Test
     public void testFindByPath() throws Exception {
         String mockPath = "test.txt";
-        File mockFile = new File(mockPath);
-        OutputStream mockOutputStream = Mockito.mock(OutputStream.class);
         FTPFile mockFtpFile = Mockito.mock(FTPFile.class);
 
-        // Simulate retrieving a file
         when(mockClient.mlistFile(mockPath)).thenReturn(mockFtpFile);
         when(mockFtpFile.getTimestamp()).thenReturn(Calendar.getInstance());
         when(mockFtpFile.getSize()).thenReturn(1024L);
 
-        // Mock StorageEntityFactory behavior
         StorageEntity mockEntity = Mockito.mock(StorageEntity.class);
         when(mockFactory.restore(anyString(), any(Timestamp.class), anyLong(), any(byte[].class)))
                 .thenReturn(mockEntity);
@@ -76,18 +78,17 @@ class FtpGatewayImplTest {
 
     @Test
     public void testSave() throws Exception {
-        File mockLocalFile = Mockito.mock(File.class);
-        when(mockLocalFile.getPath()).thenReturn("local.txt");
+        StorageEntity mockEntity = Mockito.mock(StorageEntity.class);
         when(mockEntity.getPath()).thenReturn("local.txt");
-        when(mockEntity.getName()).thenReturn("remote.txt");
+        when(mockEntity.getName()).thenReturn("local.txt");
         when(mockEntity.getData()).thenReturn(new byte[] {1, 2, 3});
 
-        when(mockClient.storeFile(eq("remote.txt"), any(FileInputStream.class))).thenReturn(true);
+        when(mockClient.storeFile(eq("local.txt"), any(ByteArrayInputStream.class))).thenReturn(true);
 
         StorageEntity result = ftpGateway.save(mockEntity);
         assertEquals(mockEntity, result);
 
-        verify(mockClient).storeFile(eq("remote.txt"), any(FileInputStream.class));
+        verify(mockClient).storeFile(eq("local.txt"), any(ByteArrayInputStream.class));
     }
 
     @Test
