@@ -108,7 +108,7 @@ public class FtpGatewayImpl implements StorageGateway {
 
             boolean success = client.storeFile(entity.getName(), new FileInputStream(localFile));
 
-            if(success) throw new RuntimeException("Error loading file");
+            if(!success) throw new RuntimeException("Error loading file");
 
             return entity;
         }catch(Exception e){
