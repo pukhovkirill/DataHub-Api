@@ -55,14 +55,14 @@ public class FtpClient {
         }
     }
 
-    public void disconnect() throws IOException {
+    public void disconnect() {
         try{
             if(client != null && client.isConnected()) {
                 client.logout();
                 client.disconnect();
             }
         }catch(IOException e) {
-            throw new IOException("Failed to disconnect from FTP server", e);
+            throw new RuntimeException("Failed to disconnect from FTP server", e);
         }
     }
 }

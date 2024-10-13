@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.pukhovkirill.datahub.infrastructure.exception.FTPFileAlreadyExistsException;
+import com.pukhovkirill.datahub.infrastructure.exception.FTPFileNotFoundException;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.springframework.context.annotation.Scope;
@@ -34,7 +36,7 @@ public class FtpGatewayImpl implements StorageGateway {
             return client.listFiles() == null
                     ? 0
                     : client.listFiles().length;
-        } catch (IOException e){
+        } catch (Exception e){
             throw new RuntimeException(e);
         }
     }
@@ -42,6 +44,9 @@ public class FtpGatewayImpl implements StorageGateway {
     @Override
     public void delete(StorageEntity entity) {
         try{
+            if(!existsByPath(entity.getPath()))
+                throw new FTPFileNotFoundException(entity.getPath());
+
             if(client.deleteFile(entity.getPath()))
                 throw new RuntimeException("Error deleting file");
         }catch(Exception e){
@@ -77,9 +82,12 @@ public class FtpGatewayImpl implements StorageGateway {
     public Optional<StorageEntity> findByPath(String path) {
         try(ByteArrayOutputStream baos = new ByteArrayOutputStream()){
 
-            client.retrieveFile(path, baos);
+            if(!existsByPath(path))
+                throw new FTPFileNotFoundException(path);
 
             FTPFile fileInfo = client.mlistFile(path);
+
+            client.retrieveFile(path, baos);
 
             StorageEntity storageEntity = factory.restore(
                     path,
@@ -97,6 +105,9 @@ public class FtpGatewayImpl implements StorageGateway {
     @Override
     public StorageEntity save(StorageEntity entity) {
         try(ByteArrayInputStream bais = new ByteArrayInputStream(entity.getData())){
+
+            if(existsByPath(entity.getPath()))
+                throw new FTPFileAlreadyExistsException(entity.getPath());
 
             if(!client.storeFile(entity.getName(), bais))
                 throw new RuntimeException("Error loading file");
@@ -126,7 +137,7 @@ public class FtpGatewayImpl implements StorageGateway {
             }
             return false;
         }catch(Exception e){
-            return false;
+            throw new RuntimeException(e);
         }
     }
 }

@@ -57,12 +57,12 @@ public class SftpClient{
         }
     }
 
-    public void disconnect() throws IOException {
+    public void disconnect() {
         try{
             if(client != null && client.isConnected())
                 client.disconnect();
         }catch(Exception e) {
-            throw new IOException("Failed to disconnect from SFTP server", e);
+            throw new RuntimeException("Failed to disconnect from SFTP server", e);
         }
     }
 }
