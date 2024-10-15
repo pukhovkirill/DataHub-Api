@@ -47,8 +47,8 @@ public class FtpGatewayImpl implements StorageGateway {
             if(!existsByPath(entity.getPath()))
                 throw new FTPFileNotFoundException(entity.getPath());
 
-            if(client.deleteFile(entity.getPath()))
-                throw new RuntimeException("Error deleting file");
+            if(!client.deleteFile(entity.getPath()))
+                throw new IOException("Error deleting file");
         }catch(Exception e){
             throw new RuntimeException(e);
         }
@@ -109,8 +109,8 @@ public class FtpGatewayImpl implements StorageGateway {
             if(existsByPath(entity.getPath()))
                 throw new FTPFileAlreadyExistsException(entity.getPath());
 
-            if(!client.storeFile(entity.getName(), bais))
-                throw new RuntimeException("Error loading file");
+            if(!client.storeFile(entity.getPath(), bais))
+                throw new IOException("Error loading file");
 
             return entity;
         }catch(Exception e){

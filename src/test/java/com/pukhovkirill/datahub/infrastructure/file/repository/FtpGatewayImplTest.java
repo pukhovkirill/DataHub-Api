@@ -2,8 +2,11 @@ package com.pukhovkirill.datahub.infrastructure.file.repository;
 
 import com.pukhovkirill.datahub.entity.factory.StorageEntityFactory;
 import com.pukhovkirill.datahub.entity.model.StorageEntity;
+import com.pukhovkirill.datahub.infrastructure.exception.FTPFileAlreadyExistsException;
+import com.pukhovkirill.datahub.infrastructure.exception.FTPFileNotFoundException;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -22,82 +25,199 @@ import static org.mockito.Mockito.*;
 class FtpGatewayImplTest {
 
     @Mock
-    private FTPClient mockClient;
+    private FTPClient client;
 
     @Mock
-    private StorageEntityFactory mockFactory;
+    private StorageEntityFactory factory;
 
     @InjectMocks
-    private FtpGatewayImpl ftpGateway;
+    private FtpGatewayImpl gateway;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        mockClient = Mockito.mock(FTPClient.class);
-        mockFactory = Mockito.mock(StorageEntityFactory.class);
-        ftpGateway = new FtpGatewayImpl(mockClient, mockFactory);
+        client = Mockito.mock(FTPClient.class);
+        factory = Mockito.mock(StorageEntityFactory.class);
+        gateway = new FtpGatewayImpl(client, factory);
     }
 
     @Test
     public void testCount() throws IOException {
         FTPFile[] mockFiles = new FTPFile[3];
-        when(mockClient.listFiles()).thenReturn(mockFiles);
+        when(client.listFiles()).thenReturn(mockFiles);
 
-        long count = ftpGateway.count();
+        long count = gateway.count();
         assertEquals(3, count);
     }
 
     @Test
     public void testDelete() throws IOException {
-        StorageEntity mockEntity = Mockito.mock(StorageEntity.class);
-        when(mockClient.deleteFile(anyString())).thenReturn(true);
+        StorageEntity storageEntity = Mockito.mock(StorageEntity.class);
+        when(client.deleteFile(anyString())).thenReturn(true);
 
-        ftpGateway.delete(mockEntity);
+        String path = "local.txt";
 
-        verify(mockClient).deleteFile(mockEntity.getPath());
+        FTPFile ftpFile = Mockito.mock(FTPFile.class);
+
+        when(client.listFiles()).thenReturn(new FTPFile[] { ftpFile });
+        when(ftpFile.getName()).thenReturn(path);
+
+        when(storageEntity.getPath()).thenReturn(path);
+
+        gateway.delete(storageEntity);
+
+        verify(client).deleteFile(storageEntity.getPath());
+    }
+
+    @Test
+    public void testDeleteWithFTPFileNotFoundException() throws IOException {
+        StorageEntity storageEntity = Mockito.mock(StorageEntity.class);
+        String path = "invalid.txt";
+
+        when(storageEntity.getPath()).thenReturn(path);
+
+        FTPFile[] ftpFiles = new FTPFile[0];
+        when(client.listFiles()).thenReturn(ftpFiles);
+
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> gateway.delete(storageEntity)
+        );
+
+        Assertions.assertEquals(String.format("Could not find file with name '%s'", path), exception.getCause().getMessage());
+        Assertions.assertInstanceOf(FTPFileNotFoundException.class, exception.getCause());
+    }
+
+    @Test
+    public void testDeleteWithIOException() throws IOException {
+        StorageEntity storageEntity = mock(StorageEntity.class);
+        String path = "local.txt";
+
+        when(storageEntity.getPath()).thenReturn(path);
+
+        FTPFile ftpFile = Mockito.mock(FTPFile.class);
+
+        when(client.listFiles()).thenReturn(new FTPFile[] { ftpFile });
+        when(ftpFile.getName()).thenReturn("local.txt");
+
+        when(client.deleteFile(anyString())).thenReturn(false);
+
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> gateway.delete(storageEntity)
+        );
+
+        Assertions.assertEquals("Error deleting file", exception.getCause().getMessage());
+        Assertions.assertInstanceOf(IOException.class, exception.getCause());
     }
 
     @Test
     public void testFindByPath() throws Exception {
-        String mockPath = "test.txt";
-        FTPFile mockFtpFile = Mockito.mock(FTPFile.class);
+        FTPFile ftpFile = Mockito.mock(FTPFile.class);
+        String path = "test.txt";
 
-        when(mockClient.mlistFile(mockPath)).thenReturn(mockFtpFile);
-        when(mockFtpFile.getTimestamp()).thenReturn(Calendar.getInstance());
-        when(mockFtpFile.getSize()).thenReturn(1024L);
+        when(ftpFile.getTimestamp()).thenReturn(Calendar.getInstance());
+        when(ftpFile.getSize()).thenReturn(1024L);
+        when(ftpFile.getName()).thenReturn(path);
+
+        when(client.mlistFile(path)).thenReturn(ftpFile);
+        when(client.listFiles()).thenReturn(new FTPFile[] { ftpFile });
 
         StorageEntity mockEntity = Mockito.mock(StorageEntity.class);
-        when(mockFactory.restore(anyString(), any(Timestamp.class), anyLong(), any(byte[].class)))
+        when(factory.restore(any(), any(Timestamp.class), anyLong(), any(byte[].class)))
                 .thenReturn(mockEntity);
 
-        Optional<StorageEntity> result = ftpGateway.findByPath(mockPath);
+        Optional<StorageEntity> result = gateway.findByPath(path);
         assertTrue(result.isPresent());
 
-        verify(mockClient).retrieveFile(eq(mockPath), any(OutputStream.class));
+        verify(client).retrieveFile(eq(path), any(OutputStream.class));
+    }
+
+    @Test
+    public void testFindByPathWithFTPFileNotFoundException() throws Exception {
+        String path = "invalid.txt";
+        FTPFile[] ftpFiles = new FTPFile[0];
+        when(client.listFiles()).thenReturn(ftpFiles);
+
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> gateway.findByPath(path)
+        );
+
+        Assertions.assertEquals(String.format("Could not find file with name '%s'", path), exception.getCause().getMessage());
+        Assertions.assertInstanceOf(FTPFileNotFoundException.class, exception.getCause());
     }
 
     @Test
     public void testSave() throws Exception {
-        StorageEntity mockEntity = Mockito.mock(StorageEntity.class);
-        when(mockEntity.getPath()).thenReturn("local.txt");
-        when(mockEntity.getName()).thenReturn("local.txt");
-        when(mockEntity.getData()).thenReturn(new byte[] {1, 2, 3});
+        StorageEntity storageEntity = Mockito.mock(StorageEntity.class);
+        String path = "local.txt";
 
-        when(mockClient.storeFile(eq("local.txt"), any(ByteArrayInputStream.class))).thenReturn(true);
+        FTPFile[] ftpFiles = new FTPFile[0];
+        when(client.listFiles()).thenReturn(ftpFiles);
 
-        StorageEntity result = ftpGateway.save(mockEntity);
-        assertEquals(mockEntity, result);
+        when(storageEntity.getPath()).thenReturn(path);
+        when(storageEntity.getName()).thenReturn(path);
+        when(storageEntity.getData()).thenReturn(new byte[] {1, 2, 3});
 
-        verify(mockClient).storeFile(eq("local.txt"), any(ByteArrayInputStream.class));
+        when(client.storeFile(eq(path), any(ByteArrayInputStream.class))).thenReturn(true);
+
+        StorageEntity result = gateway.save(storageEntity);
+        assertEquals(storageEntity, result);
+
+        verify(client).storeFile(eq("local.txt"), any(ByteArrayInputStream.class));
+    }
+
+    @Test
+    public void testSaveWithFTPFileAlreadyExistsException() throws IOException {
+        StorageEntity storageEntity = Mockito.mock(StorageEntity.class);
+        String path = "local.txt";
+
+        when(storageEntity.getPath()).thenReturn(path);
+        when(storageEntity.getData()).thenReturn(new byte[] {1, 2, 3});
+
+        FTPFile ftpFile = Mockito.mock(FTPFile.class);
+
+        when(client.listFiles()).thenReturn(new FTPFile[] { ftpFile });
+        when(ftpFile.getName()).thenReturn(path);
+
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> gateway.save(storageEntity)
+        );
+
+        Assertions.assertEquals(String.format("File with the name '%s' already exists", path), exception.getCause().getMessage());
+        Assertions.assertInstanceOf(FTPFileAlreadyExistsException.class, exception.getCause());
+    }
+
+    @Test
+    public void testSaveWithIOException() throws IOException {
+        StorageEntity storageEntity = mock(StorageEntity.class);
+        String path = "local.txt";
+
+        FTPFile[] ftpFiles = new FTPFile[0];
+        when(client.listFiles()).thenReturn(ftpFiles);
+
+        when(storageEntity.getName()).thenReturn(path);
+        when(storageEntity.getData()).thenReturn(new byte[] {1, 2, 3});
+        when(client.storeFile(anyString(), any())).thenReturn(false);
+
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> gateway.save(storageEntity)
+        );
+
+        Assertions.assertEquals("Error loading file", exception.getCause().getMessage());
+        Assertions.assertInstanceOf(IOException.class, exception.getCause());
     }
 
     @Test
     public void testExistsByPath() throws Exception {
-        FTPFile mockFile = new FTPFile();
-        mockFile.setName("test.txt");
-        when(mockClient.listFiles()).thenReturn(new FTPFile[] {mockFile});
+        FTPFile ftpFile = new FTPFile();
+        ftpFile.setName("test.txt");
+        when(client.listFiles()).thenReturn(new FTPFile[] {ftpFile});
 
-        boolean exists = ftpGateway.existsByPath("test.txt");
+        boolean exists = gateway.existsByPath("test.txt");
         assertTrue(exists);
     }
 }
