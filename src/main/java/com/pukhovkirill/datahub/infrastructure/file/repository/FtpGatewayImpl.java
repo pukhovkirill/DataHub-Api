@@ -55,13 +55,6 @@ public class FtpGatewayImpl implements StorageGateway {
     }
 
     @Override
-    public void deleteAll(Iterable<StorageEntity> entities) {
-        for(StorageEntity entity : entities){
-            delete(entity);
-        }
-    }
-
-    @Override
     public Iterable<StorageEntity> findAll() {
         List<StorageEntity> entities = new ArrayList<>();
         try{
@@ -116,14 +109,6 @@ public class FtpGatewayImpl implements StorageGateway {
         }catch(Exception e){
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public Iterable<StorageEntity> saveAll(Iterable<StorageEntity> entities) {
-        for(StorageEntity entity : entities)
-            save(entity);
-
-        return entities;
     }
 
     @Override

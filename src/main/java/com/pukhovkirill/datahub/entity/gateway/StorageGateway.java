@@ -8,7 +8,6 @@ public interface StorageGateway {
     long count();
 
     void delete(StorageEntity entity);
-    void deleteAll(Iterable<StorageEntity> entities);
 
     boolean existsByPath(String path);
 
@@ -16,5 +15,4 @@ public interface StorageGateway {
     Optional<StorageEntity> findByPath(String path);
 
     StorageEntity save(StorageEntity entity);
-    Iterable<StorageEntity> saveAll(Iterable<StorageEntity> entities);
 }

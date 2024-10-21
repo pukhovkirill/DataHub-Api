@@ -58,13 +58,6 @@ public class SftpGatewayImpl implements StorageGateway {
     }
 
     @Override
-    public void deleteAll(Iterable<StorageEntity> entities) {
-        for(StorageEntity entity : entities){
-            delete(entity);
-        }
-    }
-
-    @Override
     public Iterable<StorageEntity> findAll() {
         List<StorageEntity> entities = new ArrayList<>();
         try{
@@ -127,14 +120,6 @@ public class SftpGatewayImpl implements StorageGateway {
         }catch(JSchException | SftpException | IOException e){
             throw new RuntimeException("Error loading file", e);
         }
-    }
-
-    @Override
-    public Iterable<StorageEntity> saveAll(Iterable<StorageEntity> entities) {
-        for(StorageEntity entity : entities)
-            save(entity);
-
-        return entities;
     }
 
     @Override

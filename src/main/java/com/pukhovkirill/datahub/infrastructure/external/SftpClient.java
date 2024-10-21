@@ -3,8 +3,6 @@ package com.pukhovkirill.datahub.infrastructure.external;
 import com.jcraft.jsch.*;
 import lombok.Getter;
 
-import java.io.IOException;
-
 @Getter
 public class SftpClient{
 
