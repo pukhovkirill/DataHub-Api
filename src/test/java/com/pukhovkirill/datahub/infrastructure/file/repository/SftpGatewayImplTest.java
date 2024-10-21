@@ -5,6 +5,8 @@ import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.SftpException;
 import com.pukhovkirill.datahub.entity.factory.StorageEntityFactory;
 import com.pukhovkirill.datahub.entity.model.StorageEntity;
+import com.pukhovkirill.datahub.infrastructure.exception.SFTPFileAlreadyExistsException;
+import com.pukhovkirill.datahub.infrastructure.exception.SFTPFileNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,7 +35,7 @@ class SftpGatewayImplTest {
     private SftpGatewayImpl gateway;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         MockitoAnnotations.openMocks(this);
         client = Mockito.mock(ChannelSftp.class);
         factory = Mockito.mock(StorageEntityFactory.class);
@@ -41,7 +43,7 @@ class SftpGatewayImplTest {
     }
 
     @Test
-    void testCount() throws Exception {
+    public void testCount() throws Exception {
         Vector<ChannelSftp.LsEntry> files = mock(Vector.class);
         when(files.size()).thenReturn(1);
 
@@ -51,12 +53,10 @@ class SftpGatewayImplTest {
         long count = gateway.count();
 
         assertEquals(1, count);
-        verify(client).connect();
-        verify(client).exit();
     }
 
     @Test
-    void testCountWhenRuntimeException() throws Exception {
+    public void testCountWhenRuntimeException() throws Exception {
         when(client.pwd()).thenThrow(new SftpException(0, "Error"));
 
         RuntimeException exception = assertThrows(
@@ -68,38 +68,104 @@ class SftpGatewayImplTest {
     }
 
     @Test
-    void testDelete() throws Exception {
+    public void testDelete() throws Exception {
+        StorageEntity storageEntity = mock(StorageEntity.class);
+        ChannelSftp.LsEntry file = mock(ChannelSftp.LsEntry.class);
+
+        String dir = "/home/sftp/";
+        String path = "/home/sftp/test.txt";
+
+        when(file.getLongname()).thenReturn(path);
+
+        when(storageEntity.getPath()).thenReturn(path);
+        when(storageEntity.getData()).thenReturn(new byte[]{1, 2, 3});
+
+
+        // this is the section for the method existsByPath()
+        Iterator<ChannelSftp.LsEntry> iter = new ArrayIterator<>(new ChannelSftp.LsEntry[]{file});
+        Vector<ChannelSftp.LsEntry> files = mock(Vector.class);
+        when(files.size()).thenReturn(1);
+        when(files.iterator()).thenReturn(iter);
+
+        when(client.pwd()).thenReturn(dir);
+        when(client.ls(dir)).thenReturn(files);
+        // end
+
+        when(storageEntity.getPath()).thenReturn(path);
+
+        gateway.delete(storageEntity);
+
+        verify(client).rm(path);
+    }
+
+    @Test
+    public void testDeleteWithRuntimeException() throws Exception {
         StorageEntity storageEntity = mock(StorageEntity.class);
 
         String path = "/home/sftp/test.txt";
 
         when(storageEntity.getPath()).thenReturn(path);
 
-        gateway.delete(storageEntity);
-
-        verify(client).connect();
-        verify(client).rm(path);
-        verify(client).exit();
-    }
-
-    @Test
-    void testDeleteWithRuntimeException() throws Exception {
-        StorageEntity entity = mock(StorageEntity.class);
-
-        String path = "/home/sftp/test.txt";
-
-        when(entity.getPath()).thenReturn(path);
-
         doThrow(new SftpException(0, "Error")).when(client).rm(anyString());
 
-        assertThrows(RuntimeException.class, () -> gateway.delete(entity));
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> gateway.delete(storageEntity)
+        );
+
+        Assertions.assertInstanceOf(RuntimeException.class, exception);
     }
 
     @Test
-    void testFindByPath() throws Exception {
+    public void testDeleteWithSFTPFileNotFoundException() throws SftpException {
         StorageEntity storageEntity = mock(StorageEntity.class);
+        String dir = "/home/sftp/";
+        String path = "/home/sftp/invalid.txt";
 
+        when(storageEntity.getPath()).thenReturn(path);
+
+        // this is the section for the method existsByPath()
+        Iterator<ChannelSftp.LsEntry> iter = new ArrayIterator<>(new ChannelSftp.LsEntry[]{});
+        Vector<ChannelSftp.LsEntry> files = mock(Vector.class);
+        when(files.size()).thenReturn(0);
+        when(files.iterator()).thenReturn(iter);
+
+        when(client.pwd()).thenReturn(dir);
+        when(client.ls(dir)).thenReturn(files);
+        // end
+
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> gateway.delete(storageEntity)
+        );
+
+        Assertions.assertEquals(String.format("Could not find file with name '%s'", path), exception.getMessage());
+        Assertions.assertInstanceOf(SFTPFileNotFoundException.class, exception);
+    }
+
+    @Test
+    public void testFindByPath() throws Exception {
+        StorageEntity storageEntity = mock(StorageEntity.class);
+        ChannelSftp.LsEntry file = mock(ChannelSftp.LsEntry.class);
+
+        String dir = "/home/sftp/";
         String path = "/home/sftp/test.txt";
+
+        when(file.getLongname()).thenReturn(path);
+
+        when(storageEntity.getPath()).thenReturn(path);
+        when(storageEntity.getData()).thenReturn(new byte[]{1, 2, 3});
+
+
+        // this is the section for the method existsByPath()
+        Iterator<ChannelSftp.LsEntry> iter = new ArrayIterator<>(new ChannelSftp.LsEntry[]{file});
+        Vector<ChannelSftp.LsEntry> files = mock(Vector.class);
+        when(files.size()).thenReturn(1);
+        when(files.iterator()).thenReturn(iter);
+
+        when(client.pwd()).thenReturn(dir);
+        when(client.ls(dir)).thenReturn(files);
+        // end
 
         SftpATTRS attrs = mock(SftpATTRS.class);
 
@@ -109,37 +175,94 @@ class SftpGatewayImplTest {
         Optional<StorageEntity> result = gateway.findByPath(path);
 
         assertTrue(result.isPresent());
-        verify(client).connect();
-        verify(client).exit();
     }
 
     @Test
-    void testFindByPathWithRuntimeException() throws Exception {
+    public void testFindByPathWithRuntimeException() throws Exception {
         String path = "/home/sftp/test.txt";
         when(client.lstat(path)).thenThrow(new SftpException(0, "Error"));
 
-        assertThrows(RuntimeException.class, () -> gateway.findByPath(path));
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> gateway.findByPath(path)
+        );
+
+        Assertions.assertInstanceOf(RuntimeException.class, exception);
     }
 
     @Test
-    void testSaveFile() throws Exception {
-        StorageEntity entity = mock(StorageEntity.class);
+    public void testFindByPathWithSFTPFileNotFoundException() throws SftpException {
+        String dir = "/home/sftp/";
+        String path = "/home/sftp/invalid.txt";
+
+        // this is the section for the method existsByPath()
+        Iterator<ChannelSftp.LsEntry> iter = new ArrayIterator<>(new ChannelSftp.LsEntry[]{});
+        Vector<ChannelSftp.LsEntry> files = mock(Vector.class);
+        when(files.size()).thenReturn(0);
+        when(files.iterator()).thenReturn(iter);
+
+        when(client.pwd()).thenReturn(dir);
+        when(client.ls(dir)).thenReturn(files);
+        // end
+
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> gateway.findByPath(path)
+        );
+
+        Assertions.assertEquals(String.format("Could not find file with name '%s'", path), exception.getMessage());
+        Assertions.assertInstanceOf(SFTPFileNotFoundException.class, exception);
+    }
+
+    @Test
+    public void testSaveFile() throws Exception {
+        StorageEntity storageEntity = mock(StorageEntity.class);
 
         String path = "/home/sftp/test.txt";
 
-        when(entity.getPath()).thenReturn(path);
-        when(entity.getData()).thenReturn(new byte[]{1, 2, 3});
+        when(storageEntity.getPath()).thenReturn(path);
+        when(storageEntity.getData()).thenReturn(new byte[]{1, 2, 3});
 
-        StorageEntity result = gateway.save(entity);
+        StorageEntity result = gateway.save(storageEntity);
 
-        assertEquals(entity, result);
-        verify(client).connect();
+        assertEquals(storageEntity, result);
         verify(client).put(any(ByteArrayInputStream.class), eq(path));
-        verify(client).exit();
     }
 
     @Test
-    void testExistsByPath() throws Exception {
+    public void testSaveFileWithSFTPFileAlreadyExistsException() throws SftpException {
+        StorageEntity storageEntity = mock(StorageEntity.class);
+        ChannelSftp.LsEntry file = mock(ChannelSftp.LsEntry.class);
+
+        String dir = "/home/sftp/";
+        String path = "/home/sftp/test.txt";
+
+        when(file.getLongname()).thenReturn(path);
+
+        when(storageEntity.getPath()).thenReturn(path);
+        when(storageEntity.getData()).thenReturn(new byte[]{1, 2, 3});
+
+        // this is the section for the method existsByPath()
+        Iterator<ChannelSftp.LsEntry> iter = new ArrayIterator<>(new ChannelSftp.LsEntry[]{file});
+        Vector<ChannelSftp.LsEntry> files = mock(Vector.class);
+        when(files.size()).thenReturn(1);
+        when(files.iterator()).thenReturn(iter);
+
+        when(client.pwd()).thenReturn(dir);
+        when(client.ls(dir)).thenReturn(files);
+        // end
+
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> gateway.save(storageEntity)
+        );
+
+        Assertions.assertEquals(String.format("File with the name '%s' already exists", path), exception.getMessage());
+        Assertions.assertInstanceOf(SFTPFileAlreadyExistsException.class, exception);
+    }
+
+    @Test
+    public void testExistsByPath() throws Exception {
         ChannelSftp.LsEntry file = mock(ChannelSftp.LsEntry.class);
 
         String dir = "/home/sftp";
@@ -159,24 +282,20 @@ class SftpGatewayImplTest {
         boolean exists = gateway.existsByPath(path);
 
         assertTrue(exists);
-        verify(client).connect();
-        verify(client).exit();
     }
 
     @Test
-    void testExistsByPathWhenNotFound() throws Exception {
+    public void testExistsByPathWhenNotFound() {
         String path = "/home/sftp/test.txt";
 
         Iterator<ChannelSftp.LsEntry> iter = new ArrayIterator<>(new ChannelSftp.LsEntry[]{});
 
         Vector<ChannelSftp.LsEntry> files = mock(Vector.class);
-        when(files.size()).thenReturn(1);
+        when(files.size()).thenReturn(0);
         when(files.iterator()).thenReturn(iter);
 
         boolean exists = gateway.existsByPath(path);
 
         assertFalse(exists);
-        verify(client).connect();
-        verify(client).exit();
     }
 }

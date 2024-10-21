@@ -57,7 +57,7 @@ public class SftpGatewayImpl implements StorageGateway {
 
             client.rm(entity.getPath());
             client.exit();
-        }catch(Exception e){
+        }catch(JSchException | SftpException e){
             throw new RuntimeException("Error deleting file", e);
         }
     }
@@ -73,8 +73,8 @@ public class SftpGatewayImpl implements StorageGateway {
                 var entity = findByPath(file.getLongname());
                 entity.ifPresent(entities::add);
             }
-        }catch(Exception e){
-            throw new RuntimeException(e);
+        }catch(JSchException | SftpException e){
+            throw new RuntimeException("Error finding file", e);
         }
 
         return entities;
@@ -101,8 +101,8 @@ public class SftpGatewayImpl implements StorageGateway {
             );
 
             return Optional.of(storageEntity);
-        }catch(Exception e){
-            throw new RuntimeException(e);
+        }catch(JSchException | SftpException | IOException e){
+            throw new RuntimeException("Error finding file", e);
         }
     }
 

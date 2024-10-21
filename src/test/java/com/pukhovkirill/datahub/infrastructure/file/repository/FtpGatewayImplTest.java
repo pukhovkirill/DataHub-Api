@@ -220,4 +220,12 @@ class FtpGatewayImplTest {
         boolean exists = gateway.existsByPath("test.txt");
         assertTrue(exists);
     }
+
+    @Test
+    public void testExistsByPathWhenNotFound() throws Exception {
+        when(client.listFiles()).thenReturn(new FTPFile[] {});
+
+        boolean exists = gateway.existsByPath("test.txt");
+        assertFalse(exists);
+    }
 }
