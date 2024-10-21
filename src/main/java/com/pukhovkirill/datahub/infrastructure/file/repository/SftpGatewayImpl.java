@@ -78,13 +78,11 @@ public class SftpGatewayImpl implements StorageGateway {
 
     @Override
     public Optional<StorageEntity> findByPath(String path) {
-        try{
+        try(ByteArrayOutputStream baos = new ByteArrayOutputStream()){
             client.connect();
-            File tmpFile = new File(path);
-            OutputStream outputStream = new FileOutputStream(tmpFile);
-            client.get(path, outputStream);
 
             SftpATTRS fileInfo = client.lstat(path);
+            client.get(path, baos);
 
             client.exit();
 
@@ -92,7 +90,7 @@ public class SftpGatewayImpl implements StorageGateway {
                     path,
                     new Timestamp((long) fileInfo.getATime() * 1000),
                     fileInfo.getSize(),
-                    Files.toByteArray(tmpFile)
+                    baos.toByteArray()
             );
 
             return Optional.of(storageEntity);
@@ -103,17 +101,9 @@ public class SftpGatewayImpl implements StorageGateway {
 
     @Override
     public StorageEntity save(StorageEntity entity) {
-        try{
-            File localFile = new File(entity.getPath());
-
+        try(ByteArrayInputStream bais = new ByteArrayInputStream(entity.getData())){
             client.connect();
-
-            OutputStream os = new FileOutputStream(localFile);
-            os.write(entity.getData());
-            os.close();
-
-            client.put(new FileInputStream(localFile), entity.getPath());
-
+            client.put(bais, entity.getPath());
             client.exit();
 
             return entity;
