@@ -6,12 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.google.common.io.Files;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.SftpException;
 
+import com.pukhovkirill.datahub.infrastructure.exception.SFTPFileAlreadyExistsException;
+import com.pukhovkirill.datahub.infrastructure.exception.SFTPFileNotFoundException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -50,6 +51,10 @@ public class SftpGatewayImpl implements StorageGateway {
     public void delete(StorageEntity entity) {
         try{
             client.connect();
+
+            if(!existsByPath(entity.getPath()))
+                throw new SFTPFileNotFoundException(entity.getPath());
+
             client.rm(entity.getPath());
             client.exit();
         }catch(Exception e){
@@ -66,7 +71,6 @@ public class SftpGatewayImpl implements StorageGateway {
             client.exit();
             for (ChannelSftp.LsEntry file : files) {
                 var entity = findByPath(file.getLongname());
-
                 entity.ifPresent(entities::add);
             }
         }catch(Exception e){
@@ -80,6 +84,9 @@ public class SftpGatewayImpl implements StorageGateway {
     public Optional<StorageEntity> findByPath(String path) {
         try(ByteArrayOutputStream baos = new ByteArrayOutputStream()){
             client.connect();
+
+            if(!existsByPath(path))
+                throw new SFTPFileNotFoundException(path);
 
             SftpATTRS fileInfo = client.lstat(path);
             client.get(path, baos);
@@ -103,7 +110,12 @@ public class SftpGatewayImpl implements StorageGateway {
     public StorageEntity save(StorageEntity entity) {
         try(ByteArrayInputStream bais = new ByteArrayInputStream(entity.getData())){
             client.connect();
+
+            if(existsByPath(entity.getPath()))
+                throw new SFTPFileAlreadyExistsException(entity.getPath());
+
             client.put(bais, entity.getPath());
+
             client.exit();
 
             return entity;
