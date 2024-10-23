@@ -158,16 +158,27 @@ public class StorageEntityArrayTire implements Tire<StorageEntityDto>{
     public Collection<StorageEntityDto> findFuzzy(String name) {
         Collection<StorageEntityDto> entities = new LinkedList<>();
         var currentNode = this.root;
+
         for(char ch : name.toCharArray()){
-            if(currentNode.getChild(ch) != null){
-                for(var entity : currentNode.getEntities()){
-                    entities.add(entity.clone());
-                }
-            }
             if (currentNode.getChild(ch) == null){
                 return entities;
             }
             currentNode = currentNode.getChild(ch);
+        }
+
+        Queue<TireNode> queue = new ArrayDeque<>();
+        queue.add(currentNode);
+
+        while(!queue.isEmpty()){
+            var node = queue.poll();
+
+            if(!node.entities.isEmpty())
+                entities.addAll(node.entities);
+
+            for(int i = 0; i < 92; i++){
+                if(node.getChild(i) != null)
+                    queue.add(node.getChild(i));
+            }
         }
 
         return entities;
