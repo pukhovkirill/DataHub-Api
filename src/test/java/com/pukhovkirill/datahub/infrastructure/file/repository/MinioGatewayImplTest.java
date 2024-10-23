@@ -1,18 +1,5 @@
 package com.pukhovkirill.datahub.infrastructure.file.repository;
 
-import com.pukhovkirill.datahub.entity.exception.StorageEntityAlreadyExistsException;
-import io.minio.*;
-import io.minio.errors.*;
-import org.junit.jupiter.api.*;
-import org.mockito.InjectMocks;
-
-import org.mockito.MockitoAnnotations;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.testcontainers.containers.MinIOContainer;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -20,6 +7,19 @@ import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
+import io.minio.*;
+import io.minio.errors.*;
+
+import org.junit.jupiter.api.*;
+import org.mockito.InjectMocks;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+import org.mockito.MockitoAnnotations;
+
+import org.springframework.test.util.ReflectionTestUtils;
+import org.testcontainers.containers.MinIOContainer;
+
+import com.pukhovkirill.datahub.entity.exception.StorageEntityAlreadyExistsException;
 import com.pukhovkirill.datahub.entity.factory.StorageEntityFactoryImpl;
 import com.pukhovkirill.datahub.entity.model.StorageEntity;
 

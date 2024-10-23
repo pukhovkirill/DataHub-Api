@@ -26,7 +26,10 @@ public class CacheableStorageServiceImpl implements StorageService {
 
     private final OngoingGatewayService ongoingGateways;
 
-    public CacheableStorageServiceImpl(@Qualifier("tireCacheService") StorageEntitiesCache cache, OngoingGatewayService gateways, BeanFactory factory){
+    public CacheableStorageServiceImpl(@Qualifier("tireCacheService")
+                                       StorageEntitiesCache cache,
+                                       OngoingGatewayService gateways,
+                                       BeanFactory factory){
         this.cache = cache;
         this.ongoingGateways = gateways;
         this.beanFactory = factory;
@@ -48,7 +51,9 @@ public class CacheableStorageServiceImpl implements StorageService {
     }
 
     @Override
-    public void uploadAll(String location, Collection<StorageEntityDto> entities, Collection<ByteArrayInputStream> bais) {
+    public void uploadAll(String location,
+                          Collection<StorageEntityDto> entities,
+                          Collection<ByteArrayInputStream> bais) {
         var entIter = entities.iterator();
         var byteIter = bais.iterator();
 

@@ -113,7 +113,8 @@ public class StorageEntityArrayTire implements Tire<StorageEntityDto>{
                 }
                 currentNode = currentNode.getChild(ch);
             }
-            currentNode.addEntity(entity);
+            if(!currentNode.entities.contains(entity))
+                currentNode.addEntity(entity);
         }finally{
             releaseWriteLock();
         }

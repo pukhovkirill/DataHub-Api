@@ -1,15 +1,16 @@
 package com.pukhovkirill.datahub.infrastructure.collection;
 
-import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
-
 import java.util.*;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.mockito.MockitoAnnotations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
 
 public class StorageEntityArrayTireTest {
     private StorageEntityArrayTire tire;
