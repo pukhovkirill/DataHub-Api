@@ -67,8 +67,16 @@ public class StorageEntityArrayTire implements Tire<StorageEntityDto>{
             return this.outgoingNodes.get(charIndexMap.get(ch));
         }
 
+        public TireNode getChild(int index){
+            return this.outgoingNodes.get(index);
+        }
+
         public synchronized void setChild(char ch){
             this.outgoingNodes.set(charIndexMap.get(ch), new TireNode());
+        }
+
+        public synchronized void setChild(int index){
+            this.outgoingNodes.set(index, new TireNode());
         }
 
         public Collection<StorageEntityDto> getEntities(){
@@ -124,9 +132,9 @@ public class StorageEntityArrayTire implements Tire<StorageEntityDto>{
             if(!node.entities.isEmpty())
                 entities.addAll(node.entities);
 
-            for(char ch = 'a'; ch <= 'z'; ch++){
-                if(node.getChild(ch) != null)
-                    queue.add(node.getChild(ch));
+            for(int i = 0; i < 92; i++){
+                if(node.getChild(i) != null)
+                    queue.add(node.getChild(i));
             }
         }
         return entities;
