@@ -97,7 +97,7 @@ public class CacheableStorageServiceImplTest {
 
     @Test
     public void testDelete() {
-        String location = "location";
+        String location = "internal";
         String name = "name";
         StorageEntityDto entity = mock(StorageEntityDto.class);
 
@@ -114,7 +114,7 @@ public class CacheableStorageServiceImplTest {
 
     @Test
     public void testDeleteWhenEntityNotFound() {
-        String location = "location";
+        String location = "internal";
         String name = "name";
         when(cache.getFromCache(name)).thenReturn(Collections.emptyList());
 
@@ -123,7 +123,7 @@ public class CacheableStorageServiceImplTest {
 
     @Test
     public void testDeleteAll() {
-        String location = "location";
+        String location = "internal";
         Collection<String> names = Arrays.asList("name1", "name2");
 
         StorageEntityDto entity1 = mock(StorageEntityDto.class);
