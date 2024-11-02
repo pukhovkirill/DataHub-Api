@@ -2,8 +2,6 @@ package com.pukhovkirill.datahub.infrastructure.file.service;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.util.Collection;
-import java.util.LinkedList;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -51,19 +49,7 @@ public class CacheableStorageServiceImpl implements StorageService {
     }
 
     @Override
-    public void uploadAll(String location,
-                          Collection<StorageEntityDto> entities,
-                          Collection<ByteArrayInputStream> bais) {
-        var entIter = entities.iterator();
-        var byteIter = bais.iterator();
-
-        while (entIter.hasNext() && byteIter.hasNext()) {
-            uploadTo(location, entIter.next(), byteIter.next());
-        }
-    }
-
-    @Override
-    public void delete(String location, String name) {
+    public void deleteFrom(String location, String name) {
         try{
             var results = cache.getFromCache(name);
 
@@ -92,13 +78,6 @@ public class CacheableStorageServiceImpl implements StorageService {
     }
 
     @Override
-    public void deleteAll(String location, Collection<String> names) {
-        for(String name : names){
-            delete(location, name);
-        }
-    }
-
-    @Override
     public ByteArrayOutputStream download(StorageEntityDto entity) {
         try{
             var downloadUseCase = beanFactory.getBean(
@@ -109,16 +88,5 @@ public class CacheableStorageServiceImpl implements StorageService {
         }catch (Exception e){
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public Collection<ByteArrayOutputStream> downloadAll(Collection<StorageEntityDto> entities) {
-        Collection<ByteArrayOutputStream> collectionBaos = new LinkedList<>();
-
-        for(var entity : entities){
-            collectionBaos.add(download(entity));
-        }
-
-        return collectionBaos;
     }
 }
