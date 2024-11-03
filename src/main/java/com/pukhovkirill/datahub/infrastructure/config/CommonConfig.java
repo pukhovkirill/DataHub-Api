@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
 import com.pukhovkirill.datahub.entity.gateway.StorageGateway;
+import com.pukhovkirill.datahub.entity.factory.StorageEntityFactory;
+import com.pukhovkirill.datahub.entity.factory.StorageEntityFactoryImpl;
 import com.pukhovkirill.datahub.infrastructure.file.service.OngoingGatewayService;
 import com.pukhovkirill.datahub.infrastructure.file.service.OngoingGatewayServiceImpl;
 
@@ -16,6 +18,12 @@ public class CommonConfig {
     @Scope("singleton")
     public OngoingGatewayService ongoingGatewayService(@Qualifier("minioStorageGateway") StorageGateway gateway) {
         return new OngoingGatewayServiceImpl(gateway);
+    }
+
+    @Bean
+    @Scope("prototype")
+    public StorageEntityFactory storageEntityFactory() {
+        return new StorageEntityFactoryImpl();
     }
 
 }

@@ -1,4 +1,4 @@
-package com.pukhovkirill.datahub.infrastructure.file.controller;
+package com.pukhovkirill.datahub.infrastructure.file.service;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -17,14 +17,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import com.pukhovkirill.datahub.infrastructure.file.repository.MinioGatewayImpl;
-import com.pukhovkirill.datahub.infrastructure.file.service.CacheableStorageServiceImpl;
-import com.pukhovkirill.datahub.infrastructure.file.service.OngoingGatewayService;
 import com.pukhovkirill.datahub.usecase.cache.storageEntity.StorageEntitiesCache;
 import com.pukhovkirill.datahub.usecase.deleteStorageEntityCase.DeleteStorageEntity;
 import com.pukhovkirill.datahub.usecase.downloadStorageEntityCase.DownloadStorageEntity;
 import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
 import com.pukhovkirill.datahub.usecase.uploadStorageEntityCase.UploadStorageEntity;
 
+// TODO: add edge cases tests
 public class CacheableStorageServiceImplTest {
 
     @Mock

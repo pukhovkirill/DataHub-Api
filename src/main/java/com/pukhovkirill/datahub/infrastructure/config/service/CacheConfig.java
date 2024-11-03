@@ -1,5 +1,6 @@
 package com.pukhovkirill.datahub.infrastructure.config.service;
 
+import com.pukhovkirill.datahub.infrastructure.cache.StorageEntitiesTireCacheImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -19,7 +20,7 @@ public class CacheConfig {
     @Bean
     @Scope("singleton")
     public StorageEntitiesCache tireCacheService() {
-        return new StorageEntitiesCacheImpl();
+        return new StorageEntitiesTireCacheImpl();
     }
 
 }
