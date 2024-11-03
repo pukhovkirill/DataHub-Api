@@ -8,6 +8,6 @@ import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
 
 public interface StorageService {
     void uploadTo(String location, StorageEntityDto entity, ByteArrayInputStream bais);
-    void deleteFrom(String location, String name);
-    ByteArrayOutputStream download(StorageEntityDto entity);
+    void deleteFrom(String location, String path);
+    ByteArrayOutputStream download(String location, String path);
 }

@@ -2,7 +2,9 @@ package com.pukhovkirill.datahub.infrastructure.file.service;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.Collection;
 
+import com.pukhovkirill.datahub.util.StringHelper;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -49,20 +51,20 @@ public class CacheableStorageServiceImpl implements StorageService {
     }
 
     @Override
-    public void deleteFrom(String location, String name) {
+    public void deleteFrom(String location, String path) {
         try{
-            var results = cache.getFromCache(name);
+            var results = cache.getFromCache(StringHelper.extractName(path));
 
             StorageEntityDto entity = null;
             for(var result : results){
-                if(result.getLocation().equals(location)){
+                if(result.getLocation().equals(location) && result.getPath().equals(path)){
                     entity = result;
                     break;
                 }
             }
 
             if(entity == null){
-                throw new RuntimeException("Could not find entity with name: " + name);
+                throw new RuntimeException("Could not find entity: " + path);
             }
 
             var deleteUseCase = beanFactory.getBean(
@@ -78,12 +80,26 @@ public class CacheableStorageServiceImpl implements StorageService {
     }
 
     @Override
-    public ByteArrayOutputStream download(StorageEntityDto entity) {
+    public ByteArrayOutputStream download(String location, String path) {
         try{
             var downloadUseCase = beanFactory.getBean(
                     DownloadStorageEntity.class,
-                    ongoingGateways.get(entity.getLocation())
+                    ongoingGateways.get(location)
             );
+
+            Collection<StorageEntityDto> results = cache.getFromCache(StringHelper.extractName(path));
+
+            StorageEntityDto entity = null;
+            for(var result : results){
+                if(result.getLocation().equals(location) && result.getPath().equals(path)){
+                    entity = result;
+                    break;
+                }
+            }
+
+            if(entity == null)
+                throw new RuntimeException("Could not find entity: " + path);
+
             return downloadUseCase.download(entity);
         }catch (Exception e){
             throw new RuntimeException(e);

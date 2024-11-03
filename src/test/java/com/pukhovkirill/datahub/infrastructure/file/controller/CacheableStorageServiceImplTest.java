@@ -68,15 +68,16 @@ public class CacheableStorageServiceImplTest {
     @Test
     public void testDelete() {
         String location = "internal";
-        String name = "name";
+        String path = "/path/to/file";
         StorageEntityDto entity = mock(StorageEntityDto.class);
 
         DeleteStorageEntity deleteUseCase = mock(DeleteStorageEntity.class);
         when(beanFactory.getBean(eq(DeleteStorageEntity.class), any())).thenReturn(deleteUseCase);
-        when(cache.getFromCache(name)).thenReturn(Collections.singletonList(entity));
+        when(cache.getFromCache("file")).thenReturn(Collections.singletonList(entity));
         when(entity.getLocation()).thenReturn(location);
+        when(entity.getPath()).thenReturn(path);
 
-        cacheableStorageService.delete(location, name);
+        cacheableStorageService.deleteFrom(location, path);
 
         verify(deleteUseCase, times(1)).delete(entity);
         verify(cache, times(1)).removeFromCache(entity);
@@ -88,19 +89,24 @@ public class CacheableStorageServiceImplTest {
         String name = "name";
         when(cache.getFromCache(name)).thenReturn(Collections.emptyList());
 
-        assertThrows(RuntimeException.class, () -> cacheableStorageService.delete(location, name));
+        assertThrows(RuntimeException.class, () -> cacheableStorageService.deleteFrom(location, name));
     }
 
     @Test
     public void testDownload() {
+        String location = "internal";
+        String path = "/path/to/file";
         StorageEntityDto entity = mock(StorageEntityDto.class);
 
         DownloadStorageEntity downloadUseCase = mock(DownloadStorageEntity.class);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         when(beanFactory.getBean(eq(DownloadStorageEntity.class), any())).thenReturn(downloadUseCase);
         when(downloadUseCase.download(entity)).thenReturn(baos);
+        when(cache.getFromCache("file")).thenReturn(Collections.singletonList(entity));
+        when(entity.getLocation()).thenReturn(location);
+        when(entity.getPath()).thenReturn(path);
 
-        ByteArrayOutputStream result = cacheableStorageService.download(entity);
+        ByteArrayOutputStream result = cacheableStorageService.download(entity.getLocation(), entity.getPath());
 
         assertEquals(baos, result);
     }
