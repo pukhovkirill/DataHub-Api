@@ -29,12 +29,12 @@ public class RestUploadFileController extends RestFileController{
         if(file == null)
             return ResponseEntity.internalServerError().body("file is null");
         else if(file.isEmpty())
-            return ResponseEntity.badRequest().body("file is empty");
+            return ResponseEntity.badRequest().body("file cannot be empty");
 
         if(path == null)
             return ResponseEntity.internalServerError().body("path is null");
         else if(path.isEmpty() || path.isBlank())
-            return ResponseEntity.badRequest().body("path is empty");
+            return ResponseEntity.badRequest().body("path cannot be empty");
         else if (!pathIsValid(path))
             return ResponseEntity.badRequest().body("path is invalid");
 
