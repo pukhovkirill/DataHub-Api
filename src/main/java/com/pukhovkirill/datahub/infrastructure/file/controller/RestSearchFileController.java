@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
 
 @RestController
-public class RestSearchFileController {
+public class RestSearchFileController extends RestFileController {
 
     @RequestMapping(value = "api/files/list", method = RequestMethod.GET)
     public ResponseEntity<List<StorageEntityDto>> searchAll(){

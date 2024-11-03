@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class RestDownloadFileController {
+public class RestDownloadFileController extends RestFileController {
 
     @RequestMapping(value = "api/files", method = RequestMethod.GET)
     public ResponseEntity<byte[]> download(@RequestParam("path") String path){
