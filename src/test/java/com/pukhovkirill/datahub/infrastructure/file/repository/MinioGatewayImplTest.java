@@ -7,14 +7,14 @@ import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
-import io.minio.*;
-import io.minio.errors.*;
-
+import static org.junit.Assert.*;
 import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
+
+import io.minio.*;
+import io.minio.errors.*;
 
 import org.springframework.test.util.ReflectionTestUtils;
 import org.testcontainers.containers.MinIOContainer;
