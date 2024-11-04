@@ -4,6 +4,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Collections;
 
+import com.pukhovkirill.datahub.infrastructure.file.dto.StorageFile;
+import com.pukhovkirill.datahub.util.StringHelper;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -23,7 +26,6 @@ import com.pukhovkirill.datahub.usecase.downloadStorageEntityCase.DownloadStorag
 import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
 import com.pukhovkirill.datahub.usecase.uploadStorageEntityCase.UploadStorageEntity;
 
-// TODO: add edge cases tests
 public class CacheableStorageServiceImplTest {
 
     @Mock
@@ -50,7 +52,7 @@ public class CacheableStorageServiceImplTest {
     @Test
     public void testUploadTo() {
         StorageEntityDto entity = mock(StorageEntityDto.class);
-        String name = "some.txt";
+        String name = "/file";
 
         ByteArrayInputStream bais = new ByteArrayInputStream("data".getBytes());
 
@@ -63,6 +65,34 @@ public class CacheableStorageServiceImplTest {
 
         verify(uploadUseCase, times(1)).upload(entity, bais);
         verify(cache, times(1)).saveToCache(name, entity);
+    }
+
+    @Test
+    public void testUploadToWhenEntityAlreadyExists() {
+        StorageEntityDto mockEntity = mock(StorageEntityDto.class);
+        String location = "internal";
+        String path = "/file";
+
+        ByteArrayInputStream bais = new ByteArrayInputStream("data".getBytes());
+
+        UploadStorageEntity uploadUseCase = mock(UploadStorageEntity.class);
+        when(cache.getFromCache(anyString())).thenReturn(Collections.singletonList(mockEntity));
+        when(beanFactory.getBean(eq(UploadStorageEntity.class), any())).thenReturn(uploadUseCase);
+        when(ongoingGateways.get(anyString())).thenReturn(mock(MinioGatewayImpl.class));
+        when(mockEntity.getPath()).thenReturn(path);
+        when(mockEntity.getName()).thenReturn(StringHelper.extractName(path));
+        when(mockEntity.getLocation()).thenReturn(location);
+
+        StorageEntityDto entity = StorageFile.builder()
+                .name("file")
+                .path("/file")
+                .location("internal")
+                .build();
+
+        cacheableStorageService.uploadTo(location, entity, bais);
+
+        verify(uploadUseCase, times(1)).upload(entity, bais);
+        verify(cache, times(1)).saveToCache(mockEntity.getName()+"(1)", entity);
     }
 
     @Test
@@ -86,10 +116,16 @@ public class CacheableStorageServiceImplTest {
     @Test
     public void testDeleteWhenEntityNotFound() {
         String location = "internal";
-        String name = "name";
-        when(cache.getFromCache(name)).thenReturn(Collections.emptyList());
+        String path = "/path/to/name";
+        when(cache.getFromCache(anyString())).thenReturn(Collections.emptyList());
 
-        assertThrows(RuntimeException.class, () -> cacheableStorageService.deleteFrom(location, name));
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> cacheableStorageService.deleteFrom(location, path)
+        );
+
+        Assertions.assertEquals("Could not find entity: " + path, exception.getCause().getMessage());
+        Assertions.assertInstanceOf(RuntimeException.class, exception.getCause());
     }
 
     @Test
@@ -109,5 +145,20 @@ public class CacheableStorageServiceImplTest {
         ByteArrayOutputStream result = cacheableStorageService.download(entity.getLocation(), entity.getPath());
 
         assertEquals(baos, result);
+    }
+
+    @Test
+    public void testDownloadWhenEntityNotFound() {
+        String location = "internal";
+        String path = "/path/to/name";
+        when(cache.getFromCache(anyString())).thenReturn(Collections.emptyList());
+
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> cacheableStorageService.download(location, path)
+        );
+
+        Assertions.assertEquals("Could not find entity: " + path, exception.getCause().getMessage());
+        Assertions.assertInstanceOf(RuntimeException.class, exception.getCause());
     }
 }

@@ -2,7 +2,7 @@ package com.pukhovkirill.datahub.infrastructure.file.service;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.util.Collection;
+import java.util.Optional;
 
 import com.pukhovkirill.datahub.util.StringHelper;
 import org.springframework.beans.factory.BeanFactory;
@@ -38,12 +38,22 @@ public class CacheableStorageServiceImpl implements StorageService {
     @Override
     public void uploadTo(String location, StorageEntityDto entity, ByteArrayInputStream bais) {
         try{
+            var optEntity = find(entity);
+
+            if(optEntity.isPresent()){
+                entity.setPath(StringHelper.generateUniqueFilename(entity.getPath()));
+                entity.setName(StringHelper.extractName(entity.getPath()));
+
+                uploadTo(location, entity, bais);
+                return;
+            }
+
             var uploadUseCase = beanFactory.getBean(
                     UploadStorageEntity.class,
                     ongoingGateways.get(location)
             );
-            uploadUseCase.upload(entity, bais);
 
+            uploadUseCase.upload(entity, bais);
             cache.saveToCache(entity.getName(), entity);
         }catch (Exception e){
             throw new RuntimeException(e);
@@ -53,17 +63,9 @@ public class CacheableStorageServiceImpl implements StorageService {
     @Override
     public void deleteFrom(String location, String path) {
         try{
-            var results = cache.getFromCache(StringHelper.extractName(path));
+            var optEntity = find(location, path);
 
-            StorageEntityDto entity = null;
-            for(var result : results){
-                if(result.getLocation().equals(location) && result.getPath().equals(path)){
-                    entity = result;
-                    break;
-                }
-            }
-
-            if(entity == null){
+            if(optEntity.isEmpty()){
                 throw new RuntimeException("Could not find entity: " + path);
             }
 
@@ -71,9 +73,9 @@ public class CacheableStorageServiceImpl implements StorageService {
                     DeleteStorageEntity.class,
                     ongoingGateways.get(location)
             );
-            deleteUseCase.delete(entity);
 
-            cache.removeFromCache(entity);
+            deleteUseCase.delete(optEntity.get());
+            cache.removeFromCache(optEntity.get());
         }catch (Exception e){
             throw new RuntimeException(e);
         }
@@ -82,27 +84,35 @@ public class CacheableStorageServiceImpl implements StorageService {
     @Override
     public ByteArrayOutputStream download(String location, String path) {
         try{
+            var optEntity = find(location, path);
+
+            if(optEntity.isEmpty())
+                throw new RuntimeException("Could not find entity: " + path);
+
             var downloadUseCase = beanFactory.getBean(
                     DownloadStorageEntity.class,
                     ongoingGateways.get(location)
             );
 
-            Collection<StorageEntityDto> results = cache.getFromCache(StringHelper.extractName(path));
-
-            StorageEntityDto entity = null;
-            for(var result : results){
-                if(result.getLocation().equals(location) && result.getPath().equals(path)){
-                    entity = result;
-                    break;
-                }
-            }
-
-            if(entity == null)
-                throw new RuntimeException("Could not find entity: " + path);
-
-            return downloadUseCase.download(entity);
+            return downloadUseCase.download(optEntity.get());
         }catch (Exception e){
             throw new RuntimeException(e);
         }
+    }
+
+    private Optional<StorageEntityDto> find(StorageEntityDto entity){
+        return find(entity.getLocation(), entity.getPath());
+    }
+
+    private Optional<StorageEntityDto> find(String location, String path){
+        var results = cache.getFromCache(StringHelper.extractName(path));
+
+        for(var result : results){
+            if(result.getLocation().equals(location) && result.getPath().equals(path)){
+                return Optional.of(result);
+            }
+        }
+
+        return Optional.empty();
     }
 }
