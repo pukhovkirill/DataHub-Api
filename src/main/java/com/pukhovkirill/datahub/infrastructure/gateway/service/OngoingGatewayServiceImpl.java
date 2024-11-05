@@ -1,5 +1,7 @@
-package com.pukhovkirill.datahub.infrastructure.file.service;
+package com.pukhovkirill.datahub.infrastructure.gateway.service;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -35,6 +37,11 @@ public class OngoingGatewayServiceImpl implements OngoingGatewayService {
             storageGatewayCache.remove(key);
         }else
             throw new StorageGatewayNotFoundException(key);
+    }
+
+    @Override
+    public Collection<String> list() {
+        return new ArrayList<>(storageGatewayCache.keySet());
     }
 
     @Override
