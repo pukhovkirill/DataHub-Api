@@ -5,6 +5,8 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Optional;
 
+import com.pukhovkirill.datahub.infrastructure.external.FtpManager;
+import com.pukhovkirill.datahub.infrastructure.gateway.repository.FtpGatewayImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,6 +28,9 @@ import com.pukhovkirill.datahub.infrastructure.exception.FTPFileNotFoundExceptio
 class FtpGatewayImplTest {
 
     @Mock
+    private FtpManager manager;
+
+    @Mock
     private FTPClient client;
 
     @Mock
@@ -37,9 +42,14 @@ class FtpGatewayImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+
+        manager = Mockito.mock(FtpManager.class);
         client = Mockito.mock(FTPClient.class);
+
+        when(manager.getClient()).thenReturn(client);
+
         factory = Mockito.mock(StorageEntityFactory.class);
-        gateway = new FtpGatewayImpl(client, factory);
+        gateway = new FtpGatewayImpl(manager, factory);
     }
 
     @Test

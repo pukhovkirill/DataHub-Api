@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.Collections;
 
 import com.pukhovkirill.datahub.infrastructure.file.dto.StorageFile;
+import com.pukhovkirill.datahub.infrastructure.gateway.service.OngoingGatewayService;
 import com.pukhovkirill.datahub.util.StringHelper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import com.pukhovkirill.datahub.infrastructure.file.repository.MinioGatewayImpl;
+import com.pukhovkirill.datahub.infrastructure.gateway.repository.MinioGatewayImpl;
 import com.pukhovkirill.datahub.usecase.cache.storageEntity.StorageEntitiesCache;
 import com.pukhovkirill.datahub.usecase.deleteStorageEntityCase.DeleteStorageEntity;
 import com.pukhovkirill.datahub.usecase.downloadStorageEntityCase.DownloadStorageEntity;

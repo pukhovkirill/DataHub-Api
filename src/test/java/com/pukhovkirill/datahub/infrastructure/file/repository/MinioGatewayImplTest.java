@@ -8,6 +8,8 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 import static org.junit.Assert.*;
+
+import com.pukhovkirill.datahub.infrastructure.gateway.repository.MinioGatewayImpl;
 import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
 import static org.mockito.Mockito.*;

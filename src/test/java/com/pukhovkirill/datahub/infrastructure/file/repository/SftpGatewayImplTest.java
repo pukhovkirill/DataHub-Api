@@ -4,6 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.sql.Timestamp;
 import java.util.*;
 
+import com.pukhovkirill.datahub.infrastructure.external.SftpManager;
+import com.pukhovkirill.datahub.infrastructure.gateway.repository.SftpGatewayImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +30,9 @@ import com.pukhovkirill.datahub.infrastructure.exception.SFTPFileNotFoundExcepti
 class SftpGatewayImplTest {
 
     @Mock
+    private SftpManager manager;
+
+    @Mock
     private ChannelSftp client;
 
     @Mock
@@ -39,9 +44,14 @@ class SftpGatewayImplTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+
+        manager = Mockito.mock(SftpManager.class);
         client = Mockito.mock(ChannelSftp.class);
+
+        when(manager.getClient()).thenReturn(client);
+
         factory = Mockito.mock(StorageEntityFactory.class);
-        gateway = new SftpGatewayImpl(client, factory);
+        gateway = new SftpGatewayImpl(manager, factory);
     }
 
     @Test

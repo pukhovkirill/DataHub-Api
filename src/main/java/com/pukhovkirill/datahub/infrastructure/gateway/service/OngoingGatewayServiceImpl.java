@@ -1,5 +1,7 @@
 package com.pukhovkirill.datahub.infrastructure.gateway.service;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,8 +34,10 @@ public class OngoingGatewayServiceImpl implements OngoingGatewayService {
     }
 
     @Override
-    public void release(String key) {
+    public void release(String key) throws IOException {
         if(storageGatewayCache.containsKey(key)){
+            if(storageGatewayCache.get(key) instanceof Closeable gateway)
+                gateway.close();
             storageGatewayCache.remove(key);
         }else
             throw new StorageGatewayNotFoundException(key);
