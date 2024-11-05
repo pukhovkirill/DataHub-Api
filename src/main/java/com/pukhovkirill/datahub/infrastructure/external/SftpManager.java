@@ -4,7 +4,7 @@ import com.jcraft.jsch.*;
 import lombok.Getter;
 
 @Getter
-public class SftpClient{
+public class SftpManager {
 
     private final String server;
 
@@ -18,7 +18,7 @@ public class SftpClient{
 
     private ChannelSftp client;
 
-    public SftpClient(String server, int port, String user, String password, String workingDirectory) {
+    public SftpManager(String server, int port, String user, String password, String workingDirectory) {
         this.server = server;
         this.port = port;
         this.user = user;
@@ -26,7 +26,7 @@ public class SftpClient{
         this.workingDirectory = workingDirectory;
     }
 
-    public SftpClient(String server, int port, String user, String password) {
+    public SftpManager(String server, int port, String user, String password) {
         this.server = server;
         this.port = port;
         this.user = user;

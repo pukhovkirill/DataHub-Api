@@ -8,8 +8,8 @@ import org.springframework.context.annotation.Scope;
 import com.pukhovkirill.datahub.entity.gateway.StorageGateway;
 import com.pukhovkirill.datahub.entity.factory.StorageEntityFactory;
 import com.pukhovkirill.datahub.entity.factory.StorageEntityFactoryImpl;
-import com.pukhovkirill.datahub.infrastructure.file.service.OngoingGatewayService;
-import com.pukhovkirill.datahub.infrastructure.file.service.OngoingGatewayServiceImpl;
+import com.pukhovkirill.datahub.infrastructure.gateway.service.OngoingGatewayService;
+import com.pukhovkirill.datahub.infrastructure.gateway.service.OngoingGatewayServiceImpl;
 
 @Configuration
 public class CommonConfig {

@@ -13,6 +13,7 @@ import com.jcraft.jsch.SftpException;
 
 import com.pukhovkirill.datahub.infrastructure.exception.SFTPFileAlreadyExistsException;
 import com.pukhovkirill.datahub.infrastructure.exception.SFTPFileNotFoundException;
+import com.pukhovkirill.datahub.infrastructure.external.SftpManager;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -22,14 +23,17 @@ import com.pukhovkirill.datahub.entity.model.StorageEntity;
 
 @Service
 @Scope("prototype")
-public class SftpGatewayImpl implements StorageGateway {
+public class SftpGatewayImpl implements StorageGateway, Closeable {
+
+    private final SftpManager manager;
 
     private final ChannelSftp client;
 
     private final StorageEntityFactory factory;
 
-    public SftpGatewayImpl(ChannelSftp client, StorageEntityFactory factory) {
-        this.client = client;
+    public SftpGatewayImpl(SftpManager manager, StorageEntityFactory factory) {
+        this.manager = manager;
+        this.client = manager.getClient();
         this.factory = factory;
     }
 
@@ -138,6 +142,15 @@ public class SftpGatewayImpl implements StorageGateway {
             return false;
         }catch(Exception e){
             return false;
+        }
+    }
+
+    @Override
+    public void close() {
+        try {
+            manager.disconnect();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }

@@ -7,7 +7,7 @@ import org.apache.commons.net.ftp.FTPClient;
 import java.io.IOException;
 
 @Getter
-public class FtpClient {
+public class FtpManager {
 
     private final String server;
 
@@ -21,7 +21,7 @@ public class FtpClient {
 
     private FTPClient client;
 
-    public FtpClient(String server, int port, String user, String password, String workingDirectory) {
+    public FtpManager(String server, int port, String user, String password, String workingDirectory) {
         this.server = server;
         this.port = port;
         this.user = user;
@@ -29,7 +29,7 @@ public class FtpClient {
         this.workingDirectory = workingDirectory;
     }
 
-    public FtpClient(String server, int port, String user, String password) {
+    public FtpManager(String server, int port, String user, String password) {
         this.server = server;
         this.port = port;
         this.user = user;

@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Optional;
 
+import com.pukhovkirill.datahub.infrastructure.gateway.service.OngoingGatewayService;
 import com.pukhovkirill.datahub.util.StringHelper;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Qualifier;

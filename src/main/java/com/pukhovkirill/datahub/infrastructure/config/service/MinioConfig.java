@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.pukhovkirill.datahub.entity.factory.StorageEntityFactory;
 import com.pukhovkirill.datahub.entity.gateway.StorageGateway;
-import com.pukhovkirill.datahub.infrastructure.file.repository.MinioGatewayImpl;
+import com.pukhovkirill.datahub.infrastructure.gateway.repository.MinioGatewayImpl;
 
 @Configuration
 public class MinioConfig {

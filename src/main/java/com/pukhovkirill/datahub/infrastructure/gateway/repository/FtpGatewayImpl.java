@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import com.pukhovkirill.datahub.infrastructure.exception.FTPFileAlreadyExistsException;
 import com.pukhovkirill.datahub.infrastructure.exception.FTPFileNotFoundException;
+import com.pukhovkirill.datahub.infrastructure.external.FtpManager;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.springframework.context.annotation.Scope;
@@ -19,14 +20,17 @@ import com.pukhovkirill.datahub.entity.model.StorageEntity;
 
 @Service
 @Scope("prototype")
-public class FtpGatewayImpl implements StorageGateway {
+public class FtpGatewayImpl implements StorageGateway, Closeable {
+
+    private final FtpManager manager;
 
     private final FTPClient client;
 
     private final StorageEntityFactory factory;
 
-    public FtpGatewayImpl(FTPClient client, StorageEntityFactory factory) {
-        this.client = client;
+    public FtpGatewayImpl(FtpManager manager, StorageEntityFactory factory) {
+        this.manager = manager;
+        this.client = manager.getClient();
         this.factory = factory;
     }
 
@@ -122,6 +126,15 @@ public class FtpGatewayImpl implements StorageGateway {
             }
             return false;
         }catch(Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void close() {
+        try {
+            manager.disconnect();
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
