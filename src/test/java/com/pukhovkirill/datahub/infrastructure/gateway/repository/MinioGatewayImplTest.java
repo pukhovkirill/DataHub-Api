@@ -1,4 +1,4 @@
-package com.pukhovkirill.datahub.infrastructure.file.repository;
+package com.pukhovkirill.datahub.infrastructure.gateway.repository;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
