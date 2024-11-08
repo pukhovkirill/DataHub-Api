@@ -63,11 +63,13 @@ public class StorageFile implements StorageEntityDto {
 
     @Override
     public StorageEntityDto clone() {
-        try {
-            return (StorageEntityDto) super.clone();
-        }
-        catch( CloneNotSupportedException ex ) {
-            throw new InternalError();
-        }
+        return StorageFile.builder()
+                .name(this.name)
+                .path(this.path)
+                .contentType(this.contentType)
+                .lastModified(this.lastModified != null ? (Timestamp) this.lastModified.clone() : null)
+                .size(this.size)
+                .location(this.location)
+                .build();
     }
 }
