@@ -14,7 +14,7 @@ services:
       - 'MINIO_DEFAULT_BUCKETS=storage'
     command: server /data
 
-  createbuckets:
+  create-bucket:
       image: 'minio/minio:latest'
       depends_on:
         - minio

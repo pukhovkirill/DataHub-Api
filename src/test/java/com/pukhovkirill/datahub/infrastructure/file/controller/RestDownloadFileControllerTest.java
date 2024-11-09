@@ -1,7 +1,5 @@
 package com.pukhovkirill.datahub.infrastructure.file.controller;
 
-import com.pukhovkirill.datahub.infrastructure.exception.FTPFileNotFoundException;
-import com.pukhovkirill.datahub.infrastructure.file.service.StorageService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,9 +11,12 @@ import org.springframework.http.ResponseEntity;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+
+import com.pukhovkirill.datahub.infrastructure.file.service.StorageService;
 
 public class RestDownloadFileControllerTest {
 
@@ -40,11 +41,12 @@ public class RestDownloadFileControllerTest {
 
         when(storageService.download(anyString(), anyString())).thenReturn(baos);
 
-        ResponseEntity<byte[]> response = restDownloadFileController.download(validPath);
+        ResponseEntity<Map<String, Object>> response = restDownloadFileController.download(validPath);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertArrayEquals("file content".getBytes(), response.getBody());
+        assertNotNull(response.getBody());
+        assertArrayEquals("file content".getBytes(), (byte[]) response.getBody().get("data"));
         verify(storageService, times(1)).download(anyString(), anyString());
     }
 

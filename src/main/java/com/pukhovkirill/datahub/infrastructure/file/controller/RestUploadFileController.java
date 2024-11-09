@@ -4,7 +4,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URLConnection;
 import java.sql.Timestamp;
+import java.util.Map;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pukhovkirill.datahub.infrastructure.file.exception.FileParamException;
+import com.pukhovkirill.datahub.infrastructure.file.exception.PathParamException;
 import com.pukhovkirill.datahub.infrastructure.file.dto.StorageFile;
 import com.pukhovkirill.datahub.infrastructure.file.service.StorageService;
 import com.pukhovkirill.datahub.util.StringHelper;
@@ -26,18 +30,18 @@ public class RestUploadFileController extends RestFileController{
     }
 
     @RequestMapping(value = "api/files", method = RequestMethod.POST)
-    public ResponseEntity<String> upload(@RequestParam("file") MultipartFile file, @RequestParam("path") String path) throws IOException {
+    public ResponseEntity<Map<String, Object>> upload(@RequestParam("file") MultipartFile file, @RequestParam("path") String path) throws IOException {
         if(file == null)
-            return ResponseEntity.internalServerError().body("file is null");
+            throw new FileParamException("file is null", HttpStatus.INTERNAL_SERVER_ERROR);
         else if(file.isEmpty())
-            return ResponseEntity.badRequest().body("file cannot be empty");
+            throw new FileParamException("file is empty", HttpStatus.BAD_REQUEST);
 
         if(path == null)
-            return ResponseEntity.internalServerError().body("path is null");
+            throw new PathParamException("path is null", HttpStatus.INTERNAL_SERVER_ERROR);
         else if(path.isEmpty() || path.isBlank())
-            return ResponseEntity.badRequest().body("path cannot be empty");
+            throw new PathParamException("path is empty", HttpStatus.BAD_REQUEST);
         else if (!pathIsValid(path))
-            return ResponseEntity.badRequest().body("path is invalid");
+            throw new PathParamException("path is invalid", HttpStatus.BAD_REQUEST);
 
         String location = path.split(":")[0];
         String filepath = path.split(":")[1];
@@ -54,6 +58,9 @@ public class RestUploadFileController extends RestFileController{
 
         this.storageService.uploadTo(location, storageFile, new ByteArrayInputStream(file.getBytes()));
 
-        return ResponseEntity.ok().body("success");
+        return ResponseEntity.ok().body(Map.of(
+                "timestamp", (new Timestamp(System.currentTimeMillis())).toString(),
+                "status", HttpStatus.OK.value(),
+                "message", "success"));
     }
 }
