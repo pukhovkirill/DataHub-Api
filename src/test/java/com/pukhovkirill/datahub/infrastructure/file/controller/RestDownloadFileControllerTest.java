@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.pukhovkirill.datahub.infrastructure.file.service.StorageService;
-import com.pukhovkirill.datahub.infrastructure.file.exception.PathParamException;
+import com.pukhovkirill.datahub.infrastructure.file.exception.InvalidParamException;
 
 public class RestDownloadFileControllerTest {
 
@@ -54,34 +54,34 @@ public class RestDownloadFileControllerTest {
     @Test
     public void downloadWhenPathIsNull() {
         RuntimeException exception = assertThrows(
-                PathParamException.class,
+                InvalidParamException.class,
                 () -> restDownloadFileController.download(null)
         );
 
         Assertions.assertEquals("path is null", exception.getMessage());
-        Assertions.assertInstanceOf(PathParamException.class, exception);
+        Assertions.assertInstanceOf(InvalidParamException.class, exception);
     }
 
     @Test
     public void downloadWhenPathIsEmpty() {
         RuntimeException exception = assertThrows(
-                PathParamException.class,
+                InvalidParamException.class,
                 () -> restDownloadFileController.download("")
         );
 
         Assertions.assertEquals("path is empty", exception.getMessage());
-        Assertions.assertInstanceOf(PathParamException.class, exception);
+        Assertions.assertInstanceOf(InvalidParamException.class, exception);
     }
 
     @Test
     public void downloadWhenPathIsBlank() {
         RuntimeException exception = assertThrows(
-                PathParamException.class,
+                InvalidParamException.class,
                 () -> restDownloadFileController.download("   ")
         );
 
         Assertions.assertEquals("path is empty", exception.getMessage());
-        Assertions.assertInstanceOf(PathParamException.class, exception);
+        Assertions.assertInstanceOf(InvalidParamException.class, exception);
     }
 
     @Test
@@ -89,12 +89,12 @@ public class RestDownloadFileControllerTest {
         String invalidPath = "invalid_path_format";
 
         RuntimeException exception = assertThrows(
-                PathParamException.class,
+                InvalidParamException.class,
                 () -> restDownloadFileController.download(invalidPath)
         );
 
         Assertions.assertEquals("path is invalid", exception.getMessage());
-        Assertions.assertInstanceOf(PathParamException.class, exception);
+        Assertions.assertInstanceOf(InvalidParamException.class, exception);
     }
 
 }

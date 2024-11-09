@@ -20,8 +20,7 @@ import static org.mockito.Mockito.*;
 
 import com.pukhovkirill.datahub.infrastructure.file.dto.StorageFile;
 import com.pukhovkirill.datahub.infrastructure.file.service.StorageService;
-import com.pukhovkirill.datahub.infrastructure.file.exception.FileParamException;
-import com.pukhovkirill.datahub.infrastructure.file.exception.PathParamException;
+import com.pukhovkirill.datahub.infrastructure.file.exception.InvalidParamException;
 
 class RestUploadFileControllerTest {
 
@@ -63,12 +62,12 @@ class RestUploadFileControllerTest {
     @Test
     void uploadWhenFileIsNull() {
         RuntimeException exception = assertThrows(
-                FileParamException.class,
+                InvalidParamException.class,
                 () -> restUploadFileController.upload(null, "location:file.txt")
         );
 
         Assertions.assertEquals("file is null", exception.getMessage());
-        Assertions.assertInstanceOf(FileParamException.class, exception);
+        Assertions.assertInstanceOf(InvalidParamException.class, exception);
     }
 
     @Test
@@ -78,12 +77,12 @@ class RestUploadFileControllerTest {
         when(file.isEmpty()).thenReturn(true);
 
         RuntimeException exception = assertThrows(
-                FileParamException.class,
+                InvalidParamException.class,
                 () -> restUploadFileController.upload(file, "location:file.txt")
         );
 
         Assertions.assertEquals("file is empty", exception.getMessage());
-        Assertions.assertInstanceOf(FileParamException.class, exception);
+        Assertions.assertInstanceOf(InvalidParamException.class, exception);
     }
 
     @Test
@@ -91,12 +90,12 @@ class RestUploadFileControllerTest {
         MultipartFile file = mock(MultipartFile.class);
 
         RuntimeException exception = assertThrows(
-                PathParamException.class,
+                InvalidParamException.class,
                 () -> restUploadFileController.upload(file, null)
         );
 
         Assertions.assertEquals("path is null", exception.getMessage());
-        Assertions.assertInstanceOf(PathParamException.class, exception);
+        Assertions.assertInstanceOf(InvalidParamException.class, exception);
     }
 
     @Test
@@ -104,25 +103,25 @@ class RestUploadFileControllerTest {
         MultipartFile file = mock(MultipartFile.class);
 
         RuntimeException exception = assertThrows(
-                PathParamException.class,
+                InvalidParamException.class,
                 () -> restUploadFileController.upload(file, "")
         );
 
         Assertions.assertEquals("path is empty", exception.getMessage());
-        Assertions.assertInstanceOf(PathParamException.class, exception);
+        Assertions.assertInstanceOf(InvalidParamException.class, exception);
     }
 
     @Test
-    void uploadWhenPathIsInvalid() throws IOException {
+    void uploadWhenPathIsInvalid() {
         MultipartFile file = mock(MultipartFile.class);
         String invalidPath = "invalid_path_format";
 
         RuntimeException exception = assertThrows(
-                PathParamException.class,
+                InvalidParamException.class,
                 () -> restUploadFileController.upload(file, invalidPath)
         );
 
         Assertions.assertEquals("path is invalid", exception.getMessage());
-        Assertions.assertInstanceOf(PathParamException.class, exception);
+        Assertions.assertInstanceOf(InvalidParamException.class, exception);
     }
 }

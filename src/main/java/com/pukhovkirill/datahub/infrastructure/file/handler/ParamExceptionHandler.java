@@ -7,23 +7,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.pukhovkirill.datahub.infrastructure.file.exception.FileParamException;
-import com.pukhovkirill.datahub.infrastructure.file.exception.PathParamException;
+import com.pukhovkirill.datahub.infrastructure.file.exception.InvalidParamException;
 
 @ControllerAdvice
 public class ParamExceptionHandler {
 
     @ExceptionHandler
-    public ResponseEntity<Map<String, Object>> fileParamException(FileParamException e){
-        return ResponseEntity.status(e.getStatus()).body(Map.of(
-                "timestamp", (new Timestamp(System.currentTimeMillis())).toString(),
-                "status", e.getStatus().value(),
-                "error", e.getStatus().name(),
-                "message", e.getMessage()));
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<Map<String, Object>> pathParamException(PathParamException e){
+    public ResponseEntity<Map<String, Object>> invalidParamException(InvalidParamException e){
         return ResponseEntity.status(e.getStatus()).body(Map.of(
                 "timestamp", (new Timestamp(System.currentTimeMillis())).toString(),
                 "status", e.getStatus().value(),

@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pukhovkirill.datahub.infrastructure.file.exception.PathParamException;
 import com.pukhovkirill.datahub.infrastructure.file.service.StorageService;
+import com.pukhovkirill.datahub.infrastructure.file.exception.InvalidParamException;
 
 @RestController
 public class RestDownloadFileController extends RestFileController {
@@ -27,11 +27,11 @@ public class RestDownloadFileController extends RestFileController {
     @RequestMapping(value = "api/files", method = RequestMethod.GET)
     public ResponseEntity<Map<String, Object>> download(@RequestParam("path") String path) throws IOException {
         if(path == null)
-            throw new PathParamException("path is null", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new InvalidParamException("path is null", HttpStatus.INTERNAL_SERVER_ERROR);
         else if(path.isEmpty() || path.isBlank())
-            throw new PathParamException("path is empty", HttpStatus.BAD_REQUEST);
+            throw new InvalidParamException("path is empty", HttpStatus.BAD_REQUEST);
         else if (!pathIsValid(path))
-            throw new PathParamException("path is invalid", HttpStatus.BAD_REQUEST);
+            throw new InvalidParamException("path is invalid", HttpStatus.BAD_REQUEST);
 
         String location = path.split(":")[0];
         String filepath = path.split(":")[1];
