@@ -1,5 +1,10 @@
 package com.pukhovkirill.datahub.infrastructure.gateway.controller;
 
+import java.sql.Timestamp;
+import java.util.Map;
+
+import com.pukhovkirill.datahub.infrastructure.gateway.dto.GatewayCredentials;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.pukhovkirill.datahub.entity.gateway.StorageGateway;
@@ -13,20 +18,13 @@ public abstract class RestRegisterGatewayController {
         this.ongoingGatewayService = ongoingGatewayService;
     }
 
-    protected ResponseEntity<String> register(String key,
-                                           String protocol, String server, int port,
-                                           String username, String password,
-                                           String workingDirectory) {
-        StorageGateway gateway = getStorageGateway(key,
-                                                   protocol, server, port,
-                                                   username, password,
-                                                   workingDirectory);
-        ongoingGatewayService.register(key, gateway);
-        return ResponseEntity.ok("success");
+    protected ResponseEntity<Map<String, Object>> register(GatewayCredentials credentials) {
+        StorageGateway gateway = getStorageGateway(credentials);
+        ongoingGatewayService.register(credentials.getKey(), gateway);
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of(
+                "timestamp", (new Timestamp(System.currentTimeMillis())).toString(),
+                "status", HttpStatus.OK.value()));
     }
 
-    protected abstract StorageGateway getStorageGateway(String key,
-                                                        String protocol, String server, int port,
-                                                        String username, String password,
-                                                        String workingDirectory);
+    protected abstract StorageGateway getStorageGateway(GatewayCredentials credentials);
 }

@@ -1,10 +1,10 @@
 package com.pukhovkirill.datahub.infrastructure.gateway.controller;
 
+import java.util.Map;
+
+import com.pukhovkirill.datahub.infrastructure.gateway.dto.GatewayCredentials;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.pukhovkirill.datahub.entity.factory.StorageEntityFactoryImpl;
 import com.pukhovkirill.datahub.entity.gateway.StorageGateway;
@@ -20,25 +20,22 @@ public class RestRegisterFtpGatewayController extends RestRegisterGatewayControl
     }
 
     @RequestMapping(value = "api/gateways/ftp", method = RequestMethod.POST)
-    public ResponseEntity<String> registerFtp(@RequestParam("key") String key,
-                                              @RequestParam("protocol") String protocol,
-                                              @RequestParam("server") String server,
-                                              @RequestParam("port") int port,
-                                              @RequestParam("username") String username,
-                                              @RequestParam("password") String password,
-                                              @RequestParam("working-directory") String workingDirectory) {
-        return register(key, protocol, server, port, username, password, workingDirectory);
+    public ResponseEntity<Map<String, Object>> registerFtp(@RequestBody GatewayCredentials credentials) {
+        return register(credentials);
     }
 
     @Override
-    protected StorageGateway getStorageGateway(String key,
-                                               String protocol, String server, int port,
-                                               String username, String password,
-                                               String workingDirectory) {
+    protected StorageGateway getStorageGateway(GatewayCredentials credentials) {
         FtpManager manager;
+        var workingDirectory = credentials.getWorkingDirectory();
         if(workingDirectory.isEmpty() || workingDirectory.isBlank())
-            manager = new FtpManager(server, port, username, password);
-        else manager = new FtpManager(server, port, username, password, workingDirectory);
+            manager = new FtpManager(
+                    credentials.getServer(), credentials.getPort(),
+                    credentials.getUsername(), credentials.getPassword());
+        else manager = new FtpManager(
+                credentials.getServer(), credentials.getPort(),
+                credentials.getUsername(), credentials.getPassword(),
+                workingDirectory);
 
         manager.connect();
         return new FtpGatewayImpl(

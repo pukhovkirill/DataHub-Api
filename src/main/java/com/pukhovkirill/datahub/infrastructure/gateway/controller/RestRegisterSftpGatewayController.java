@@ -1,10 +1,10 @@
 package com.pukhovkirill.datahub.infrastructure.gateway.controller;
 
+import java.util.Map;
+
+import com.pukhovkirill.datahub.infrastructure.gateway.dto.GatewayCredentials;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.pukhovkirill.datahub.entity.factory.StorageEntityFactoryImpl;
 import com.pukhovkirill.datahub.entity.gateway.StorageGateway;
@@ -20,25 +20,22 @@ public class RestRegisterSftpGatewayController extends RestRegisterGatewayContro
     }
 
     @RequestMapping(value = "api/gateways/sftp", method = RequestMethod.POST)
-    public ResponseEntity<String> registerSftp(@RequestParam("key") String key,
-                                               @RequestParam("protocol") String protocol,
-                                               @RequestParam("server") String server,
-                                               @RequestParam("port") int port,
-                                               @RequestParam("username") String username,
-                                               @RequestParam("password") String password,
-                                               @RequestParam("working-directory") String workingDirectory) {
-        return register(key, protocol, server, port, username, password, workingDirectory);
+    public ResponseEntity<Map<String, Object>> registerSftp(@RequestBody GatewayCredentials credentials) {
+        return register(credentials);
     }
 
     @Override
-    protected StorageGateway getStorageGateway(String key,
-                                               String protocol, String server, int port,
-                                               String username, String password,
-                                               String workingDirectory) {
+    protected StorageGateway getStorageGateway(GatewayCredentials credentials) {
         SftpManager manager;
+        var workingDirectory = credentials.getWorkingDirectory();
         if(workingDirectory.isEmpty() || workingDirectory.isBlank())
-            manager = new SftpManager(server, port, username, password);
-        else manager = new SftpManager(server, port, username, password, workingDirectory);
+            manager = new SftpManager(
+                    credentials.getServer(), credentials.getPort(),
+                    credentials.getUsername(), credentials.getPassword());
+        else manager = new SftpManager(
+                credentials.getServer(), credentials.getPort(),
+                credentials.getUsername(), credentials.getPassword(),
+                workingDirectory);
 
         manager.connect();
         return new SftpGatewayImpl(

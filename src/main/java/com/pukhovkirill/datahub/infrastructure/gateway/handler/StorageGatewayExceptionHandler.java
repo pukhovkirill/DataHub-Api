@@ -1,4 +1,4 @@
-package com.pukhovkirill.datahub.infrastructure.file.handler;
+package com.pukhovkirill.datahub.infrastructure.gateway.handler;
 
 import java.sql.Timestamp;
 import java.util.Map;
