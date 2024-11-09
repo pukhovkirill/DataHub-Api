@@ -1,5 +1,9 @@
 package com.pukhovkirill.datahub.infrastructure.file.controller;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Map;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,14 +13,11 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.Map;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.pukhovkirill.datahub.infrastructure.file.service.StorageService;
+import com.pukhovkirill.datahub.infrastructure.file.exception.PathParamException;
 
 public class RestDownloadFileControllerTest {
 
@@ -51,49 +52,49 @@ public class RestDownloadFileControllerTest {
     }
 
     @Test
-    public void downloadWithIllegalArgumentExceptionWhenPathIsNull() {
+    public void downloadWhenPathIsNull() {
         RuntimeException exception = assertThrows(
-                IllegalArgumentException.class,
+                PathParamException.class,
                 () -> restDownloadFileController.download(null)
         );
 
         Assertions.assertEquals("path is null", exception.getMessage());
-        Assertions.assertInstanceOf(IllegalArgumentException.class, exception);
+        Assertions.assertInstanceOf(PathParamException.class, exception);
     }
 
     @Test
-    public void downloadWithIllegalArgumentExceptionWhenPathIsEmpty() {
+    public void downloadWhenPathIsEmpty() {
         RuntimeException exception = assertThrows(
-                IllegalArgumentException.class,
+                PathParamException.class,
                 () -> restDownloadFileController.download("")
         );
 
-        Assertions.assertEquals("path cannot be empty", exception.getMessage());
-        Assertions.assertInstanceOf(IllegalArgumentException.class, exception);
+        Assertions.assertEquals("path is empty", exception.getMessage());
+        Assertions.assertInstanceOf(PathParamException.class, exception);
     }
 
     @Test
-    public void downloadWithThrowIllegalArgumentExceptionWhenPathIsBlank() {
+    public void downloadWhenPathIsBlank() {
         RuntimeException exception = assertThrows(
-                IllegalArgumentException.class,
+                PathParamException.class,
                 () -> restDownloadFileController.download("   ")
         );
 
-        Assertions.assertEquals("path cannot be empty", exception.getMessage());
-        Assertions.assertInstanceOf(IllegalArgumentException.class, exception);
+        Assertions.assertEquals("path is empty", exception.getMessage());
+        Assertions.assertInstanceOf(PathParamException.class, exception);
     }
 
     @Test
-    public void downloadWithIllegalArgumentExceptionWhenPathIsInvalid() {
+    public void downloadWhenPathIsInvalid() {
         String invalidPath = "invalid_path_format";
 
         RuntimeException exception = assertThrows(
-                IllegalArgumentException.class,
+                PathParamException.class,
                 () -> restDownloadFileController.download(invalidPath)
         );
 
         Assertions.assertEquals("path is invalid", exception.getMessage());
-        Assertions.assertInstanceOf(IllegalArgumentException.class, exception);
+        Assertions.assertInstanceOf(PathParamException.class, exception);
     }
 
 }

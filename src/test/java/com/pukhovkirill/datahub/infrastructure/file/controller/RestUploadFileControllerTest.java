@@ -1,5 +1,10 @@
 package com.pukhovkirill.datahub.infrastructure.file.controller;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.Map;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -10,15 +15,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.Map;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.pukhovkirill.datahub.infrastructure.file.dto.StorageFile;
 import com.pukhovkirill.datahub.infrastructure.file.service.StorageService;
+import com.pukhovkirill.datahub.infrastructure.file.exception.FileParamException;
+import com.pukhovkirill.datahub.infrastructure.file.exception.PathParamException;
 
 class RestUploadFileControllerTest {
 
@@ -58,62 +61,68 @@ class RestUploadFileControllerTest {
     }
 
     @Test
-    void uploadWithReturnInternalServerErrorWhenFileIsNull() throws IOException {
-        ResponseEntity<Map<String, Object>> response = restUploadFileController.upload(null, "location:file.txt");
+    void uploadWhenFileIsNull() {
+        RuntimeException exception = assertThrows(
+                FileParamException.class,
+                () -> restUploadFileController.upload(null, "location:file.txt")
+        );
 
-        assertNotNull(response);
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals("file is null", response.getBody().get("message"));
+        Assertions.assertEquals("file is null", exception.getMessage());
+        Assertions.assertInstanceOf(FileParamException.class, exception);
     }
 
     @Test
-    void uploadWithReturnBadRequestWhenFileIsEmpty() throws IOException {
+    void uploadWhenFileIsEmpty() {
         MultipartFile file = mock(MultipartFile.class);
 
         when(file.isEmpty()).thenReturn(true);
 
-        ResponseEntity<Map<String, Object>> response = restUploadFileController.upload(file, "location:file.txt");
+        RuntimeException exception = assertThrows(
+                FileParamException.class,
+                () -> restUploadFileController.upload(file, "location:file.txt")
+        );
 
-        assertNotNull(response);
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals("file is empty", response.getBody().get("message"));
+        Assertions.assertEquals("file is empty", exception.getMessage());
+        Assertions.assertInstanceOf(FileParamException.class, exception);
     }
 
     @Test
-    void uploadWithReturnInternalServerErrorWhenPathIsNull() throws IOException {
+    void uploadWhenPathIsNull() {
         MultipartFile file = mock(MultipartFile.class);
 
-        ResponseEntity<Map<String, Object>> response = restUploadFileController.upload(file, null);
+        RuntimeException exception = assertThrows(
+                PathParamException.class,
+                () -> restUploadFileController.upload(file, null)
+        );
 
-        assertNotNull(response);
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals("path is null", response.getBody().get("message"));
+        Assertions.assertEquals("path is null", exception.getMessage());
+        Assertions.assertInstanceOf(PathParamException.class, exception);
     }
 
     @Test
-    void uploadWithReturnBadRequestWhenPathIsEmpty() throws IOException {
+    void uploadWhenPathIsEmpty() {
         MultipartFile file = mock(MultipartFile.class);
 
-        ResponseEntity<Map<String, Object>> response = restUploadFileController.upload(file, "");
+        RuntimeException exception = assertThrows(
+                PathParamException.class,
+                () -> restUploadFileController.upload(file, "")
+        );
 
-        assertNotNull(response);
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals("path is empty", response.getBody().get("message"));
+        Assertions.assertEquals("path is empty", exception.getMessage());
+        Assertions.assertInstanceOf(PathParamException.class, exception);
     }
 
     @Test
-    void uploadWithReturnBadRequestWhenPathIsInvalid() throws IOException {
+    void uploadWhenPathIsInvalid() throws IOException {
         MultipartFile file = mock(MultipartFile.class);
+        String invalidPath = "invalid_path_format";
 
-        ResponseEntity<Map<String, Object>> response = restUploadFileController.upload(file, "invalid_path_format");
+        RuntimeException exception = assertThrows(
+                PathParamException.class,
+                () -> restUploadFileController.upload(file, invalidPath)
+        );
 
-        assertNotNull(response);
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals("path is invalid", response.getBody().get("message"));
+        Assertions.assertEquals("path is invalid", exception.getMessage());
+        Assertions.assertInstanceOf(PathParamException.class, exception);
     }
 }
