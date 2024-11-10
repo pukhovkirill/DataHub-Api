@@ -2,7 +2,7 @@ package com.pukhovkirill.datahub.infrastructure.gateway.controller;
 
 import java.util.Map;
 
-import com.pukhovkirill.datahub.infrastructure.gateway.dto.GatewayCredentials;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,6 +11,7 @@ import com.pukhovkirill.datahub.entity.gateway.StorageGateway;
 import com.pukhovkirill.datahub.infrastructure.external.SftpManager;
 import com.pukhovkirill.datahub.infrastructure.gateway.repository.SftpGatewayImpl;
 import com.pukhovkirill.datahub.infrastructure.gateway.service.OngoingGatewayService;
+import com.pukhovkirill.datahub.infrastructure.gateway.dto.GatewayCredentials;
 
 @RestController
 public class RestRegisterSftpGatewayController extends RestRegisterGatewayController{
@@ -20,7 +21,7 @@ public class RestRegisterSftpGatewayController extends RestRegisterGatewayContro
     }
 
     @RequestMapping(value = "api/gateways/sftp", method = RequestMethod.POST)
-    public ResponseEntity<Map<String, Object>> registerSftp(@RequestBody GatewayCredentials credentials) {
+    public ResponseEntity<Map<String, Object>> registerSftp(@RequestBody @Valid GatewayCredentials credentials) {
         return register(credentials);
     }
 

@@ -2,7 +2,7 @@ package com.pukhovkirill.datahub.infrastructure.gateway.controller;
 
 import java.util.Map;
 
-import com.pukhovkirill.datahub.infrastructure.gateway.dto.GatewayCredentials;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,6 +11,7 @@ import com.pukhovkirill.datahub.entity.gateway.StorageGateway;
 import com.pukhovkirill.datahub.infrastructure.external.FtpManager;
 import com.pukhovkirill.datahub.infrastructure.gateway.repository.FtpGatewayImpl;
 import com.pukhovkirill.datahub.infrastructure.gateway.service.OngoingGatewayService;
+import com.pukhovkirill.datahub.infrastructure.gateway.dto.GatewayCredentials;
 
 @RestController
 public class RestRegisterFtpGatewayController extends RestRegisterGatewayController {
@@ -20,7 +21,7 @@ public class RestRegisterFtpGatewayController extends RestRegisterGatewayControl
     }
 
     @RequestMapping(value = "api/gateways/ftp", method = RequestMethod.POST)
-    public ResponseEntity<Map<String, Object>> registerFtp(@RequestBody GatewayCredentials credentials) {
+    public ResponseEntity<Map<String, Object>> registerFtp(@RequestBody @Valid GatewayCredentials credentials) {
         return register(credentials);
     }
 

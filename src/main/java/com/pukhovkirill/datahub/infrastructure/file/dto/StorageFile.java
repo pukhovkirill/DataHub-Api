@@ -3,12 +3,15 @@ package com.pukhovkirill.datahub.infrastructure.file.dto;
 import java.sql.Timestamp;
 import java.util.Objects;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.AllArgsConstructor;
 
-import com.pukhovkirill.datahub.infrastructure.file.validator.valid.ValidFileSize;
 import com.pukhovkirill.datahub.infrastructure.file.validator.valid.ValidFilename;
 import com.pukhovkirill.datahub.infrastructure.file.validator.valid.ValidFilepath;
 
@@ -20,17 +23,22 @@ import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
 @AllArgsConstructor
 public class StorageFile implements StorageEntityDto {
 
+    @NotNull(message = "name is null")
     @ValidFilename
     private String name;
 
+    @NotNull(message = "path is null")
     @ValidFilepath
     private String path;
 
+    @NotNull(message = "contentType is null")
+    @NotEmpty(message = "contentType is empty")
+    @NotBlank(message = "contentType is empty")
     private String contentType;
 
     private Timestamp lastModified;
 
-    @ValidFileSize
+    @Size
     private long size;
 
     private String location;
