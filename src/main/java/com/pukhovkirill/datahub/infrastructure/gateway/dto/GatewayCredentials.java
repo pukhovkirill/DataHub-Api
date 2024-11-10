@@ -1,9 +1,6 @@
 package com.pukhovkirill.datahub.infrastructure.gateway.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,7 +27,8 @@ public class GatewayCredentials {
     @NotBlank(message = "server is empty")
     private String server;
 
-    @Size(max = 65535)
+    @Min(value = 0, message = "port out of range")
+    @Max(value = 65535, message = "port out of range")
     private int port;
 
     @NotNull
