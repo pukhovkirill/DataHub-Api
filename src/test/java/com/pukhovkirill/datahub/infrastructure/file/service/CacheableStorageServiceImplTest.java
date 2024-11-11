@@ -65,7 +65,7 @@ public class CacheableStorageServiceImplTest {
         cacheableStorageService.uploadTo("internal", entity, bais);
 
         verify(uploadUseCase, times(1)).upload(entity, bais);
-        verify(cache, times(1)).saveToCache(name, entity);
+        verify(cache, times(1)).saveToCache(entity);
     }
 
     @Test
@@ -93,7 +93,7 @@ public class CacheableStorageServiceImplTest {
         cacheableStorageService.uploadTo(location, entity, bais);
 
         verify(uploadUseCase, times(1)).upload(entity, bais);
-        verify(cache, times(1)).saveToCache(mockEntity.getName()+"(1)", entity);
+        verify(cache, times(1)).saveToCache(entity);
     }
 
     @Test

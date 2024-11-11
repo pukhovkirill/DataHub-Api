@@ -30,7 +30,7 @@ public class StorageEntitiesCacheImpl implements StorageEntitiesCache {
     }
 
     @Override
-    public void saveToCache(String key, StorageEntityDto value) {
+    public void saveToCache(StorageEntityDto value) {
 
     }
 

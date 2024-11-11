@@ -55,7 +55,7 @@ public class CacheableStorageServiceImpl implements StorageService {
             );
 
             uploadUseCase.upload(entity, bais);
-            cache.saveToCache(entity.getName(), entity);
+            cache.saveToCache(entity);
         }catch (Exception e){
             throw new RuntimeException(e);
         }

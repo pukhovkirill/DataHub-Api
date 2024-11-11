@@ -31,7 +31,7 @@ public class StorageEntitiesTireCacheImpl implements StorageEntitiesCache {
     }
 
     @Override
-    public void saveToCache(String key, StorageEntityDto value) {
+    public void saveToCache(StorageEntityDto value) {
         cache.add(value);
     }
 
