@@ -1,5 +1,7 @@
 package com.pukhovkirill.datahub.infrastructure.config.usecase;
 
+import com.pukhovkirill.datahub.usecase.listingStorageEntityCase.ListStorageEntity;
+import com.pukhovkirill.datahub.usecase.listingStorageEntityCase.ListStorageEntityImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -10,8 +12,8 @@ import com.pukhovkirill.datahub.usecase.deleteStorageEntityCase.DeleteStorageEnt
 import com.pukhovkirill.datahub.usecase.deleteStorageEntityCase.DeleteStorageEntityImpl;
 import com.pukhovkirill.datahub.usecase.downloadStorageEntityCase.DownloadStorageEntity;
 import com.pukhovkirill.datahub.usecase.downloadStorageEntityCase.DownloadStorageEntityImpl;
-import com.pukhovkirill.datahub.usecase.listingStorageEntityCase.search.StorageEntitySearch;
-import com.pukhovkirill.datahub.usecase.listingStorageEntityCase.search.StorageEntitySearchImpl;
+import com.pukhovkirill.datahub.usecase.searchStorageEntityCase.search.StorageEntitySearch;
+import com.pukhovkirill.datahub.usecase.searchStorageEntityCase.search.StorageEntitySearchImpl;
 import com.pukhovkirill.datahub.usecase.uploadStorageEntityCase.UploadStorageEntity;
 import com.pukhovkirill.datahub.usecase.uploadStorageEntityCase.UploadStorageEntityImpl;
 
@@ -34,6 +36,12 @@ public class CommonUseCaseConfig {
     @Scope("prototype")
     public DeleteStorageEntity externalDeleteFileUseCase(StorageGateway gateway){
         return new DeleteStorageEntityImpl(gateway);
+    }
+
+    @Bean
+    @Scope("prototype")
+    public ListStorageEntity externalListFileUseCase(StorageGateway gateway){
+        return new ListStorageEntityImpl(gateway);
     }
 
     @Bean

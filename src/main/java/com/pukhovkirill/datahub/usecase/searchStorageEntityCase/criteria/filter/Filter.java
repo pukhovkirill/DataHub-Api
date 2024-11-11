@@ -1,4 +1,4 @@
-package com.pukhovkirill.datahub.usecase.listingStorageEntityCase.criteria.filter;
+package com.pukhovkirill.datahub.usecase.searchStorageEntityCase.criteria.filter;
 
 import java.util.Collection;
 
