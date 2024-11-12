@@ -1,9 +1,11 @@
 package com.pukhovkirill.datahub.common.initial;
 
-import com.pukhovkirill.datahub.common.service.StorageIndexingService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+
+import com.pukhovkirill.datahub.common.service.StorageIndexingService;
+
 @Component
 public class CachePrimingRunner implements CommandLineRunner {
 
