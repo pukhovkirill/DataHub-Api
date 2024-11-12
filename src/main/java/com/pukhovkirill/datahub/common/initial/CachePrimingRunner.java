@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import com.pukhovkirill.datahub.common.service.StorageIndexingService;
 
+@Order(2)
 @Component
 public class CachePrimingRunner implements CommandLineRunner {
 
@@ -15,7 +16,6 @@ public class CachePrimingRunner implements CommandLineRunner {
         this.indexingService = indexingService;
     }
 
-    @Order(10)
     @Override
     public void run(String... args) {
         indexingService.indexing();

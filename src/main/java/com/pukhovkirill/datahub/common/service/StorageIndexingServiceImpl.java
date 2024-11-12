@@ -33,6 +33,9 @@ public class StorageIndexingServiceImpl implements StorageIndexingService {
     public void indexing() {
         try{
             for(String location : ongoingGateways.list()){
+                if(location.equals("internal"))
+                    continue;
+
                 var listUseCase = beanFactory.getBean(
                         ListStorageEntity.class,
                         ongoingGateways.get(location)

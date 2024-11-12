@@ -12,6 +12,7 @@ import com.pukhovkirill.datahub.infrastructure.gateway.service.OngoingGatewaySer
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+@Order(1)
 @Component
 public class GatewayReconnectRunner implements CommandLineRunner {
 
@@ -24,7 +25,6 @@ public class GatewayReconnectRunner implements CommandLineRunner {
         this.beanFactory = beanFactory;
     }
 
-    @Order(5)
     @Override
     public void run(String... args) {
         List<GatewayCredentials> gateways = CredentialsSaver.loadCredentials();
