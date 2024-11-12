@@ -2,16 +2,11 @@ package com.pukhovkirill.datahub.infrastructure.cache;
 
 import java.util.Collection;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
-
 import com.pukhovkirill.datahub.infrastructure.collection.StorageEntityArrayTire;
 import com.pukhovkirill.datahub.infrastructure.collection.Tire;
 import com.pukhovkirill.datahub.usecase.cache.storageEntity.StorageEntitiesCache;
 import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
 
-@Service
-@Scope("prototype")
 public class StorageEntitiesTireCacheImpl implements StorageEntitiesCache {
 
     private static final Tire<StorageEntityDto> cache;
@@ -49,7 +44,7 @@ public class StorageEntitiesTireCacheImpl implements StorageEntitiesCache {
     @Override
     public boolean hasInCache(StorageEntityDto key) {
         var results = cache.findFuzzy(key.getName());
-        return !results.isEmpty();
+        return !results.isEmpty() && results.contains(key);
     }
 
     @Override

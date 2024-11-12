@@ -3,14 +3,9 @@ package com.pukhovkirill.datahub.infrastructure.cache;
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
-
 import com.pukhovkirill.datahub.usecase.cache.storageEntity.StorageEntitiesCache;
 import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
 
-@Service
-@Scope("prototype")
 public class StorageEntitiesCacheImpl implements StorageEntitiesCache {
 
     private static final CopyOnWriteArrayList<StorageEntityDto> cache;

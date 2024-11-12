@@ -39,9 +39,7 @@ public class CacheableStorageServiceImpl implements StorageService {
     @Override
     public void uploadTo(String location, StorageEntityDto entity, ByteArrayInputStream bais) {
         try{
-            var optEntity = find(entity);
-
-            if(optEntity.isPresent()){
+            if(cache.hasInCache(entity)){
                 entity.setPath(StringHelper.generateUniqueFilename(entity.getPath()));
                 entity.setName(StringHelper.extractName(entity.getPath()));
 
@@ -99,10 +97,6 @@ public class CacheableStorageServiceImpl implements StorageService {
         }catch (Exception e){
             throw new RuntimeException(e);
         }
-    }
-
-    private Optional<StorageEntityDto> find(StorageEntityDto entity){
-        return find(entity.getLocation(), entity.getPath());
     }
 
     private Optional<StorageEntityDto> find(String location, String path){
