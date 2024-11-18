@@ -2,30 +2,28 @@ package com.pukhovkirill.datahub.infrastructure.file.service;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.sql.Timestamp;
 import java.util.Optional;
 
 import org.springframework.beans.factory.BeanFactory;
 
-import com.pukhovkirill.datahub.util.StringHelper;
+import com.pukhovkirill.datahub.infrastructure.file.dto.StorageFile;
 import com.pukhovkirill.datahub.infrastructure.gateway.service.OngoingGatewayService;
-import com.pukhovkirill.datahub.usecase.cache.storageEntity.StorageEntitiesCache;
 import com.pukhovkirill.datahub.usecase.deleteStorageEntityCase.DeleteStorageEntity;
 import com.pukhovkirill.datahub.usecase.downloadStorageEntityCase.DownloadStorageEntity;
 import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
+import com.pukhovkirill.datahub.usecase.listingStorageEntityCase.ListStorageEntity;
 import com.pukhovkirill.datahub.usecase.uploadStorageEntityCase.UploadStorageEntity;
+import com.pukhovkirill.datahub.util.StringHelper;
 
-public class CacheableStorageServiceImpl implements StorageService {
+public class DefaultStorageServiceImpl implements StorageService {
 
     private final BeanFactory beanFactory;
 
-    private final StorageEntitiesCache cache;
-
     private final OngoingGatewayService ongoingGateways;
 
-    public CacheableStorageServiceImpl(StorageEntitiesCache cache,
-                                       OngoingGatewayService gateways,
-                                       BeanFactory factory){
-        this.cache = cache;
+    public DefaultStorageServiceImpl(OngoingGatewayService gateways,
+                                     BeanFactory factory){
         this.ongoingGateways = gateways;
         this.beanFactory = factory;
     }
@@ -33,7 +31,8 @@ public class CacheableStorageServiceImpl implements StorageService {
     @Override
     public void uploadTo(String location, StorageEntityDto entity, ByteArrayInputStream bais) {
         try{
-            if(cache.hasInCache(entity)){
+            var optEntity = find(location, entity.getPath());
+            if(optEntity.isPresent()){
                 entity.setPath(StringHelper.generateUniqueFilename(entity.getPath()));
                 entity.setName(StringHelper.extractName(entity.getPath()));
 
@@ -47,7 +46,6 @@ public class CacheableStorageServiceImpl implements StorageService {
             );
 
             uploadUseCase.upload(entity, bais);
-            cache.saveToCache(entity);
         }catch (Exception e){
             throw new RuntimeException(e);
         }
@@ -68,7 +66,6 @@ public class CacheableStorageServiceImpl implements StorageService {
             );
 
             deleteUseCase.delete(optEntity.get());
-            cache.removeFromCache(optEntity.get());
         }catch (Exception e){
             throw new RuntimeException(e);
         }
@@ -94,14 +91,35 @@ public class CacheableStorageServiceImpl implements StorageService {
     }
 
     private Optional<StorageEntityDto> find(String location, String path){
-        var results = cache.getFromCache(StringHelper.extractName(path));
+        StorageEntityDto storageEntityDto = null;
 
-        for(var result : results){
-            if(result.getLocation().equals(location) && result.getPath().equals(path)){
-                return Optional.of(result);
+        try{
+            var listUseCase = beanFactory.getBean(
+                    ListStorageEntity.class,
+                    ongoingGateways.get(location)
+            );
+
+            var results = listUseCase.list();
+
+            for(var result : results){
+                if(result.getPath().equals(path)){
+                    storageEntityDto = StorageFile.builder()
+                            .name(result.getName())
+                            .path(result.getPath())
+                            .contentType(result.getContentType())
+                            .lastModified(result.getLastModified() != null
+                                    ? (Timestamp) result.getLastModified().clone()
+                                    : null)
+                            .size(result.getSize())
+                            .location(location).build();
+                    break;
+                }
             }
+
+        }catch (Exception e){
+            throw new RuntimeException(e);
         }
 
-        return Optional.empty();
+        return Optional.ofNullable(storageEntityDto);
     }
 }

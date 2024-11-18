@@ -5,16 +5,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
 
 import com.pukhovkirill.datahub.infrastructure.file.dto.StorageFile;
 import com.pukhovkirill.datahub.infrastructure.gateway.service.OngoingGatewayService;
 import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
 import com.pukhovkirill.datahub.usecase.listingStorageEntityCase.ListStorageEntity;
 
-@Service
-@Scope("prototype")
 public class SearchServiceImpl implements SearchService {
 
     private final BeanFactory beanFactory;

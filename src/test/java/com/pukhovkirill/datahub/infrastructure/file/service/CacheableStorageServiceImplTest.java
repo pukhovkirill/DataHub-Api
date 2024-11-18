@@ -4,9 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Collections;
 
-import com.pukhovkirill.datahub.infrastructure.file.dto.StorageFile;
-import com.pukhovkirill.datahub.infrastructure.gateway.service.OngoingGatewayService;
-import com.pukhovkirill.datahub.util.StringHelper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,8 +17,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import com.pukhovkirill.datahub.infrastructure.cache.StorageEntitiesCacheImpl;
+import com.pukhovkirill.datahub.infrastructure.file.dto.StorageFile;
+import com.pukhovkirill.datahub.infrastructure.gateway.service.OngoingGatewayService;
+import com.pukhovkirill.datahub.util.StringHelper;
 import com.pukhovkirill.datahub.infrastructure.gateway.repository.MinioGatewayImpl;
-import com.pukhovkirill.datahub.usecase.cache.storageEntity.StorageEntitiesCache;
 import com.pukhovkirill.datahub.usecase.deleteStorageEntityCase.DeleteStorageEntity;
 import com.pukhovkirill.datahub.usecase.downloadStorageEntityCase.DownloadStorageEntity;
 import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
@@ -30,7 +30,7 @@ import com.pukhovkirill.datahub.usecase.uploadStorageEntityCase.UploadStorageEnt
 public class CacheableStorageServiceImplTest {
 
     @Mock
-    private StorageEntitiesCache cache;
+    private StorageEntitiesCacheImpl cache;
 
     @Mock
     private OngoingGatewayService ongoingGateways;
@@ -44,7 +44,7 @@ public class CacheableStorageServiceImplTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        cache = mock(StorageEntitiesCache.class);
+        cache = mock(StorageEntitiesCacheImpl.class);
         ongoingGateways = mock(OngoingGatewayService.class);
         beanFactory = mock(BeanFactory.class);
         cacheableStorageService = new CacheableStorageServiceImpl(cache, ongoingGateways, beanFactory);
