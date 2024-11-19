@@ -74,8 +74,16 @@ public class SftpGatewayImpl implements StorageGateway, Closeable {
             var files = client.ls(client.pwd());
             client.exit();
             for (ChannelSftp.LsEntry file : files) {
-                var entity = findByPath(file.getLongname());
-                entity.ifPresent(entities::add);
+                SftpATTRS fileInfo = client.lstat(file.getLongname());
+
+                var entity = factory.restore(
+                        file.getLongname(),
+                        new Timestamp((long) fileInfo.getATime() * 1000),
+                        fileInfo.getSize(),
+                        new byte[] { }
+                );
+
+                entities.add(entity);
             }
         }catch(JSchException | SftpException e){
             throw new RuntimeException("Error finding file", e);

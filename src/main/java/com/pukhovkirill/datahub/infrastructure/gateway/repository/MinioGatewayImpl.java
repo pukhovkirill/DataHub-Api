@@ -81,9 +81,14 @@ public class MinioGatewayImpl implements StorageGateway {
             for(Result<Item> result : results) {
                 var item = result.get();
 
-                var entity = findByPath(item.objectName());
+                var entity = factory.restore(
+                        item.objectName(),
+                        toTimestamp(item.lastModified()),
+                        item.size(),
+                        new byte[] { }
+                );
 
-                entity.ifPresent(entities::add);
+                entities.add(entity);
             }
 
         }catch (MinioException e){
@@ -124,7 +129,7 @@ public class MinioGatewayImpl implements StorageGateway {
                 baos.write(buff, 0, count);
             }
 
-            var entity = factory.restore(
+            StorageEntity entity = factory.restore(
                     path,
                     toTimestamp(item.lastModified()),
                     item.size(),

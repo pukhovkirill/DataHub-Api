@@ -21,10 +21,9 @@ public class ListStorageEntityImpl implements ListStorageEntity {
         try{
             var results = gateway.findAll();
 
-            for (var result : results) {
-                result.setData(new byte[]{});
+            for (var result : results)
                 entities.add(result);
-            }
+
         }catch (Exception e){
             throw new RuntimeException(e);
         }

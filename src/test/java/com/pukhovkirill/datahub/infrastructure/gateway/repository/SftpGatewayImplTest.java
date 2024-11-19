@@ -5,7 +5,6 @@ import java.sql.Timestamp;
 import java.util.*;
 
 import com.pukhovkirill.datahub.infrastructure.external.SftpManager;
-import com.pukhovkirill.datahub.infrastructure.gateway.repository.SftpGatewayImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

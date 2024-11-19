@@ -64,9 +64,16 @@ public class FtpGatewayImpl implements StorageGateway, Closeable {
         try{
             FTPFile[] files = client.listFiles();
             for (FTPFile file : files) {
-                var entity = findByPath(file.getName());
+                FTPFile fileInfo = client.mlistFile(file.getName());
 
-                entity.ifPresent(entities::add);
+                var entity = factory.restore(
+                        file.getName(),
+                        new Timestamp(fileInfo.getTimestamp().getTimeInMillis()),
+                        fileInfo.getSize(),
+                        new byte[] { }
+                );
+
+                entities.add(entity);
             }
         }catch(Exception e){
             throw new RuntimeException(e);
