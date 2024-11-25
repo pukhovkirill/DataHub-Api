@@ -17,7 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import com.pukhovkirill.datahub.infrastructure.cache.StorageEntitiesCacheImpl;
 import com.pukhovkirill.datahub.infrastructure.file.dto.StorageFile;
 import com.pukhovkirill.datahub.infrastructure.gateway.service.OngoingGatewayService;
 import com.pukhovkirill.datahub.util.StringHelper;
@@ -26,11 +25,12 @@ import com.pukhovkirill.datahub.usecase.deleteStorageEntityCase.DeleteStorageEnt
 import com.pukhovkirill.datahub.usecase.downloadStorageEntityCase.DownloadStorageEntity;
 import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
 import com.pukhovkirill.datahub.usecase.uploadStorageEntityCase.UploadStorageEntity;
+import com.pukhovkirill.datahub.infrastructure.cache.StorageEntitiesTireCacheImpl;
 
 public class CacheableStorageServiceImplTest {
 
     @Mock
-    private StorageEntitiesCacheImpl cache;
+    private StorageEntitiesTireCacheImpl cache;
 
     @Mock
     private OngoingGatewayService ongoingGateways;
@@ -44,7 +44,7 @@ public class CacheableStorageServiceImplTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        cache = mock(StorageEntitiesCacheImpl.class);
+        cache = mock(StorageEntitiesTireCacheImpl.class);
         ongoingGateways = mock(OngoingGatewayService.class);
         beanFactory = mock(BeanFactory.class);
         cacheableStorageService = new CacheableStorageServiceImpl(cache, ongoingGateways, beanFactory);

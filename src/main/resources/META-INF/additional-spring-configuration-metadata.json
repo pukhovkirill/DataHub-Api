@@ -21,7 +21,7 @@
     {
       "name": "minio.access-key",
       "type": "java.lang.String",
-      "description": "The access key used for authentication with the MinIO server. This acts like a username to access the server.",
+      "description": "The access key used for authentication with the MinIO server. This acts like a username to access the server."
     },
     {
       "name": "minio.secret-key",
@@ -51,6 +51,18 @@
       "type": "java.lang.String",
       "description": "The default bucket name where files will be stored in the MinIO server if no other bucket is specified.",
       "defaultValue": "default"
+    },
+    {
+      "name": "application.cache.enable",
+      "type": "java.lang.Boolean",
+      "description": "A flag to determine if cache is enable.",
+      "defaultValue": false
+    },
+    {
+      "name": "application.cache.type",
+      "type": "java.lang.String",
+      "description": "The type of data structure to cache. Should be 'TIRE' or 'LRU'.",
+      "defaultValue": "LRU"
     }
   ]
 }

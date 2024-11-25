@@ -7,13 +7,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
 import com.pukhovkirill.datahub.entity.gateway.StorageGateway;
-import com.pukhovkirill.datahub.usecase.cache.storageEntity.StorageEntitiesCache;
 import com.pukhovkirill.datahub.usecase.deleteStorageEntityCase.DeleteStorageEntity;
 import com.pukhovkirill.datahub.usecase.deleteStorageEntityCase.DeleteStorageEntityImpl;
 import com.pukhovkirill.datahub.usecase.downloadStorageEntityCase.DownloadStorageEntity;
 import com.pukhovkirill.datahub.usecase.downloadStorageEntityCase.DownloadStorageEntityImpl;
-import com.pukhovkirill.datahub.usecase.searchStorageEntityCase.search.StorageEntitySearch;
-import com.pukhovkirill.datahub.usecase.searchStorageEntityCase.search.StorageEntitySearchImpl;
 import com.pukhovkirill.datahub.usecase.uploadStorageEntityCase.UploadStorageEntity;
 import com.pukhovkirill.datahub.usecase.uploadStorageEntityCase.UploadStorageEntityImpl;
 
@@ -42,17 +39,5 @@ public class CommonUseCaseConfig {
     @Scope("prototype")
     public ListStorageEntity externalListFileUseCase(StorageGateway gateway){
         return new ListStorageEntityImpl(gateway);
-    }
-
-    @Bean
-    @Scope("prototype")
-    public StorageEntitySearch tireCacheSearchFileUseCase(StorageEntitiesCache cache){
-        return new StorageEntitySearchImpl(cache);
-    }
-
-    @Bean
-    @Scope("prototype")
-    public StorageEntitySearch defaultCacheSearchFileUseCase(StorageEntitiesCache cache){
-        return new StorageEntitySearchImpl(cache);
     }
 }

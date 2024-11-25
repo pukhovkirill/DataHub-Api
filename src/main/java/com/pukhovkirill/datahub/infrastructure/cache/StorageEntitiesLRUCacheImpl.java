@@ -1,27 +1,20 @@
 package com.pukhovkirill.datahub.infrastructure.cache;
 
-import java.util.Collection;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import com.pukhovkirill.datahub.usecase.cache.storageEntity.StorageEntitiesCache;
 import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
 
-public class StorageEntitiesCacheImpl implements StorageEntitiesCache {
+import java.util.Collection;
+import java.util.List;
 
-    private static final CopyOnWriteArrayList<StorageEntityDto> cache;
-
-    static{
-        cache = new CopyOnWriteArrayList<>();
-    }
-
+public class StorageEntitiesLRUCacheImpl implements StorageEntitiesCache {
     @Override
     public Collection<StorageEntityDto> getFromCache(String key) {
-        return null;
+        return List.of();
     }
 
     @Override
     public Collection<StorageEntityDto> getAllFromCache() {
-        return null;
+        return List.of();
     }
 
     @Override
