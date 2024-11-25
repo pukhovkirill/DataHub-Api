@@ -26,6 +26,7 @@ import com.pukhovkirill.datahub.usecase.downloadStorageEntityCase.DownloadStorag
 import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
 import com.pukhovkirill.datahub.usecase.uploadStorageEntityCase.UploadStorageEntity;
 import com.pukhovkirill.datahub.infrastructure.cache.StorageEntitiesTireCacheImpl;
+import com.pukhovkirill.datahub.usecase.listingStorageEntityCase.ListStorageEntity;
 
 public class CacheableStorageServiceImplTest {
 
@@ -120,6 +121,11 @@ public class CacheableStorageServiceImplTest {
         String path = "/path/to/name";
         when(cache.getFromCache(anyString())).thenReturn(Collections.emptyList());
 
+        ListStorageEntity listUseCase = mock(ListStorageEntity.class);
+        when(beanFactory.getBean(eq(ListStorageEntity.class), any())).thenReturn(listUseCase);
+
+        when(listUseCase.list()).thenReturn(Collections.emptyList());
+
         RuntimeException exception = assertThrows(
                 RuntimeException.class,
                 () -> cacheableStorageService.deleteFrom(location, path)
@@ -153,6 +159,11 @@ public class CacheableStorageServiceImplTest {
         String location = "internal";
         String path = "/path/to/name";
         when(cache.getFromCache(anyString())).thenReturn(Collections.emptyList());
+
+        ListStorageEntity listUseCase = mock(ListStorageEntity.class);
+        when(beanFactory.getBean(eq(ListStorageEntity.class), any())).thenReturn(listUseCase);
+
+        when(listUseCase.list()).thenReturn(Collections.emptyList());
 
         RuntimeException exception = assertThrows(
                 RuntimeException.class,

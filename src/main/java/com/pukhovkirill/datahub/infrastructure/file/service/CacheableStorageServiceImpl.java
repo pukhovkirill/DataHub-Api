@@ -2,6 +2,7 @@ package com.pukhovkirill.datahub.infrastructure.file.service;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.sql.Timestamp;
 import java.util.Optional;
 
 import org.springframework.beans.factory.BeanFactory;
@@ -13,6 +14,8 @@ import com.pukhovkirill.datahub.usecase.deleteStorageEntityCase.DeleteStorageEnt
 import com.pukhovkirill.datahub.usecase.downloadStorageEntityCase.DownloadStorageEntity;
 import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
 import com.pukhovkirill.datahub.usecase.uploadStorageEntityCase.UploadStorageEntity;
+import com.pukhovkirill.datahub.infrastructure.file.dto.StorageFile;
+import com.pukhovkirill.datahub.usecase.listingStorageEntityCase.ListStorageEntity;
 
 public class CacheableStorageServiceImpl implements StorageService {
 
@@ -94,14 +97,41 @@ public class CacheableStorageServiceImpl implements StorageService {
     }
 
     private Optional<StorageEntityDto> find(String location, String path){
-        var results = cache.getFromCache(StringHelper.extractName(path));
+        StorageEntityDto storageEntityDto = null;
+        try{
+            var cacheHits = cache.getFromCache(StringHelper.extractName(path));
 
-        for(var result : results){
-            if(result.getLocation().equals(location) && result.getPath().equals(path)){
-                return Optional.of(result);
+            for(var hit : cacheHits){
+                if(hit.getLocation().equals(location) && hit.getPath().equals(path)){
+                    return Optional.of(hit);
+                }
             }
+
+            var listUseCase = beanFactory.getBean(
+                    ListStorageEntity.class,
+                    ongoingGateways.get(location)
+            );
+
+            var results = listUseCase.list();
+
+            for(var result : results){
+                if(result.getPath().equals(path)){
+                    storageEntityDto = StorageFile.builder()
+                            .name(result.getName())
+                            .path(result.getPath())
+                            .contentType(result.getContentType())
+                            .lastModified(result.getLastModified() != null
+                                    ? (Timestamp) result.getLastModified().clone()
+                                    : null)
+                            .size(result.getSize())
+                            .location(location).build();
+                    break;
+                }
+            }
+        }catch (Exception e){
+            throw new RuntimeException(e);
         }
 
-        return Optional.empty();
+        return Optional.ofNullable(storageEntityDto);
     }
 }
