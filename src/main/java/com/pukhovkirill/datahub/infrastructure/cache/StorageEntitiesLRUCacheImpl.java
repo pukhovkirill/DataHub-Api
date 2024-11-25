@@ -11,7 +11,7 @@ import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
 
 public class StorageEntitiesLRUCacheImpl implements StorageEntitiesCache {
 
-    private static final ConcurrentMap<String, StorageEntityDto> entityByName;
+    private static final ConcurrentMap<String, List<StorageEntityDto>> entityByName;
 
     private static final List<StorageEntityDto> cache;
 
@@ -39,11 +39,14 @@ public class StorageEntitiesLRUCacheImpl implements StorageEntitiesCache {
 
         acquireWriteLock();
         try {
-            StorageEntityDto entity;
-            if((entity = entityByName.get(key)) != null){
-                cache.remove(entity);
-                cache.addFirst(entity);
-                result.add(entity.clone());
+            List<StorageEntityDto> entities;
+
+            if(!(entities = entityByName.get(key)).isEmpty()){
+                for(StorageEntityDto entity : entities){
+                    cache.remove(entity);
+                    cache.addFirst(entity);
+                    result.add(entity.clone());
+                }
             }
         }finally {
             releaseWriteLock();
@@ -74,15 +77,17 @@ public class StorageEntitiesLRUCacheImpl implements StorageEntitiesCache {
         try{
             StorageEntityDto entity = value.clone();
 
-            if(entityByName.containsKey(entity.getName()))
-                return;
-
-            if(cache.size() >= capacity){
-                cache.removeLast();
+            if(cache.size() == capacity){
+                removeFromCache(cache.getLast());
             }
 
-            cache.addFirst(entity);
-            entityByName.put(entity.getName(), entity);
+            var list = entityByName.getOrDefault(entity.getName(), new ArrayList<>());
+            if(!list.contains(entity)){
+                list.add(entity);
+                entityByName.put(entity.getName(), list);
+            }
+
+            cache.addFirst(value);
         }finally {
             releaseWriteLock();
         }
@@ -92,11 +97,19 @@ public class StorageEntitiesLRUCacheImpl implements StorageEntitiesCache {
     public void removeFromCache(StorageEntityDto key) {
         acquireWriteLock();
         try{
-            if(entityByName.containsKey(key.getName())){
-                var entity = entityByName.get(key.getName());
-                cache.remove(entity);
-                entityByName.remove(key.getName());
+            StorageEntityDto entity = key.clone();
+
+            var list = entityByName.get(entity.getName());
+            if(list.contains(entity)){
+                list.remove(entity);
+                if(list.isEmpty()){
+                    entityByName.remove(entity.getName());
+                }else{
+                    entityByName.put(entity.getName(), list);
+                }
             }
+
+            cache.remove(entity);
         }finally {
             releaseWriteLock();
         }
@@ -106,7 +119,8 @@ public class StorageEntitiesLRUCacheImpl implements StorageEntitiesCache {
     public boolean hasInCache(StorageEntityDto key) {
         acquireWriteLock();
         try{
-            if(entityByName.containsValue(key))
+            var list = entityByName.get(key.getName());
+            if(list != null && list.contains(key))
                 return true;
         }finally {
             releaseWriteLock();
