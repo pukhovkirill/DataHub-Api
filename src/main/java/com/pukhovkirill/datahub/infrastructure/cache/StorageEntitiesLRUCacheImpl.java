@@ -15,14 +15,17 @@ public class StorageEntitiesLRUCacheImpl implements StorageEntitiesCache {
 
     private static final List<StorageEntityDto> cache;
 
-    private static final int capacity;
+    private final int capacity;
 
     private final Lock writeLock = new ReentrantLock();
 
     static{
-        capacity = 256;
         entityByName = new ConcurrentHashMap<>();
         cache = Collections.synchronizedList(new LinkedList<>());
+    }
+
+    public StorageEntitiesLRUCacheImpl(int capacity) {
+        this.capacity = capacity;
     }
 
     private void acquireWriteLock() {

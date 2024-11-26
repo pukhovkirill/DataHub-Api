@@ -63,6 +63,18 @@
       "type": "java.lang.String",
       "description": "The type of data structure to cache. Should be 'TIRE' or 'LRU'.",
       "defaultValue": "LRU"
+    },
+    {
+      "name": "application.cache.lru.capacity",
+      "type": "java.lang.Integer",
+      "description": "The capacity of cache.",
+      "defaultValue": 256
+    },
+    {
+      "name": "application.upload.tmp.dir",
+      "type": "java.lang.String",
+      "description": "The path to a directory for temporary storage of file chunks.",
+      "defaultValue": "/tmp/"
     }
   ]
 }

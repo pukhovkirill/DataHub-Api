@@ -46,7 +46,7 @@ class RestUploadFileControllerTest {
         when(file.getBytes()).thenReturn("file content".getBytes());
         when(file.getSize()).thenReturn((long) "file content".getBytes().length);
 
-        ResponseEntity<Map<String, Object>> response = restUploadFileController.upload(file, validPath);
+        ResponseEntity<Map<String, Object>> response = restUploadFileController.upload(file, validPath, -1, -1);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -63,7 +63,7 @@ class RestUploadFileControllerTest {
     void uploadWhenFileIsNull() {
         RuntimeException exception = assertThrows(
                 InvalidParamException.class,
-                () -> restUploadFileController.upload(null, "location:file.txt")
+                () -> restUploadFileController.upload(null, "location:file.txt", -1, -1)
         );
 
         Assertions.assertEquals("file is null", exception.getMessage());
@@ -78,7 +78,7 @@ class RestUploadFileControllerTest {
 
         RuntimeException exception = assertThrows(
                 InvalidParamException.class,
-                () -> restUploadFileController.upload(file, "location:file.txt")
+                () -> restUploadFileController.upload(file, "location:file.txt", -1, -1)
         );
 
         Assertions.assertEquals("file is empty", exception.getMessage());
@@ -91,7 +91,7 @@ class RestUploadFileControllerTest {
 
         RuntimeException exception = assertThrows(
                 InvalidParamException.class,
-                () -> restUploadFileController.upload(file, null)
+                () -> restUploadFileController.upload(file, null, -1, -1)
         );
 
         Assertions.assertEquals("path is null", exception.getMessage());
@@ -104,7 +104,7 @@ class RestUploadFileControllerTest {
 
         RuntimeException exception = assertThrows(
                 InvalidParamException.class,
-                () -> restUploadFileController.upload(file, "")
+                () -> restUploadFileController.upload(file, "", -1, -1)
         );
 
         Assertions.assertEquals("path is empty", exception.getMessage());
@@ -118,7 +118,7 @@ class RestUploadFileControllerTest {
 
         RuntimeException exception = assertThrows(
                 InvalidParamException.class,
-                () -> restUploadFileController.upload(file, invalidPath)
+                () -> restUploadFileController.upload(file, invalidPath, -1, -1)
         );
 
         Assertions.assertEquals("path is invalid", exception.getMessage());

@@ -15,11 +15,14 @@ public class CacheConfig {
     @Value("${application.cache.type}")
     private String type;
 
+    @Value("${application.cache.lru.capacity}")
+    private int capacity;
+
     @Bean
     @Scope("singleton")
     public StorageEntitiesCache storageEntitiesCache() {
         if(type.equals("LRU"))
-            return new StorageEntitiesLRUCacheImpl();
+            return new StorageEntitiesLRUCacheImpl(capacity);
 
         if(type.equals("TIRE"))
             return new StorageEntitiesTireCacheImpl();
