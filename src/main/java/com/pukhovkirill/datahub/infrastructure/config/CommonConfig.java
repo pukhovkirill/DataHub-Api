@@ -1,6 +1,5 @@
 package com.pukhovkirill.datahub.infrastructure.config;
 
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;

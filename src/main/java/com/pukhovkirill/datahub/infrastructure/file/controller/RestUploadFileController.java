@@ -10,7 +10,6 @@ import java.nio.file.StandardOpenOption;
 import java.sql.Timestamp;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,9 +22,6 @@ import com.pukhovkirill.datahub.infrastructure.file.exception.InvalidParamExcept
 
 @RestController
 public class RestUploadFileController extends RestFileController{
-
-    @Value("${application.upload.tmp.dir}")
-    private String UPLOAD_TMP_PATH;
 
     private final StorageService storageService;
     
@@ -79,24 +75,26 @@ public class RestUploadFileController extends RestFileController{
     }
 
     private ResponseEntity<Map<String, Object>> chunkedUpload(MultipartFile file, String path, int total, int chunk) throws IOException {
-        Path chunked = Paths.get(UPLOAD_TMP_PATH, StringHelper.extractName(path));
+        Path chunked = Paths.get(UPLOAD_TMP_PATH, StringHelper.extractName(path)+".part");
 
         if(chunk == 0 && total > 0){
             Files.deleteIfExists(chunked);
             Files.createFile(chunked);
+            Files.write(chunked, file.getBytes(), StandardOpenOption.APPEND);
         }else if(chunk > 0 && total > 0){
             Files.write(chunked, file.getBytes(), StandardOpenOption.APPEND);
 
-            if(chunk == total){
+            if(chunk == total - 1){
                 String location = path.split(":")[0];
                 String filepath = path.split(":")[1];
                 String filename = StringHelper.extractName(filepath);
+                long size = Files.size(chunked);
 
                 StorageFile storageFile = StorageFile.builder()
                         .name(filename)
                         .path(filepath)
                         .contentType(URLConnection.guessContentTypeFromName(filename))
-                        .size(file.getSize())
+                        .size(size)
                         .lastModified(new Timestamp(System.currentTimeMillis()))
                         .location(location)
                         .build();

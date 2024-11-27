@@ -75,6 +75,12 @@
       "type": "java.lang.String",
       "description": "The path to a directory for temporary storage of file chunks.",
       "defaultValue": "/tmp/"
+    },
+    {
+      "name": "application.request.chunk.size",
+      "type": "java.lang.Integer",
+      "description": "The number of bytes for single chunk.",
+      "defaultValue": 52428800
     }
   ]
 }

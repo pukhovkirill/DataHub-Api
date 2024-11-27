@@ -42,7 +42,7 @@ public class RestDownloadFileControllerTest {
 
         when(storageService.download(anyString(), anyString())).thenReturn(baos);
 
-        ResponseEntity<Map<String, Object>> response = restDownloadFileController.download(validPath);
+        ResponseEntity<Map<String, Object>> response = restDownloadFileController.download(validPath, -1, -1);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -55,7 +55,7 @@ public class RestDownloadFileControllerTest {
     public void downloadWhenPathIsNull() {
         RuntimeException exception = assertThrows(
                 InvalidParamException.class,
-                () -> restDownloadFileController.download(null)
+                () -> restDownloadFileController.download(null, -1, -1)
         );
 
         Assertions.assertEquals("path is null", exception.getMessage());
@@ -66,7 +66,7 @@ public class RestDownloadFileControllerTest {
     public void downloadWhenPathIsEmpty() {
         RuntimeException exception = assertThrows(
                 InvalidParamException.class,
-                () -> restDownloadFileController.download("")
+                () -> restDownloadFileController.download("", -1, -1)
         );
 
         Assertions.assertEquals("path is empty", exception.getMessage());
@@ -77,7 +77,7 @@ public class RestDownloadFileControllerTest {
     public void downloadWhenPathIsBlank() {
         RuntimeException exception = assertThrows(
                 InvalidParamException.class,
-                () -> restDownloadFileController.download("   ")
+                () -> restDownloadFileController.download("   ", -1, -1)
         );
 
         Assertions.assertEquals("path is empty", exception.getMessage());
@@ -90,7 +90,7 @@ public class RestDownloadFileControllerTest {
 
         RuntimeException exception = assertThrows(
                 InvalidParamException.class,
-                () -> restDownloadFileController.download(invalidPath)
+                () -> restDownloadFileController.download(invalidPath, -1, -1)
         );
 
         Assertions.assertEquals("path is invalid", exception.getMessage());
