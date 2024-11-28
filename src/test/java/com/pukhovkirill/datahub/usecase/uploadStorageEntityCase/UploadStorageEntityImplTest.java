@@ -11,23 +11,18 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import com.pukhovkirill.datahub.entity.factory.StorageEntityFactoryImpl;
 import com.pukhovkirill.datahub.entity.gateway.StorageGateway;
 import com.pukhovkirill.datahub.entity.model.StorageEntity;
-import com.pukhovkirill.datahub.infrastructure.file.dto.StorageFile;
 import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
 
 public class UploadStorageEntityImplTest {
-    @Mock
-    private StorageGateway storageGateway;
 
     @Mock
-    private StorageEntityFactoryImpl factory;
+    private StorageGateway storageGateway;
 
     @InjectMocks
     private UploadStorageEntityImpl uploadStorageEntity;
@@ -35,44 +30,78 @@ public class UploadStorageEntityImplTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        uploadStorageEntity = new UploadStorageEntityImpl(storageGateway);
-        ReflectionTestUtils.setField(uploadStorageEntity, "factory", factory);
     }
 
     @Test
     public void testUpload(){
-        StorageFile dto = StorageFile.builder()
-                .name("testFile.txt")
-                .path("/test/path")
-                .contentType("text/plain")
-                .location("/location")
-                .lastModified(new Timestamp(System.currentTimeMillis()))
-                .build();
+        StorageEntityDto storageEntity = mock(StorageEntityDto.class);
+        when(storageEntity.getName()).thenReturn("testFile.txt");
+        when(storageEntity.getPath()).thenReturn("/test/path/testFile.txt");
+        when(storageEntity.getContentType()).thenReturn("text/plain");
+        when(storageEntity.getLocation()).thenReturn("internal");
+        when(storageEntity.getLastModified()).thenReturn(new Timestamp(System.currentTimeMillis()));
 
-        byte[] data = "test data".getBytes();
-        ByteArrayInputStream bais = new ByteArrayInputStream(data);
+        ByteArrayInputStream bais = new ByteArrayInputStream("test data".getBytes());
 
-        StorageEntity storageEntity = mock(StorageEntity.class);
-        when(factory.create(anyString(), any())).thenReturn(storageEntity);
 
-        uploadStorageEntity.upload(dto, bais);
+        uploadStorageEntity.upload(storageEntity, bais);
 
-        verify(storageGateway).save(eq(storageEntity));
+
+        verify(storageGateway).save(any(StorageEntity.class));
     }
 
     @Test
-    public void testUploadWithIOException() throws IOException {
-        StorageEntityDto dto = mock(StorageFile.class);
-        ByteArrayInputStream bais = mock(ByteArrayInputStream.class);
+    public void testUploadWithIOException() {
+        StorageEntityDto storageEntity = mock(StorageEntityDto.class);
 
-        when(bais.read(any())).thenThrow(new RuntimeException(new IOException("Simulated IOException")));
+        ByteArrayInputStream bais = mock(ByteArrayInputStream.class);
+        doThrow(new IOException()).when(bais);
+
 
         RuntimeException exception = Assert.assertThrows(
                 RuntimeException.class,
-                () -> uploadStorageEntity.upload(dto, bais)
+                () -> uploadStorageEntity.upload(storageEntity, bais)
         );
 
+
+        Assertions.assertNotNull(exception);
         Assertions.assertNotNull(exception.getCause());
         Assertions.assertInstanceOf(IOException.class, exception.getCause());
+    }
+
+    @Test
+    public void testUploadWithNullPointerExceptionAndEmptyDto(){
+        StorageEntityDto storageEntity = null;
+
+        ByteArrayInputStream bais = new ByteArrayInputStream("test data".getBytes());
+
+
+        RuntimeException exception = Assert.assertThrows(
+                RuntimeException.class,
+                () -> uploadStorageEntity.upload(storageEntity, bais)
+        );
+
+
+        Assertions.assertNotNull(exception);
+        Assertions.assertNotNull(exception.getCause());
+        Assertions.assertInstanceOf(NullPointerException.class, exception.getCause());
+    }
+
+    @Test
+    public void testUploadWithNullPointerExceptionAndEmptyBais(){
+        StorageEntityDto storageEntity = mock(StorageEntityDto.class);
+
+        ByteArrayInputStream bais = null;
+
+
+        RuntimeException exception = Assert.assertThrows(
+                RuntimeException.class,
+                () -> uploadStorageEntity.upload(storageEntity, bais)
+        );
+
+
+        Assertions.assertNotNull(exception);
+        Assertions.assertNotNull(exception.getCause());
+        Assertions.assertInstanceOf(NullPointerException.class, exception.getCause());
     }
 }

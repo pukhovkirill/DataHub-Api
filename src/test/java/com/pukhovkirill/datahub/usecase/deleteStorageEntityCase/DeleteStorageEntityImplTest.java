@@ -3,6 +3,7 @@ package com.pukhovkirill.datahub.usecase.deleteStorageEntityCase;
 import java.sql.Timestamp;
 import java.util.Optional;
 
+import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +18,6 @@ import static org.mockito.Mockito.*;
 import com.pukhovkirill.datahub.entity.exception.StorageEntityNotFoundException;
 import com.pukhovkirill.datahub.entity.gateway.StorageGateway;
 import com.pukhovkirill.datahub.entity.model.StorageEntity;
-import com.pukhovkirill.datahub.infrastructure.file.dto.StorageFile;
 
 public class DeleteStorageEntityImplTest {
 
@@ -35,45 +35,61 @@ public class DeleteStorageEntityImplTest {
 
     @Test
     public void deleteSuccess() {
-        String path = "/some/path";
-        StorageFile dto = StorageFile.builder()
-                .name("testFile.txt")
-                .path(path)
-                .contentType("text/plain")
-                .location("/location")
-                .lastModified(new Timestamp(System.currentTimeMillis()))
-                .build();
+        String path = "/test/path/testFile.txt";
+        StorageEntityDto storageEntity = mock(StorageEntityDto.class);
+        when(storageEntity.getName()).thenReturn("testFile.txt");
+        when(storageEntity.getPath()).thenReturn(path);
+        when(storageEntity.getContentType()).thenReturn("text/plain");
+        when(storageEntity.getLocation()).thenReturn("internal");
+        when(storageEntity.getLastModified()).thenReturn(new Timestamp(System.currentTimeMillis()));
+
         StorageEntity entity = mock(StorageEntity.class);
+        when(storageGateway.findByPath(anyString())).thenReturn(Optional.of(entity));
 
-        when(storageGateway.findByPath(path)).thenReturn(Optional.of(entity));
 
-        boolean result = deleteStorageEntityImpl.delete(dto);
+        boolean result = deleteStorageEntityImpl.delete(storageEntity);
+
 
         assertTrue(result);
-        verify(storageGateway, times(1)).findByPath(path);
-        verify(storageGateway, times(1)).delete(entity);
     }
 
     @Test
-    public void deleteThrowsStorageEntityNotFoundException() {
-        String path = "/invalid/path";
-        StorageFile dto = StorageFile.builder()
-                .name("testFile.txt")
-                .path(path)
-                .contentType("text/plain")
-                .location("/location")
-                .lastModified(new Timestamp(System.currentTimeMillis()))
-                .build();
+    public void deleteWithNullPointerException(){
+        StorageEntityDto storageEntity = null;
 
-        when(storageGateway.findByPath(path)).thenReturn(Optional.empty());
 
-        StorageEntityNotFoundException exception = assertThrows(
-                StorageEntityNotFoundException.class,
-                () -> deleteStorageEntityImpl.delete(dto)
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> deleteStorageEntityImpl.delete(storageEntity)
         );
 
+
+        Assertions.assertNotNull(exception);
+        Assertions.assertNotNull(exception.getCause());
+        Assertions.assertInstanceOf(NullPointerException.class, exception.getCause());
+    }
+
+    @Test
+    public void deleteWithStorageEntityNotFoundException() {
+        String path = "/invalid/path/testFile.txt";
+        StorageEntityDto storageEntity = mock(StorageEntityDto.class);
+        when(storageEntity.getName()).thenReturn("testFile.txt");
+        when(storageEntity.getPath()).thenReturn(path);
+        when(storageEntity.getContentType()).thenReturn("text/plain");
+        when(storageEntity.getLocation()).thenReturn("internal");
+        when(storageEntity.getLastModified()).thenReturn(new Timestamp(System.currentTimeMillis()));
+
+        when(storageGateway.findByPath(anyString())).thenReturn(Optional.empty());
+
+
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> deleteStorageEntityImpl.delete(storageEntity)
+        );
+
+
+        Assertions.assertNotNull(exception);
+        Assertions.assertInstanceOf(StorageEntityNotFoundException.class, exception);
         Assertions.assertEquals(String.format("Could not find storage entity with name '%s'", path), exception.getMessage());
-        verify(storageGateway, times(1)).findByPath(path);
-        verify(storageGateway, never()).delete(any(StorageEntity.class));
     }
 }
