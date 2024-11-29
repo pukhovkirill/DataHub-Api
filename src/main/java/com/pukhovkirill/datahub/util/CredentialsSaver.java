@@ -17,10 +17,18 @@ import com.pukhovkirill.datahub.infrastructure.gateway.dto.GatewayCredentials;
 
 public class CredentialsSaver {
 
-    private static final String FILE_PATH = Paths.get("src", "main", "resources", "credentials.json").toString();
-    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private static final String FILE_PATH;
+    private static final Gson gson;
+    private volatile static CredentialsSaver instance;
 
-    public static void saveCredentials(GatewayCredentials credentials) {
+    static {
+        FILE_PATH = Paths.get("src", "main", "resources", "credentials.json").toString();
+        gson = new GsonBuilder().setPrettyPrinting().create();
+    }
+
+    private CredentialsSaver(){}
+
+    public synchronized void saveCredentials(GatewayCredentials credentials) {
         createFileIfNotExists();
 
         List<GatewayCredentials> credentialsList = loadCredentials();
@@ -33,7 +41,7 @@ public class CredentialsSaver {
         }
     }
 
-    public static List<GatewayCredentials> loadCredentials() {
+    public synchronized List<GatewayCredentials> loadCredentials() {
         createFileIfNotExists();
 
         List<GatewayCredentials> credentialsList;
@@ -46,7 +54,7 @@ public class CredentialsSaver {
         return credentialsList == null ? new ArrayList<>() : credentialsList;
     }
 
-    private static void createFileIfNotExists() {
+    private synchronized void createFileIfNotExists() {
         File file = new File(FILE_PATH);
         try {
             if(file.createNewFile())
@@ -54,6 +62,15 @@ public class CredentialsSaver {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static CredentialsSaver getInstance() {
+        if(instance == null){
+            synchronized (CredentialsSaver.class) {
+                instance = new CredentialsSaver();
+            }
+        }
+        return instance;
     }
 }
 

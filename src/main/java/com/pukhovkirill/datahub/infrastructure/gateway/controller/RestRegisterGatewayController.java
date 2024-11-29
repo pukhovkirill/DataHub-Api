@@ -25,7 +25,7 @@ public abstract class RestRegisterGatewayController {
     protected ResponseEntity<Map<String, Object>> register(GatewayCredentials credentials) {
         StorageGateway gateway = factory.create(credentials);
         ongoingGatewayService.register(credentials.getKey(), gateway);
-        CredentialsSaver.saveCredentials(credentials);
+        CredentialsSaver.getInstance().saveCredentials(credentials);
         return ResponseEntity.status(HttpStatus.OK).body(Map.of(
                 "timestamp", (new Timestamp(System.currentTimeMillis())).toString(),
                 "status", HttpStatus.OK.value()));

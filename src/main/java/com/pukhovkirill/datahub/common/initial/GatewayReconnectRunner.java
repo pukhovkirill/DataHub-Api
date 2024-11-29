@@ -27,7 +27,7 @@ public class GatewayReconnectRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        List<GatewayCredentials> gateways = CredentialsSaver.loadCredentials();
+        List<GatewayCredentials> gateways = CredentialsSaver.getInstance().loadCredentials();
 
         for (GatewayCredentials credentials : gateways) {
             var factory = beanFactory.getBean(

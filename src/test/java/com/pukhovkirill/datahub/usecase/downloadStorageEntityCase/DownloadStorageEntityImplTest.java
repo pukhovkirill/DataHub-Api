@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Optional;
 
-import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,8 +17,10 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import com.pukhovkirill.datahub.entity.exception.StorageEntityNotFoundException;
+import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
 import com.pukhovkirill.datahub.entity.gateway.StorageGateway;
 import com.pukhovkirill.datahub.entity.model.StorageEntity;
+
 
 public class DownloadStorageEntityImplTest {
 

@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 
 import com.pukhovkirill.datahub.infrastructure.file.service.StorageService;
 import com.pukhovkirill.datahub.infrastructure.file.exception.InvalidParamException;
+import org.springframework.test.util.ReflectionTestUtils;
 
 public class RestDownloadFileControllerTest {
 
@@ -32,6 +33,7 @@ public class RestDownloadFileControllerTest {
         MockitoAnnotations.openMocks(this);
         this.storageService = mock(StorageService.class);
         this.restDownloadFileController = new RestDownloadFileController(storageService);
+        ReflectionTestUtils.setField(restDownloadFileController, "CHUNK_SIZE", 52428800);
     }
 
     @Test
