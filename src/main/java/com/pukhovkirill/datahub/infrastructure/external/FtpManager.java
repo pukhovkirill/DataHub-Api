@@ -1,5 +1,6 @@
 package com.pukhovkirill.datahub.infrastructure.external;
 
+import com.pukhovkirill.datahub.infrastructure.gateway.exception.FailedServerLoginException;
 import com.pukhovkirill.datahub.infrastructure.gateway.exception.FailedToServerConnectException;
 import lombok.Getter;
 import org.apache.commons.net.ftp.FTP;
@@ -60,20 +61,15 @@ public class FtpManager {
 
 
                 if(!client.login(user, password)){
-                    throw new RuntimeException("FTP login failed");
+                    LOGGER.error("Failed to login to FTP server as {}", user);
+                    throw new FailedServerLoginException("FTP login failed", "ftp");
                 }
 
                 LOGGER.info("Logged in to FTP server as {}", user);
 
-                String disk = "";
-                if(client.printWorkingDirectory().equals("/")){
-                    disk = client.listNames()[0];
-                }
-                client.changeWorkingDirectory(disk);
                 if(!client.changeWorkingDirectory(workingDirectory)){
-                    if(!client.changeWorkingDirectory(disk)){
-                        LOGGER.info("Failed to change directory in {}", disk);
-                    }
+                    LOGGER.info("Failed to change directory in {}", workingDirectory);
+
                     if (!client.makeDirectory(workingDirectory)) {
                         throw new IOException(
                                 "Unable to create remote directory '" + workingDirectory + "'.  error='" + client.getReplyString()+"'"
