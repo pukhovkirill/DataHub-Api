@@ -59,7 +59,6 @@ public class FtpManager {
 
                 LOGGER.info("Connected to FTP server: {}:{}", server, port);
 
-
                 if(!client.login(user, password)){
                     LOGGER.error("Failed to login to FTP server as {}", user);
                     throw new FailedServerLoginException("FTP login failed", "ftp");

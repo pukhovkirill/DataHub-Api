@@ -14,6 +14,7 @@ import com.jcraft.jsch.SftpException;
 import com.pukhovkirill.datahub.infrastructure.exception.SFTPFileAlreadyExistsException;
 import com.pukhovkirill.datahub.infrastructure.exception.SFTPFileNotFoundException;
 import com.pukhovkirill.datahub.infrastructure.external.SftpManager;
+import com.pukhovkirill.datahub.infrastructure.gateway.exception.FailedToServerConnectException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -27,18 +28,19 @@ public class SftpGatewayImpl implements StorageGateway, Closeable {
 
     private final SftpManager manager;
 
-    private final ChannelSftp client;
-
     private final StorageEntityFactory factory;
+
+    private ChannelSftp client;
 
     public SftpGatewayImpl(SftpManager manager, StorageEntityFactory factory) {
         this.manager = manager;
-        this.client = manager.getClient();
         this.factory = factory;
+        this.client = manager.getClient();
     }
 
     @Override
     public long count() {
+        connectIfNotAlive();
         try {
             client.connect();
             var files = client.ls(client.pwd());
@@ -53,6 +55,7 @@ public class SftpGatewayImpl implements StorageGateway, Closeable {
 
     @Override
     public void delete(StorageEntity entity) {
+        connectIfNotAlive();
         try{
             client.connect();
 
@@ -68,6 +71,7 @@ public class SftpGatewayImpl implements StorageGateway, Closeable {
 
     @Override
     public Iterable<StorageEntity> findAll() {
+        connectIfNotAlive();
         List<StorageEntity> entities = new ArrayList<>();
         try{
             client.connect();
@@ -94,6 +98,7 @@ public class SftpGatewayImpl implements StorageGateway, Closeable {
 
     @Override
     public Optional<StorageEntity> findByPath(String path) {
+        connectIfNotAlive();
         try(ByteArrayOutputStream baos = new ByteArrayOutputStream()){
             client.connect();
 
@@ -120,6 +125,7 @@ public class SftpGatewayImpl implements StorageGateway, Closeable {
 
     @Override
     public StorageEntity save(StorageEntity entity) {
+        connectIfNotAlive();
         try(ByteArrayInputStream bais = new ByteArrayInputStream(entity.getData())){
             client.connect();
 
@@ -138,6 +144,7 @@ public class SftpGatewayImpl implements StorageGateway, Closeable {
 
     @Override
     public boolean existsByPath(String path) {
+        connectIfNotAlive();
         try{
             client.connect();
             var files = client.ls(client.pwd());
@@ -150,6 +157,16 @@ public class SftpGatewayImpl implements StorageGateway, Closeable {
             return false;
         }catch(Exception e){
             return false;
+        }
+    }
+
+    private void connectIfNotAlive(){
+        if(client == null || client.isClosed()){
+            throw new FailedToServerConnectException("Server not available", "sftp");
+        }
+        if(!client.isConnected()){
+            manager.connect();
+            client = manager.getClient();
         }
     }
 

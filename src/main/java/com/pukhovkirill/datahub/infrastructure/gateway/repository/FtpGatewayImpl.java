@@ -9,6 +9,7 @@ import java.util.Optional;
 import com.pukhovkirill.datahub.infrastructure.exception.FTPFileAlreadyExistsException;
 import com.pukhovkirill.datahub.infrastructure.exception.FTPFileNotFoundException;
 import com.pukhovkirill.datahub.infrastructure.external.FtpManager;
+import com.pukhovkirill.datahub.infrastructure.gateway.exception.FailedToServerConnectException;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.springframework.context.annotation.Scope;
@@ -143,7 +144,10 @@ public class FtpGatewayImpl implements StorageGateway, Closeable {
     }
 
     private void connectIfNotAlive(){
-        if(client != null && !client.isConnected()){
+        if(client == null || !client.isAvailable()){
+            throw new FailedToServerConnectException("Server not available", "ftp");
+        }
+        if(!client.isConnected()){
             manager.connect();
             client = manager.getClient();
         }

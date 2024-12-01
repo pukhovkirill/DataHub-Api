@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import java.util.Map;
 
 import com.pukhovkirill.datahub.infrastructure.gateway.exception.InvalidCredentialsException;
+import com.pukhovkirill.datahub.util.CredentialsSaver;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +32,7 @@ public class RestReleaseGatewayController {
             throw new InvalidCredentialsException("key is empty", HttpStatus.BAD_REQUEST);
 
         ongoingGatewayService.release(key);
+        CredentialsSaver.getInstance().removeCredentials(key);
         return ResponseEntity.status(HttpStatus.OK).body(Map.of(
                 "timestamp", (new Timestamp(System.currentTimeMillis())).toString(),
                 "status", HttpStatus.OK.value()));

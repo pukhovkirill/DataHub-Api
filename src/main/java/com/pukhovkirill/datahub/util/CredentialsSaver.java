@@ -41,6 +41,24 @@ public class CredentialsSaver {
         }
     }
 
+    public synchronized void removeCredentials(String key) {
+        createFileIfNotExists();
+
+        List<GatewayCredentials> credentialsList = loadCredentials();
+        for(var credentials : credentialsList){
+            if(credentials.getKey().equals(key)) {
+                credentialsList.remove(credentials);
+                break;
+            }
+        }
+
+        try (FileWriter writer = new FileWriter(FILE_PATH)) {
+            gson.toJson(credentialsList, writer);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public synchronized List<GatewayCredentials> loadCredentials() {
         createFileIfNotExists();
 
