@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +19,8 @@ import com.pukhovkirill.datahub.infrastructure.gateway.service.OngoingGatewaySer
 
 @RestController
 public class RestSearchFileController extends RestFileController {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(RestSearchFileController.class);
 
     private final SearchService searchService;
 
@@ -32,8 +36,16 @@ public class RestSearchFileController extends RestFileController {
         List<StorageEntityDto> files = new LinkedList<>();
 
         for(String gateway : ongoingGateways.list()){
-            var list = searchService.list(gateway);
-            files.addAll(list);
+            try{
+                var list = searchService.list(gateway);
+                files.addAll(list);
+            }catch(Exception e){
+                LOGGER.error(
+                        "Failed to get data from \"{}\" gateway",
+                        gateway
+                );
+                LOGGER.error(e.getMessage());
+            }
         }
 
         return ResponseEntity.ok().body(Map.of(

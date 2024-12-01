@@ -24,18 +24,19 @@ public class FtpGatewayImpl implements StorageGateway, Closeable {
 
     private final FtpManager manager;
 
-    private final FTPClient client;
-
     private final StorageEntityFactory factory;
+
+    private FTPClient client;
 
     public FtpGatewayImpl(FtpManager manager, StorageEntityFactory factory) {
         this.manager = manager;
-        this.client = manager.getClient();
         this.factory = factory;
+        client = manager.getClient();
     }
 
     @Override
     public long count() {
+        connectIfNotAlive();
         try{
             return client.listFiles() == null
                     ? 0
@@ -47,6 +48,7 @@ public class FtpGatewayImpl implements StorageGateway, Closeable {
 
     @Override
     public void delete(StorageEntity entity) {
+        connectIfNotAlive();
         try{
             if(!existsByPath(entity.getPath()))
                 throw new FTPFileNotFoundException(entity.getPath());
@@ -60,16 +62,16 @@ public class FtpGatewayImpl implements StorageGateway, Closeable {
 
     @Override
     public Iterable<StorageEntity> findAll() {
+        connectIfNotAlive();
         List<StorageEntity> entities = new ArrayList<>();
         try{
             FTPFile[] files = client.listFiles();
             for (FTPFile file : files) {
-                FTPFile fileInfo = client.mlistFile(file.getName());
 
                 var entity = factory.restore(
                         file.getName(),
-                        new Timestamp(fileInfo.getTimestamp().getTimeInMillis()),
-                        fileInfo.getSize(),
+                        new Timestamp(file.getTimestamp().getTimeInMillis()),
+                        file.getSize(),
                         new byte[] { }
                 );
 
@@ -84,6 +86,7 @@ public class FtpGatewayImpl implements StorageGateway, Closeable {
 
     @Override
     public Optional<StorageEntity> findByPath(String path) {
+        connectIfNotAlive();
         try(ByteArrayOutputStream baos = new ByteArrayOutputStream()){
 
             if(!existsByPath(path))
@@ -108,6 +111,7 @@ public class FtpGatewayImpl implements StorageGateway, Closeable {
 
     @Override
     public StorageEntity save(StorageEntity entity) {
+        connectIfNotAlive();
         try(ByteArrayInputStream bais = new ByteArrayInputStream(entity.getData())){
 
             if(existsByPath(entity.getPath()))
@@ -124,6 +128,7 @@ public class FtpGatewayImpl implements StorageGateway, Closeable {
 
     @Override
     public boolean existsByPath(String path) {
+        connectIfNotAlive();
         try{
             FTPFile[] files = client.listFiles();
             for (FTPFile file : files) {
@@ -134,6 +139,13 @@ public class FtpGatewayImpl implements StorageGateway, Closeable {
             return false;
         }catch(Exception e){
             throw new RuntimeException(e);
+        }
+    }
+
+    private void connectIfNotAlive(){
+        if(client != null && !client.isConnected()){
+            manager.connect();
+            client = manager.getClient();
         }
     }
 

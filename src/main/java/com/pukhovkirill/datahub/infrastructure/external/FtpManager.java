@@ -1,13 +1,20 @@
 package com.pukhovkirill.datahub.infrastructure.external;
 
+import com.pukhovkirill.datahub.infrastructure.gateway.exception.FailedToServerConnectException;
 import lombok.Getter;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.time.Duration;
 
 @Getter
 public class FtpManager {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(FtpManager.class);
 
     private final String server;
 
@@ -41,16 +48,43 @@ public class FtpManager {
         if(client == null) {
             client = new FTPClient();
             try{
-                client.connect(server, port);
-                client.login(user, password);
+                client.connect(InetAddress.getByName(server), port);
 
+                client.setKeepAlive(true);
+                client.setControlKeepAliveTimeout(Duration.ofDays(1));
+                client.setControlKeepAliveReplyTimeout(Duration.ofDays(1));
+
+                client.setFileType(FTP.BINARY_FILE_TYPE);
+
+                LOGGER.info("Connected to FTP server: {}:{}", server, port);
+
+
+                if(!client.login(user, password)){
+                    throw new RuntimeException("FTP login failed");
+                }
+
+                LOGGER.info("Logged in to FTP server as {}", user);
+
+                String disk = "";
+                if(client.printWorkingDirectory().equals("/")){
+                    disk = client.listNames()[0];
+                }
+                client.changeWorkingDirectory(disk);
                 if(!client.changeWorkingDirectory(workingDirectory)){
-                    client.makeDirectory(workingDirectory);
+                    if(!client.changeWorkingDirectory(disk)){
+                        LOGGER.info("Failed to change directory in {}", disk);
+                    }
+                    if (!client.makeDirectory(workingDirectory)) {
+                        throw new IOException(
+                                "Unable to create remote directory '" + workingDirectory + "'.  error='" + client.getReplyString()+"'"
+                        );
+                    }
+                    LOGGER.info("Created remote directory {}", workingDirectory);
                     client.changeWorkingDirectory(workingDirectory);
                 }
-                client.setFileType(FTP.BINARY_FILE_TYPE);
+
             }catch(IOException e) {
-                throw new RuntimeException("Failed to connect to FTP server", e);
+                throw new FailedToServerConnectException("Failed to connect to FTP server", "ftp", e);
             }
         }
     }
@@ -60,6 +94,7 @@ public class FtpManager {
             if(client != null && client.isConnected()) {
                 client.logout();
                 client.disconnect();
+                LOGGER.info("Disconnected from FTP server");
             }
         }catch(IOException e) {
             throw new RuntimeException("Failed to disconnect from FTP server", e);

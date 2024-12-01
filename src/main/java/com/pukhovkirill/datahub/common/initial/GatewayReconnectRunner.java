@@ -2,7 +2,11 @@ package com.pukhovkirill.datahub.common.initial;
 
 import java.util.List;
 
+import com.pukhovkirill.datahub.entity.gateway.StorageGateway;
+import com.pukhovkirill.datahub.infrastructure.gateway.exception.FailedToServerConnectException;
 import com.pukhovkirill.datahub.util.CredentialsSaver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.boot.CommandLineRunner;
 
@@ -12,9 +16,11 @@ import com.pukhovkirill.datahub.infrastructure.gateway.service.OngoingGatewaySer
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-@Order(1)
+@Order(5)
 @Component
 public class GatewayReconnectRunner implements CommandLineRunner {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(GatewayReconnectRunner.class);
 
     private final BeanFactory beanFactory;
 
@@ -31,10 +37,15 @@ public class GatewayReconnectRunner implements CommandLineRunner {
 
         for (GatewayCredentials credentials : gateways) {
             var factory = beanFactory.getBean(
-                    credentials.getProtocol(),
+                    credentials.getProtocol()+"GatewayFactory",
                     StorageGatewayFactory.class
             );
-            var gateway = factory.create(credentials);
+            StorageGateway gateway;
+            try {
+                gateway = factory.create(credentials);
+            }catch(FailedToServerConnectException e){
+                continue;
+            }
             ongoingGateways.register(credentials.getKey(), gateway);
         }
     }

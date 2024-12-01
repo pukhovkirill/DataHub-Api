@@ -3,6 +3,7 @@ package com.pukhovkirill.datahub.infrastructure.gateway.handler;
 import java.sql.Timestamp;
 import java.util.Map;
 
+import com.pukhovkirill.datahub.infrastructure.gateway.exception.FailedToServerConnectException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -29,6 +30,15 @@ public class StorageGatewayExceptionHandler {
                 "timestamp", (new Timestamp(System.currentTimeMillis())).toString(),
                 "status", HttpStatus.CONFLICT.value(),
                 "error", "Conflict",
+                "message", e.getMessage()));
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Map<String, Object>> handleFailedToServerConnectException(FailedToServerConnectException e){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
+                "timestamp", (new Timestamp(System.currentTimeMillis())).toString(),
+                "status", HttpStatus.BAD_GATEWAY.value(),
+                "error", "Bad Gateway",
                 "message", e.getMessage()));
     }
 
