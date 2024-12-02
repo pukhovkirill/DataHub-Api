@@ -44,7 +44,8 @@ class FtpGatewayImplTest {
 
         manager = Mockito.mock(FtpManager.class);
         client = Mockito.mock(FTPClient.class);
-        when(client.isAvailable()).thenReturn(true);
+        when(client.isConnected()).thenReturn(true);
+        when(client.getReplyCode()).thenReturn(200);
 
         when(manager.getClient()).thenReturn(client);
 
