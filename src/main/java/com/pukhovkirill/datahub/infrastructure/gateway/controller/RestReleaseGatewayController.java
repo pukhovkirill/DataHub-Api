@@ -31,8 +31,8 @@ public class RestReleaseGatewayController {
         else if(key.isEmpty() || key.isBlank())
             throw new InvalidCredentialsException("key is empty", HttpStatus.BAD_REQUEST);
 
-        ongoingGatewayService.release(key);
         CredentialsSaver.getInstance().removeCredentials(key);
+        ongoingGatewayService.release(key);
         return ResponseEntity.status(HttpStatus.OK).body(Map.of(
                 "timestamp", (new Timestamp(System.currentTimeMillis())).toString(),
                 "status", HttpStatus.OK.value()));

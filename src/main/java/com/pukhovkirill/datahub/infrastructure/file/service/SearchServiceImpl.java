@@ -4,6 +4,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactory;
 
 import com.pukhovkirill.datahub.infrastructure.file.dto.StorageFile;
@@ -12,6 +14,8 @@ import com.pukhovkirill.datahub.usecase.dto.StorageEntityDto;
 import com.pukhovkirill.datahub.usecase.listingStorageEntityCase.ListStorageEntity;
 
 public class SearchServiceImpl implements SearchService {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(SearchServiceImpl.class);
 
     private final BeanFactory beanFactory;
 
@@ -46,7 +50,8 @@ public class SearchServiceImpl implements SearchService {
                 collection.add(storageEntityDto);
             }
         }catch (Exception e){
-            throw new RuntimeException(e);
+            LOGGER.error(e.getMessage(), e);
+            return new ArrayList<>();
         }
 
         return collection;

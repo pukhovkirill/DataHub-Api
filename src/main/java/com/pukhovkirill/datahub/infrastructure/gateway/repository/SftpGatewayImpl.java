@@ -71,6 +71,8 @@ public class SftpGatewayImpl implements StorageGateway, Closeable {
 
     @Override
     public Iterable<StorageEntity> findAll() {
+        if(!clientIsAlive()) return new ArrayList<>();
+
         connectIfNotAlive();
         List<StorageEntity> entities = new ArrayList<>();
         try{
@@ -161,12 +163,23 @@ public class SftpGatewayImpl implements StorageGateway, Closeable {
     }
 
     private void connectIfNotAlive(){
-        if(client == null || client.isClosed()){
+        if(!clientIsAlive()){
             throw new FailedToServerConnectException("Server not available", "sftp");
         }
         if(!client.isConnected()){
             manager.connect();
             client = manager.getClient();
+        }
+    }
+
+    private boolean clientIsAlive(){
+        if(client == null || client.isClosed())
+            return false;
+        try{
+           client.cd(".");
+           return true;
+        } catch (SftpException e) {
+            return false;
         }
     }
 

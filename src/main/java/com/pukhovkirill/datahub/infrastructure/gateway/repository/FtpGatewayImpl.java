@@ -63,6 +63,8 @@ public class FtpGatewayImpl implements StorageGateway, Closeable {
 
     @Override
     public Iterable<StorageEntity> findAll() {
+        if(!clientIsAlive()) return new ArrayList<>();
+
         connectIfNotAlive();
         List<StorageEntity> entities = new ArrayList<>();
         try{
@@ -144,13 +146,19 @@ public class FtpGatewayImpl implements StorageGateway, Closeable {
     }
 
     private void connectIfNotAlive(){
-        if(client == null || !client.isAvailable()){
+        if(!clientIsAlive()){
             throw new FailedToServerConnectException("Server not available", "ftp");
         }
         if(!client.isConnected()){
             manager.connect();
             client = manager.getClient();
         }
+    }
+
+    private boolean clientIsAlive(){
+        if(client == null) return false;
+        int replyCode = client.getReplyCode();
+        return client.isConnected() && (replyCode >= 200 && replyCode < 300);
     }
 
     @Override
