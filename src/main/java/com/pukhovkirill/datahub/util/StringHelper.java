@@ -26,17 +26,17 @@ public class StringHelper {
 
             if(lastOpen != -1 && lastClose != -1){
                 int num = 0;
-                lastOpen += 1;
-                while(lastOpen < lastClose){
-                    if(!Character.isDigit(parts[name].charAt(lastOpen))){
+                int next = lastOpen + 1;
+                while(next < lastClose){
+                    if(!Character.isDigit(parts[name].charAt(next))){
                         parts[name] = parts[name] + "(1)";
-                        path = parts[parent] + parts[name] + parts[extension];
+                        path = parts[parent] + "/" + parts[name] + parts[extension];
                         return path;
                     }
-                    num = num * 10 + Character.getNumericValue(parts[name].charAt(lastOpen));
-                    lastOpen++;
+                    num = num * 10 + Character.getNumericValue(parts[name].charAt(next));
+                    next++;
                 }
-                String prefix = parts[name].substring(0, lastOpen-1);
+                String prefix = parts[name].substring(0, lastOpen+1);
                 String suffix = parts[name].substring(lastClose);
                 num = num + 1;
                 parts[name] = prefix + num + suffix;
@@ -44,7 +44,7 @@ public class StringHelper {
                 parts[name] = parts[name] + "(1)";
             }
 
-            path = parts[parent] + parts[name] + parts[extension];
+            path = parts[parent] + "/" + parts[name] + parts[extension];
 
             return path;
         }catch (Exception ex){
