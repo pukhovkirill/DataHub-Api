@@ -54,6 +54,8 @@ public class SftpManager {
                 var jschSession = jsch.getSession(user, server, port);
                 jschSession.setPassword(password);
                 jschSession.connect();
+                jschSession.setServerAliveInterval(5000);
+                jschSession.setServerAliveCountMax(5);
 
                 if(!jschSession.isConnected()){
                     LOGGER.error("Failed to login to SFTP server as {}", user);

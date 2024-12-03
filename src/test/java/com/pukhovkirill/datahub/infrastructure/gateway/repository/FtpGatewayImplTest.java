@@ -5,7 +5,6 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Optional;
 
-import com.pukhovkirill.datahub.infrastructure.external.FtpManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +18,7 @@ import org.apache.commons.net.ftp.FTPFile;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.pukhovkirill.datahub.infrastructure.external.FtpManager;
 import com.pukhovkirill.datahub.entity.factory.StorageEntityFactory;
 import com.pukhovkirill.datahub.entity.model.StorageEntity;
 import com.pukhovkirill.datahub.infrastructure.exception.FTPFileAlreadyExistsException;

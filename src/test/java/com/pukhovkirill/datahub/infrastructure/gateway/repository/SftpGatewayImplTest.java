@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.sql.Timestamp;
 import java.util.*;
 
-import com.pukhovkirill.datahub.infrastructure.external.SftpManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,6 +20,7 @@ import com.jcraft.jsch.SftpException;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.pukhovkirill.datahub.infrastructure.external.SftpManager;
 import com.pukhovkirill.datahub.entity.factory.StorageEntityFactory;
 import com.pukhovkirill.datahub.entity.model.StorageEntity;
 import com.pukhovkirill.datahub.infrastructure.exception.SFTPFileAlreadyExistsException;

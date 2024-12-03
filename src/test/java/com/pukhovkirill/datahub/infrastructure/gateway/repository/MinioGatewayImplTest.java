@@ -1,14 +1,12 @@
 package com.pukhovkirill.datahub.infrastructure.gateway.repository;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.ZonedDateTime;
 
+import io.minio.MinioClient;
 import io.minio.GetObjectResponse;
 import io.minio.ObjectWriteResponse;
 import io.minio.StatObjectResponse;
@@ -19,13 +17,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import com.pukhovkirill.datahub.entity.exception.StorageEntityAlreadyExistsException;
 import com.pukhovkirill.datahub.entity.factory.StorageEntityFactoryImpl;
 import com.pukhovkirill.datahub.entity.model.StorageEntity;
-
-import io.minio.MinioClient;
-import org.springframework.test.util.ReflectionTestUtils;
 
 public class MinioGatewayImplTest {
 
@@ -83,7 +82,6 @@ public class MinioGatewayImplTest {
         assertEquals(String.format("Storage entity with the name '%s' already exists", path), exception.getMessage());
         assertInstanceOf(StorageEntityAlreadyExistsException.class, exception);
     }
-
 
     @Test
     public void testSaveWithMinioException() {
@@ -165,7 +163,7 @@ public class MinioGatewayImplTest {
     }
 
     @Test
-    public void testExistsByPathWithFalseResult() throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+    public void testExistsByPathWithFalseResult() throws MinioException, IOException, NoSuchAlgorithmException, InvalidKeyException {
         String path = "/invalid/path";
 
         when(mockClient.statObject(any())).thenThrow(new RuntimeException(new MinioException("Object not found")));

@@ -52,8 +52,8 @@ public class FtpManager {
                 client.connect(InetAddress.getByName(server), port);
 
                 client.setKeepAlive(true);
-                client.setControlKeepAliveTimeout(Duration.ofDays(1));
-                client.setControlKeepAliveReplyTimeout(Duration.ofDays(1));
+                client.setControlKeepAliveTimeout(Duration.ofSeconds(5));
+                client.setControlKeepAliveReplyTimeout(Duration.ofSeconds(10));
 
                 client.setFileType(FTP.BINARY_FILE_TYPE);
 

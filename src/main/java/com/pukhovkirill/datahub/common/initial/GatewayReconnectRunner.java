@@ -37,7 +37,7 @@ public class GatewayReconnectRunner implements CommandLineRunner {
 
         for (GatewayCredentials credentials : gateways) {
             var factory = beanFactory.getBean(
-                    credentials.getProtocol()+"GatewayFactory",
+                    String.format("%sGatewayFactory", credentials.getProtocol()),
                     StorageGatewayFactory.class
             );
             StorageGateway gateway;
