@@ -73,7 +73,7 @@ public class RestDownloadFileController extends RestFileController {
         long fileSize = Files.size(chunked);
 
         byte[] chunkData;
-        try (SeekableByteChannel channel = Files.newByteChannel(chunked, StandardOpenOption.READ)) {
+        try(SeekableByteChannel channel = Files.newByteChannel(chunked, StandardOpenOption.READ)) {
             channel.position(offset);
             ByteBuffer buffer = ByteBuffer.allocate(CHUNK_SIZE);
             int bytesRead = channel.read(buffer);
@@ -85,6 +85,8 @@ public class RestDownloadFileController extends RestFileController {
                 chunkData = new byte[bytesRead];
                 buffer.get(chunkData);
             }
+        }catch(Exception e){
+            throw new RuntimeException(e);
         }
 
         HttpStatus status = (offset + CHUNK_SIZE >= fileSize) ? HttpStatus.OK : HttpStatus.PROCESSING;
@@ -95,7 +97,7 @@ public class RestDownloadFileController extends RestFileController {
                     "status", status.value(),
                     "data", chunkData));
         }else{
-            return ResponseEntity.ok().body(Map.of(
+            return ResponseEntity.status(status).body(Map.of(
                     "timestamp", new Timestamp(System.currentTimeMillis()).toString(),
                     "status", status.value(),
                     "total", total,
