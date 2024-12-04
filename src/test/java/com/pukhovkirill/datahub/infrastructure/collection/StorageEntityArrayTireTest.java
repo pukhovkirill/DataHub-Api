@@ -16,13 +16,13 @@ public class StorageEntityArrayTireTest {
     private StorageEntityArrayTire tire;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         MockitoAnnotations.openMocks(this);
         tire = new StorageEntityArrayTire();
     }
 
     @Test
-    void testAddEntity() {
+    public void testAddEntity() {
         StorageEntityDto entityDto = mock(StorageEntityDto.class);
         StorageEntityDto cloneEntityDto = mock(StorageEntityDto.class);
 
@@ -46,7 +46,7 @@ public class StorageEntityArrayTireTest {
     }
 
     @Test
-    void testFindAll() {
+    public void testFindAll() {
         int n = 10;
         var collection = setupFindAllTest(n);
         Set<StorageEntityDto> clones = new HashSet<>();
@@ -68,7 +68,7 @@ public class StorageEntityArrayTireTest {
     }
 
     @Test
-    void testLazyErase() {
+    public void testLazyErase() {
         StorageEntityDto entityDto = mock(StorageEntityDto.class);
         StorageEntityDto cloneEntityDto = mock(StorageEntityDto.class);
 
@@ -85,7 +85,7 @@ public class StorageEntityArrayTireTest {
     }
 
     @Test
-    void testFindFuzzy() {
+    public void testFindFuzzy() {
         StorageEntityDto entityDto = mock(StorageEntityDto.class);
         StorageEntityDto cloneEntityDto = mock(StorageEntityDto.class);
 
@@ -102,7 +102,7 @@ public class StorageEntityArrayTireTest {
     }
 
     @Test
-    void testFill() {
+    public void testFill() {
         StorageEntityDto entity1 = mock(StorageEntityDto.class);
         StorageEntityDto entity2 = mock(StorageEntityDto.class);
 
@@ -124,7 +124,7 @@ public class StorageEntityArrayTireTest {
     }
 
     @Test
-    void testClear() {
+    public void testClear() {
         StorageEntityDto entityDto = mock(StorageEntityDto.class);
 
         when(entityDto.getName()).thenReturn("clearEntity");

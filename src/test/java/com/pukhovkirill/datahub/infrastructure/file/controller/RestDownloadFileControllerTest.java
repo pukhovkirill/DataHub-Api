@@ -41,6 +41,7 @@ public class RestDownloadFileControllerTest {
         ReflectionTestUtils.setField(restDownloadFileController, "UPLOAD_TMP_PATH", "/tmp/");
     }
 
+
     /* NOT CHUNKED DOWNLOAD TESTS */
     @Test
     public void testDownload() throws IOException {
@@ -105,6 +106,7 @@ public class RestDownloadFileControllerTest {
         Assertions.assertInstanceOf(InvalidParamException.class, exception);
     }
 
+
     /* CHUNKED DOWNLOAD TESTS */
     /* ALL TESTS USE TWO STEP CHUNKED REQUESTS */
     @Test
@@ -129,7 +131,7 @@ public class RestDownloadFileControllerTest {
         assertNotNull(response1.getBody());
 
         actual = (byte[]) response1.getBody().get("data");
-        excepted = readResults(1);
+        excepted = generateResults(1);
 
         assertArrayEquals(excepted, actual);
 
@@ -146,7 +148,7 @@ public class RestDownloadFileControllerTest {
         assertNotNull(response2.getBody());
 
         actual = (byte[]) response2.getBody().get("data");
-        excepted = readResults(2);
+        excepted = generateResults(2);
 
         assertArrayEquals(excepted, actual);
     }
@@ -173,7 +175,7 @@ public class RestDownloadFileControllerTest {
         assertNotNull(response1.getBody());
 
         actual = (byte[]) response1.getBody().get("data");
-        excepted = readResults(1);
+        excepted = generateResults(1);
 
         assertArrayEquals(excepted, actual);
 
@@ -212,7 +214,7 @@ public class RestDownloadFileControllerTest {
         assertNotNull(response1.getBody());
 
         actual = (byte[]) response1.getBody().get("data");
-        excepted = readResults(1);
+        excepted = generateResults(1);
 
         assertArrayEquals(excepted, actual);
 
@@ -237,7 +239,7 @@ public class RestDownloadFileControllerTest {
         return readFile("src", "test", "java", "resources", "test_file.pdf");
     }
 
-    private byte[] readResults(int part) throws IOException {
+    private byte[] generateResults(int part) throws IOException {
         return readFile("src", "test", "java", "resources", "test_file.part" + part).toByteArray();
     }
 

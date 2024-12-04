@@ -74,8 +74,13 @@ public class RestUploadFileController extends RestFileController{
                 "message", "success"));
     }
 
-    private ResponseEntity<Map<String, Object>> chunkedUpload(MultipartFile file, String path, int total, int chunk) throws IOException {
-        Path chunked = Paths.get(UPLOAD_TMP_PATH, StringHelper.extractName(path)+".part");
+    private ResponseEntity<Map<String, Object>> chunkedUpload(MultipartFile file,
+                                                              String path,
+                                                              int total, int chunk) throws IOException {
+        String location = path.split(":")[0];
+        String filepath = path.split(":")[1];
+
+        Path chunked = Paths.get(UPLOAD_TMP_PATH, StringHelper.extractName(filepath)+".part");
 
         if(chunk == 0 && total > 0){
             Files.deleteIfExists(chunked);
@@ -84,9 +89,7 @@ public class RestUploadFileController extends RestFileController{
         }else if(chunk > 0 && total > 0){
             Files.write(chunked, file.getBytes(), StandardOpenOption.APPEND);
 
-            if(chunk == total - 1){
-                String location = path.split(":")[0];
-                String filepath = path.split(":")[1];
+            if(chunk >= total - 1){
                 String filename = StringHelper.extractName(filepath);
                 long size = Files.size(chunked);
 
@@ -99,7 +102,8 @@ public class RestUploadFileController extends RestFileController{
                         .location(location)
                         .build();
 
-                this.storageService.uploadTo(location, storageFile, new ByteArrayInputStream(Files.readAllBytes(chunked)));
+                this.storageService
+                        .uploadTo(location, storageFile, new ByteArrayInputStream(Files.readAllBytes(chunked)));
                 Files.deleteIfExists(chunked);
 
                 return ResponseEntity.ok().body(Map.of(
@@ -107,9 +111,11 @@ public class RestUploadFileController extends RestFileController{
                         "status", HttpStatus.OK.value(),
                         "message", "success"));
             }
+        }else{
+            throw new IllegalArgumentException("Invalid total or chunk value");
         }
 
-        return ResponseEntity.ok().body(Map.of(
+        return ResponseEntity.status(HttpStatus.PROCESSING).body(Map.of(
                 "timestamp", (new Timestamp(System.currentTimeMillis())).toString(),
                 "status", HttpStatus.PROCESSING.value(),
                 "message", "processing"));
