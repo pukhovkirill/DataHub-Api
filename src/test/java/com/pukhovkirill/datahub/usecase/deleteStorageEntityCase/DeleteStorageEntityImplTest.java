@@ -30,12 +30,12 @@ public class DeleteStorageEntityImplTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        deleteStorageEntityImpl = new DeleteStorageEntityImpl(storageGateway);
     }
 
     @Test
     public void deleteSuccess() {
         String path = "/test/path/testFile.txt";
+
         StorageEntityDto storageEntity = mock(StorageEntityDto.class);
         when(storageEntity.getName()).thenReturn("testFile.txt");
         when(storageEntity.getPath()).thenReturn(path);
@@ -57,12 +57,10 @@ public class DeleteStorageEntityImplTest {
     public void deleteWithNullPointerException(){
         StorageEntityDto storageEntity = null;
 
-
         RuntimeException exception = assertThrows(
                 RuntimeException.class,
                 () -> deleteStorageEntityImpl.delete(storageEntity)
         );
-
 
         Assertions.assertNotNull(exception);
         Assertions.assertNotNull(exception.getCause());
@@ -72,6 +70,7 @@ public class DeleteStorageEntityImplTest {
     @Test
     public void deleteWithStorageEntityNotFoundException() {
         String path = "/invalid/path/testFile.txt";
+
         StorageEntityDto storageEntity = mock(StorageEntityDto.class);
         when(storageEntity.getName()).thenReturn("testFile.txt");
         when(storageEntity.getPath()).thenReturn(path);
@@ -81,12 +80,10 @@ public class DeleteStorageEntityImplTest {
 
         when(storageGateway.findByPath(anyString())).thenReturn(Optional.empty());
 
-
         RuntimeException exception = assertThrows(
                 RuntimeException.class,
                 () -> deleteStorageEntityImpl.delete(storageEntity)
         );
-
 
         Assertions.assertNotNull(exception);
         Assertions.assertInstanceOf(StorageEntityNotFoundException.class, exception);

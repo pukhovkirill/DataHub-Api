@@ -7,8 +7,6 @@ import java.util.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.util.ArrayIterator;
@@ -28,23 +26,17 @@ import com.pukhovkirill.datahub.infrastructure.exception.SFTPFileNotFoundExcepti
 
 class SftpGatewayImplTest {
 
-    @Mock
-    private SftpManager manager;
-
-    @Mock
     private ChannelSftp client;
 
-    @Mock
     private StorageEntityFactory factory;
 
-    @InjectMocks
     private SftpGatewayImpl gateway;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        manager = Mockito.mock(SftpManager.class);
+        SftpManager manager = Mockito.mock(SftpManager.class);
         client = Mockito.mock(ChannelSftp.class);
 
         when(manager.getClient()).thenReturn(client);
@@ -166,7 +158,6 @@ class SftpGatewayImplTest {
 
         when(storageEntity.getPath()).thenReturn(path);
         when(storageEntity.getData()).thenReturn(new byte[]{1, 2, 3});
-
 
         // this is the section for the method existsByPath()
         Iterator<ChannelSftp.LsEntry> iter = new ArrayIterator<>(new ChannelSftp.LsEntry[]{file});

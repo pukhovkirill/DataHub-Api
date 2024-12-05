@@ -35,6 +35,6 @@ build/
 
 ### Project ###
 src/main/resources/application-prod.properties
-docker_secrets/
-.env
 src/main/resources/credentials.json
+src/test/java/resources/*
+.env

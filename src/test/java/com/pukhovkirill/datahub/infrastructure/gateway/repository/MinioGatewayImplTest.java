@@ -53,9 +53,7 @@ public class MinioGatewayImplTest {
 
         when(mockClient.putObject(any())).thenReturn(mock(ObjectWriteResponse.class));
 
-
         gateway.save(storageEntity);
-
 
         verify(mockClient, times(1)).putObject(any());
     }
@@ -71,12 +69,10 @@ public class MinioGatewayImplTest {
 
         when(mockClient.statObject(any())).thenReturn(mock(StatObjectResponse.class));
 
-
         RuntimeException exception = assertThrows(
                 RuntimeException.class,
                 () -> gateway.save(storageEntity)
         );
-
 
         assertNotNull(exception);
         assertEquals(String.format("Storage entity with the name '%s' already exists", path), exception.getMessage());
@@ -89,12 +85,10 @@ public class MinioGatewayImplTest {
 
         when(storageEntity.getData()).thenThrow(new RuntimeException(new MinioException("Invalid secret key")));
 
-
         RuntimeException exception = assertThrows(
                 RuntimeException.class,
                 () -> gateway.save(storageEntity)
         );
-
 
         assertNotNull(exception.getCause());
         assertInstanceOf(MinioException.class, exception.getCause());
@@ -121,9 +115,7 @@ public class MinioGatewayImplTest {
 
         when(mockClient.getObject(any())).thenReturn(response);
 
-
         var result = gateway.findByPath(path);
-
 
         assertTrue(result.isPresent());
         assertEquals(path, result.get().getPath());
@@ -136,12 +128,10 @@ public class MinioGatewayImplTest {
         when(mockClient.statObject(any())).thenReturn(mock(StatObjectResponse.class));
         when(mockClient.getObject(any())).thenThrow(new RuntimeException(new MinioException("Object not found")));
 
-
         RuntimeException exception = assertThrows(
                 RuntimeException.class,
                 () -> gateway.findByPath(path)
         );
-
 
         assertNotNull(exception);
         assertNotNull(exception.getCause());
@@ -154,9 +144,7 @@ public class MinioGatewayImplTest {
 
         when(mockClient.statObject(any())).thenReturn(mock(StatObjectResponse.class));
 
-
         var result = gateway.existsByPath(path);
-
 
         assertTrue(result);
         verify(mockClient, times(1)).statObject(any());
@@ -168,9 +156,7 @@ public class MinioGatewayImplTest {
 
         when(mockClient.statObject(any())).thenThrow(new RuntimeException(new MinioException("Object not found")));
 
-
         var result = gateway.existsByPath(path);
-
 
         assertFalse(result);
     }
@@ -184,9 +170,7 @@ public class MinioGatewayImplTest {
         when(storageEntity.getPath()).thenReturn(path);
         doNothing().when(mockClient).removeObject(any());
 
-
         gateway.delete(storageEntity);
-
 
         verify(mockClient, times(1)).removeObject(any());
     }

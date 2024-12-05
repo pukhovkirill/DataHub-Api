@@ -39,9 +39,7 @@ public class ListStorageEntityImplTest {
         }
         when(storageGateway.findAll()).thenReturn(collection);
 
-
         var result = listStorageEntity.list();
-
 
         Assertions.assertNotNull(result);
         Assertions.assertEquals(n, result.size());
@@ -54,12 +52,10 @@ public class ListStorageEntityImplTest {
     public void testListWithException(){
         when(storageGateway.findAll()).thenReturn(null);
 
-
         RuntimeException exception = Assert.assertThrows(
                 RuntimeException.class,
                 () -> listStorageEntity.list()
         );
-
 
         Assertions.assertNotNull(exception);
         Assertions.assertInstanceOf(RuntimeException.class, exception);

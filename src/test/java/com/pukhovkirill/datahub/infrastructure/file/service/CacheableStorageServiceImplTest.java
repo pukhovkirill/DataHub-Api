@@ -63,7 +63,9 @@ public class CacheableStorageServiceImplTest {
         when(ongoingGateways.get(anyString())).thenReturn(mock(MinioGatewayImpl.class));
         when(entity.getName()).thenReturn(name);
 
+
         cacheableStorageService.uploadTo("internal", entity, bais);
+
 
         verify(uploadUseCase, times(1)).upload(entity, bais);
         verify(cache, times(1)).saveToCache(entity);
@@ -91,7 +93,9 @@ public class CacheableStorageServiceImplTest {
                 .location("internal")
                 .build();
 
+
         cacheableStorageService.uploadTo(location, entity, bais);
+
 
         verify(uploadUseCase, times(1)).upload(entity, bais);
         verify(cache, times(1)).saveToCache(entity);
@@ -109,7 +113,9 @@ public class CacheableStorageServiceImplTest {
         when(entity.getLocation()).thenReturn(location);
         when(entity.getPath()).thenReturn(path);
 
+
         cacheableStorageService.deleteFrom(location, path);
+
 
         verify(deleteUseCase, times(1)).delete(entity);
         verify(cache, times(1)).removeFromCache(entity);
@@ -126,10 +132,12 @@ public class CacheableStorageServiceImplTest {
 
         when(listUseCase.list()).thenReturn(Collections.emptyList());
 
+
         RuntimeException exception = assertThrows(
                 RuntimeException.class,
                 () -> cacheableStorageService.deleteFrom(location, path)
         );
+
 
         Assertions.assertEquals("Could not find entity: " + path, exception.getCause().getMessage());
         Assertions.assertInstanceOf(RuntimeException.class, exception.getCause());
@@ -149,7 +157,9 @@ public class CacheableStorageServiceImplTest {
         when(entity.getLocation()).thenReturn(location);
         when(entity.getPath()).thenReturn(path);
 
+
         ByteArrayOutputStream result = cacheableStorageService.download(entity.getLocation(), entity.getPath());
+
 
         assertEquals(baos, result);
     }
@@ -165,10 +175,12 @@ public class CacheableStorageServiceImplTest {
 
         when(listUseCase.list()).thenReturn(Collections.emptyList());
 
+
         RuntimeException exception = assertThrows(
                 RuntimeException.class,
                 () -> cacheableStorageService.download(location, path)
         );
+
 
         Assertions.assertEquals("Could not find entity: " + path, exception.getCause().getMessage());
         Assertions.assertInstanceOf(RuntimeException.class, exception.getCause());

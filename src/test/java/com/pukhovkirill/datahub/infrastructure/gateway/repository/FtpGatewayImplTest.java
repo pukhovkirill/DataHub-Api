@@ -8,8 +8,6 @@ import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.apache.commons.net.ftp.FTPClient;
@@ -26,23 +24,17 @@ import com.pukhovkirill.datahub.infrastructure.exception.FTPFileNotFoundExceptio
 
 class FtpGatewayImplTest {
 
-    @Mock
-    private FtpManager manager;
-
-    @Mock
     private FTPClient client;
 
-    @Mock
     private StorageEntityFactory factory;
 
-    @InjectMocks
     private FtpGatewayImpl gateway;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        manager = Mockito.mock(FtpManager.class);
+        FtpManager manager = Mockito.mock(FtpManager.class);
         client = Mockito.mock(FTPClient.class);
         when(client.isConnected()).thenReturn(true);
         when(client.getReplyCode()).thenReturn(200);
@@ -59,6 +51,7 @@ class FtpGatewayImplTest {
         when(client.listFiles()).thenReturn(mockFiles);
 
         long count = gateway.count();
+
         assertEquals(3, count);
     }
 
@@ -140,8 +133,8 @@ class FtpGatewayImplTest {
                 .thenReturn(mockEntity);
 
         Optional<StorageEntity> result = gateway.findByPath(path);
-        assertTrue(result.isPresent());
 
+        assertTrue(result.isPresent());
         verify(client).retrieveFile(eq(path), any(OutputStream.class));
     }
 
@@ -175,8 +168,8 @@ class FtpGatewayImplTest {
         when(client.storeFile(eq(path), any(ByteArrayInputStream.class))).thenReturn(true);
 
         StorageEntity result = gateway.save(storageEntity);
-        assertEquals(storageEntity, result);
 
+        assertEquals(storageEntity, result);
         verify(client).storeFile(eq("local.txt"), any(ByteArrayInputStream.class));
     }
 
@@ -230,6 +223,7 @@ class FtpGatewayImplTest {
         when(client.listFiles()).thenReturn(new FTPFile[] {ftpFile});
 
         boolean exists = gateway.existsByPath("test.txt");
+
         assertTrue(exists);
     }
 
@@ -238,6 +232,7 @@ class FtpGatewayImplTest {
         when(client.listFiles()).thenReturn(new FTPFile[] {});
 
         boolean exists = gateway.existsByPath("test.txt");
+
         assertFalse(exists);
     }
 }

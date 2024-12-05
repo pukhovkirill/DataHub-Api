@@ -43,9 +43,7 @@ public class UploadStorageEntityImplTest {
 
         ByteArrayInputStream bais = new ByteArrayInputStream("test data".getBytes());
 
-
         uploadStorageEntity.upload(storageEntity, bais);
-
 
         verify(storageGateway).save(any(StorageEntity.class));
     }
@@ -57,12 +55,10 @@ public class UploadStorageEntityImplTest {
         ByteArrayInputStream bais = mock(ByteArrayInputStream.class);
         doThrow(new IOException()).when(bais);
 
-
         RuntimeException exception = Assert.assertThrows(
                 RuntimeException.class,
                 () -> uploadStorageEntity.upload(storageEntity, bais)
         );
-
 
         Assertions.assertNotNull(exception);
         Assertions.assertNotNull(exception.getCause());
@@ -75,12 +71,10 @@ public class UploadStorageEntityImplTest {
 
         ByteArrayInputStream bais = new ByteArrayInputStream("test data".getBytes());
 
-
         RuntimeException exception = Assert.assertThrows(
                 RuntimeException.class,
                 () -> uploadStorageEntity.upload(storageEntity, bais)
         );
-
 
         Assertions.assertNotNull(exception);
         Assertions.assertNotNull(exception.getCause());
@@ -93,12 +87,10 @@ public class UploadStorageEntityImplTest {
 
         ByteArrayInputStream bais = null;
 
-
         RuntimeException exception = Assert.assertThrows(
                 RuntimeException.class,
                 () -> uploadStorageEntity.upload(storageEntity, bais)
         );
-
 
         Assertions.assertNotNull(exception);
         Assertions.assertNotNull(exception.getCause());

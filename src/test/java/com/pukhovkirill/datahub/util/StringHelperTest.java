@@ -12,9 +12,7 @@ class StringHelperTest {
         String filename = "file.txt";
         String path = "/some/path/to/"+filename;
 
-
         String result = extractName(path);
-
 
         assertNotNull(result);
         assertEquals(filename, result);
@@ -24,9 +22,7 @@ class StringHelperTest {
     public void testExtractNameWithEmptyString(){
         String path = "";
 
-
         String result = extractName(path);
-
 
         assertNotNull(result);
         assertEquals(path, result);
@@ -37,9 +33,7 @@ class StringHelperTest {
         String filename = "file.txt";
         String path = "\\/\\/\\/\\./some\\/path\\/to\\/"+filename;
 
-
         String result = extractName(path);
-
 
         assertNotNull(result);
         assertEquals(filename, result);
@@ -98,6 +92,7 @@ class StringHelperTest {
     @Test
     public void testGenerateUniqueFilenameWithEmptyPath() {
         String path = "";
+
         String result = generateUniqueFilename(path);
 
         assertEquals("", result);

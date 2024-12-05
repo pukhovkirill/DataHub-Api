@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Optional;
 
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,6 +37,7 @@ public class DownloadStorageEntityImplTest {
     @Test
     public void downloadSuccess() {
         String path = "/test/path/testFile.txt";
+
         StorageEntityDto storageEntity = mock(StorageEntityDto.class);
         when(storageEntity.getName()).thenReturn("testFile.txt");
         when(storageEntity.getPath()).thenReturn(path);
@@ -50,9 +50,7 @@ public class DownloadStorageEntityImplTest {
         when(entity.getData()).thenReturn(data);
         when(storageGateway.findByPath(anyString())).thenReturn(Optional.of(entity));
 
-
         ByteArrayOutputStream result = downloadStorageEntityImpl.download(storageEntity);
-
 
         Assertions.assertNotNull(result);
         Assertions.assertArrayEquals(data, result.toByteArray());
@@ -61,6 +59,7 @@ public class DownloadStorageEntityImplTest {
     @Test
     public void downloadWithIOException() {
         String path = "/test/path/testFile.txt";
+
         StorageEntityDto storageEntity = mock(StorageEntityDto.class);
         when(storageEntity.getName()).thenReturn("testFile.txt");
         when(storageEntity.getPath()).thenReturn(path);
@@ -72,12 +71,10 @@ public class DownloadStorageEntityImplTest {
         when(storageGateway.findByPath(anyString())).thenReturn(Optional.of(entity));
         when(entity.getData()).thenThrow(new RuntimeException(new IOException()));
 
-
         RuntimeException exception = assertThrows(
                 RuntimeException.class,
                 () -> downloadStorageEntityImpl.download(storageEntity)
         );
-
 
         Assertions.assertNotNull(exception);
         Assertions.assertNotNull(exception.getCause());
@@ -88,12 +85,10 @@ public class DownloadStorageEntityImplTest {
     public void downloadWithNullPointerException() {
         StorageEntityDto storageEntity = null;
 
-
         RuntimeException exception = assertThrows(
                 RuntimeException.class,
                 () -> downloadStorageEntityImpl.download(storageEntity)
         );
-
 
         Assertions.assertNotNull(exception);
         Assertions.assertNotNull(exception.getCause());
@@ -103,6 +98,7 @@ public class DownloadStorageEntityImplTest {
     @Test
     public void downloadWithStorageEntityNotFoundException() {
         String path = "/invalid/path/testFile.txt";
+
         StorageEntityDto storageEntity = mock(StorageEntityDto.class);
         when(storageEntity.getName()).thenReturn("testFile.txt");
         when(storageEntity.getPath()).thenReturn(path);
@@ -112,12 +108,10 @@ public class DownloadStorageEntityImplTest {
 
         when(storageGateway.findByPath(path)).thenReturn(Optional.empty());
 
-
         RuntimeException exception = assertThrows(
                 RuntimeException.class,
                 () -> downloadStorageEntityImpl.download(storageEntity)
         );
-
 
         Assertions.assertNotNull(exception);
         Assertions.assertInstanceOf(StorageEntityNotFoundException.class, exception);
