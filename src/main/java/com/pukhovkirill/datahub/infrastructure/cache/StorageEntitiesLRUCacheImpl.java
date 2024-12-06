@@ -38,13 +38,14 @@ public class StorageEntitiesLRUCacheImpl implements StorageEntitiesCache {
 
     @Override
     public Collection<StorageEntityDto> getFromCache(String key) {
+        if(key == null) return new ArrayList<>();
         Collection<StorageEntityDto> result = new ArrayList<>();
 
         acquireWriteLock();
         try {
             List<StorageEntityDto> entities;
 
-            if(!(entities = entityByName.get(key)).isEmpty()){
+            if(!(entities = entityByName.getOrDefault(key, new ArrayList<>())).isEmpty()){
                 for(StorageEntityDto entity : entities){
                     cache.remove(entity);
                     cache.addFirst(entity);
@@ -88,9 +89,8 @@ public class StorageEntitiesLRUCacheImpl implements StorageEntitiesCache {
             if(!list.contains(entity)){
                 list.add(entity);
                 entityByName.put(entity.getName(), list);
+                cache.addFirst(entity);
             }
-
-            cache.addFirst(value);
         }finally {
             releaseWriteLock();
         }
@@ -133,7 +133,12 @@ public class StorageEntitiesLRUCacheImpl implements StorageEntitiesCache {
 
     @Override
     public void clearCache() {
-        entityByName.clear();
-        cache.clear();
+        acquireWriteLock();
+        try{
+            entityByName.clear();
+            cache.clear();
+        }finally {
+            releaseWriteLock();
+        }
     }
 }
