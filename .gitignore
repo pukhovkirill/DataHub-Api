@@ -36,5 +36,5 @@ build/
 ### Project ###
 src/main/resources/application-prod.properties
 src/main/resources/credentials.json
-src/test/java/resources/*
+src/test/unit/resources/*
 .env

@@ -236,11 +236,11 @@ public class RestDownloadFileControllerTest {
     }
 
     private ByteArrayOutputStream generateValidChunkedDownloadTestCase() throws IOException {
-        return readFile("src", "test", "java", "resources", "test_file.pdf");
+        return readFile("src", "test", "unit", "resources", "test_file.pdf");
     }
 
     private byte[] generateResults(int part) throws IOException {
-        return readFile("src", "test", "java", "resources", "test_file.part" + part).toByteArray();
+        return readFile("src", "test", "unit", "resources", "test_file.part" + part).toByteArray();
     }
 
     private ByteArrayOutputStream readFile(String first, String... more) throws IOException {
