@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.SftpException;
 
@@ -42,13 +41,11 @@ public class SftpGatewayImpl implements StorageGateway, Closeable {
     public long count() {
         connectIfNotAlive();
         try {
-            client.connect();
             var files = client.ls(client.pwd());
-            client.exit();
             return files == null
                     ? 0
                     : files.size();
-        } catch (JSchException | SftpException e) {
+        } catch (SftpException e) {
             throw new RuntimeException(e);
         }
     }
@@ -57,30 +54,23 @@ public class SftpGatewayImpl implements StorageGateway, Closeable {
     public void delete(StorageEntity entity) {
         connectIfNotAlive();
         try{
-            client.connect();
-
             if(!existsByPath(entity.getPath()))
                 throw new SFTPFileNotFoundException(entity.getPath());
 
             client.rm(entity.getPath());
-            client.exit();
-        }catch(JSchException | SftpException e){
+        }catch(SftpException e){
             throw new RuntimeException("Error deleting file", e);
         }
     }
 
     @Override
     public Iterable<StorageEntity> findAll() {
-        if(!clientIsAlive()) return new ArrayList<>();
-
         connectIfNotAlive();
         List<StorageEntity> entities = new ArrayList<>();
         try{
-            client.connect();
             var files = client.ls(client.pwd());
-            client.exit();
             for (ChannelSftp.LsEntry file : files) {
-                SftpATTRS fileInfo = client.lstat(file.getLongname());
+                SftpATTRS fileInfo = file.getAttrs();
 
                 var entity = factory.restore(
                         file.getLongname(),
@@ -91,7 +81,7 @@ public class SftpGatewayImpl implements StorageGateway, Closeable {
 
                 entities.add(entity);
             }
-        }catch(JSchException | SftpException e){
+        }catch(SftpException e){
             throw new RuntimeException("Error finding file", e);
         }
 
@@ -102,15 +92,11 @@ public class SftpGatewayImpl implements StorageGateway, Closeable {
     public Optional<StorageEntity> findByPath(String path) {
         connectIfNotAlive();
         try(ByteArrayOutputStream baos = new ByteArrayOutputStream()){
-            client.connect();
-
             if(!existsByPath(path))
                 throw new SFTPFileNotFoundException(path);
 
             SftpATTRS fileInfo = client.lstat(path);
             client.get(path, baos);
-
-            client.exit();
 
             StorageEntity storageEntity = factory.restore(
                     path,
@@ -120,7 +106,7 @@ public class SftpGatewayImpl implements StorageGateway, Closeable {
             );
 
             return Optional.of(storageEntity);
-        }catch(JSchException | SftpException | IOException e){
+        }catch(SftpException | IOException e){
             throw new RuntimeException("Error finding file", e);
         }
     }
@@ -129,17 +115,14 @@ public class SftpGatewayImpl implements StorageGateway, Closeable {
     public StorageEntity save(StorageEntity entity) {
         connectIfNotAlive();
         try(ByteArrayInputStream bais = new ByteArrayInputStream(entity.getData())){
-            client.connect();
 
             if(existsByPath(entity.getPath()))
                 throw new SFTPFileAlreadyExistsException(entity.getPath());
 
             client.put(bais, entity.getPath());
 
-            client.exit();
-
             return entity;
-        }catch(JSchException | SftpException | IOException e){
+        }catch(SftpException | IOException e){
             throw new RuntimeException("Error loading file", e);
         }
     }
@@ -148,9 +131,7 @@ public class SftpGatewayImpl implements StorageGateway, Closeable {
     public boolean existsByPath(String path) {
         connectIfNotAlive();
         try{
-            client.connect();
             var files = client.ls(client.pwd());
-            client.exit();
             for (ChannelSftp.LsEntry file : files) {
                 if (file.getLongname().equals(path)) {
                     return true;
@@ -164,7 +145,7 @@ public class SftpGatewayImpl implements StorageGateway, Closeable {
 
     private void connectIfNotAlive(){
         if(!clientIsAlive()){
-            throw new FailedToServerConnectException("Server not available", "sftp");
+            throw new FailedToServerConnectException("Server not available", "ftp");
         }
         if(!client.isConnected()){
             manager.connect();
@@ -173,15 +154,10 @@ public class SftpGatewayImpl implements StorageGateway, Closeable {
     }
 
     private boolean clientIsAlive(){
-        if(client == null || client.isClosed())
-            return false;
-        try{
-           client.cd(".");
-           return true;
-        } catch (SftpException e) {
-            return false;
-        }
+        if(client == null) return false;
+        return !client.isClosed();
     }
+
 
     @Override
     public void close() {
