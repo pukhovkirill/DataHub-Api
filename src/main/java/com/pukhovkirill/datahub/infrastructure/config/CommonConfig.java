@@ -46,5 +46,4 @@ public class CommonConfig {
     public StorageEntityFactory storageEntityFactory() {
         return new StorageEntityFactoryImpl();
     }
-
 }
