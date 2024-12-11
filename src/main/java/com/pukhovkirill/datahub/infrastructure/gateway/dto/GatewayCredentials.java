@@ -27,6 +27,7 @@ public class GatewayCredentials {
     @NotBlank(message = "server is empty")
     private String server;
 
+    @NotNull(message = "port is null")
     @Min(value = 0, message = "port out of range")
     @Max(value = 65535, message = "port out of range")
     private int port;

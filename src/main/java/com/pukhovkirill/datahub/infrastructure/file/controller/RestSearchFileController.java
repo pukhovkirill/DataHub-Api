@@ -5,6 +5,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.SchemaProperty;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +33,25 @@ public class RestSearchFileController extends RestFileController {
         this.ongoingGateways = gatewayService;
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = """
+                            List of all files from all available gateways.\s
+                            """,
+                    content = {
+                            @Content(
+                                    mediaType = "application/json",
+                                    schemaProperties = {
+                                            @SchemaProperty(name = "timestamp", schema = @Schema(implementation = Timestamp.class)),
+                                            @SchemaProperty(name = "status", schema = @Schema(implementation = int.class)),
+                                            @SchemaProperty(name = "files", array = @ArraySchema(schema = @Schema(implementation = StorageEntityDto.class))
+                                            ),
+
+                                    })
+                    }
+            ),
+    })
     @RequestMapping(value = "api/files/list", method = RequestMethod.GET)
     public ResponseEntity<Map<String, Object>> searchAll(){
         List<StorageEntityDto> files = new LinkedList<>();
