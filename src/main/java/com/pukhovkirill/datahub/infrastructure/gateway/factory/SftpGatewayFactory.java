@@ -1,6 +1,5 @@
 package com.pukhovkirill.datahub.infrastructure.gateway.factory;
 
-import com.pukhovkirill.datahub.infrastructure.gateway.exception.FailedToServerConnectException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -10,6 +9,7 @@ import com.pukhovkirill.datahub.entity.gateway.StorageGateway;
 import com.pukhovkirill.datahub.infrastructure.external.SftpManager;
 import com.pukhovkirill.datahub.infrastructure.gateway.dto.GatewayCredentials;
 import com.pukhovkirill.datahub.infrastructure.gateway.repository.SftpGatewayImpl;
+import com.pukhovkirill.datahub.infrastructure.gateway.exception.FailedToServerConnectException;
 
 @Service
 public class SftpGatewayFactory implements StorageGatewayFactory{

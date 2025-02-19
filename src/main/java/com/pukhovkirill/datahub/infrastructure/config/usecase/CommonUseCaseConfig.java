@@ -1,7 +1,5 @@
 package com.pukhovkirill.datahub.infrastructure.config.usecase;
 
-import com.pukhovkirill.datahub.usecase.listingStorageEntityCase.ListStorageEntity;
-import com.pukhovkirill.datahub.usecase.listingStorageEntityCase.ListStorageEntityImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -13,6 +11,8 @@ import com.pukhovkirill.datahub.usecase.downloadStorageEntityCase.DownloadStorag
 import com.pukhovkirill.datahub.usecase.downloadStorageEntityCase.DownloadStorageEntityImpl;
 import com.pukhovkirill.datahub.usecase.uploadStorageEntityCase.UploadStorageEntity;
 import com.pukhovkirill.datahub.usecase.uploadStorageEntityCase.UploadStorageEntityImpl;
+import com.pukhovkirill.datahub.usecase.listingStorageEntityCase.ListStorageEntity;
+import com.pukhovkirill.datahub.usecase.listingStorageEntityCase.ListStorageEntityImpl;
 
 @Configuration
 public class CommonUseCaseConfig {

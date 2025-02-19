@@ -2,8 +2,8 @@ package com.pukhovkirill.datahub.util;
 
 import org.junit.jupiter.api.Test;
 
-import static com.pukhovkirill.datahub.util.StringHelper.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static com.pukhovkirill.datahub.util.StringHelper.*;
 
 class StringHelperTest {
 

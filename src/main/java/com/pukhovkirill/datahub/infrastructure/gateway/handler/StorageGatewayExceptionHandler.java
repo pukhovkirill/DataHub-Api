@@ -3,13 +3,13 @@ package com.pukhovkirill.datahub.infrastructure.gateway.handler;
 import java.sql.Timestamp;
 import java.util.Map;
 
-import com.pukhovkirill.datahub.infrastructure.gateway.exception.FailedServerLoginException;
-import com.pukhovkirill.datahub.infrastructure.gateway.exception.FailedToServerConnectException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import com.pukhovkirill.datahub.infrastructure.gateway.exception.FailedServerLoginException;
+import com.pukhovkirill.datahub.infrastructure.gateway.exception.FailedToServerConnectException;
 import com.pukhovkirill.datahub.entity.exception.StorageGatewayAlreadyExistsException;
 import com.pukhovkirill.datahub.entity.exception.StorageGatewayNotFoundException;
 

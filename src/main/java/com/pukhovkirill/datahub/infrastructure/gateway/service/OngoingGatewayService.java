@@ -1,9 +1,9 @@
 package com.pukhovkirill.datahub.infrastructure.gateway.service;
 
-import com.pukhovkirill.datahub.entity.gateway.StorageGateway;
-
 import java.io.IOException;
 import java.util.Collection;
+
+import com.pukhovkirill.datahub.entity.gateway.StorageGateway;
 
 public interface OngoingGatewayService {
     void register(String key, StorageGateway gateway);

@@ -1,10 +1,10 @@
 package com.pukhovkirill.datahub.usecase.listingStorageEntityCase;
 
-import com.pukhovkirill.datahub.entity.gateway.StorageGateway;
-import com.pukhovkirill.datahub.entity.model.StorageEntity;
-
 import java.util.ArrayList;
 import java.util.Collection;
+
+import com.pukhovkirill.datahub.entity.gateway.StorageGateway;
+import com.pukhovkirill.datahub.entity.model.StorageEntity;
 
 public class ListStorageEntityImpl implements ListStorageEntity {
 

@@ -1,16 +1,17 @@
 package com.pukhovkirill.datahub.infrastructure.external;
 
-import com.pukhovkirill.datahub.infrastructure.gateway.exception.FailedServerLoginException;
-import com.pukhovkirill.datahub.infrastructure.gateway.exception.FailedToServerConnectException;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.time.Duration;
+
 import lombok.Getter;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.time.Duration;
+import com.pukhovkirill.datahub.infrastructure.gateway.exception.FailedServerLoginException;
+import com.pukhovkirill.datahub.infrastructure.gateway.exception.FailedToServerConnectException;
 
 @Getter
 public class FtpManager {

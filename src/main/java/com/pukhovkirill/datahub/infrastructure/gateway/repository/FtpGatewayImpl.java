@@ -6,10 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.pukhovkirill.datahub.infrastructure.exception.FTPFileAlreadyExistsException;
-import com.pukhovkirill.datahub.infrastructure.exception.FTPFileNotFoundException;
-import com.pukhovkirill.datahub.infrastructure.external.FtpManager;
-import com.pukhovkirill.datahub.infrastructure.gateway.exception.FailedToServerConnectException;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.springframework.context.annotation.Scope;
@@ -18,6 +14,10 @@ import org.springframework.stereotype.Service;
 import com.pukhovkirill.datahub.entity.factory.StorageEntityFactory;
 import com.pukhovkirill.datahub.entity.gateway.StorageGateway;
 import com.pukhovkirill.datahub.entity.model.StorageEntity;
+import com.pukhovkirill.datahub.infrastructure.exception.FTPFileAlreadyExistsException;
+import com.pukhovkirill.datahub.infrastructure.exception.FTPFileNotFoundException;
+import com.pukhovkirill.datahub.infrastructure.external.FtpManager;
+import com.pukhovkirill.datahub.infrastructure.gateway.exception.FailedToServerConnectException;
 
 @Service
 @Scope("prototype")

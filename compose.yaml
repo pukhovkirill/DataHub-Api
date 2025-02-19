@@ -20,6 +20,7 @@ services:
         - minio
       entrypoint: >
         /bin/sh -c "
+        sleep 10;
         /usr/bin/mc alias set cloud-file-storage-minio http://minio:9000 ${MINIO_ACCESS_KEY} ${MINIO_SECRET_KEY};
         /usr/bin/mc mb cloud-file-storage-minio/storage;
         /usr/bin/mc policy set public cloud-file-storage-minio/storage;
